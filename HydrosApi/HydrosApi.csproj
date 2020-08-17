@@ -422,7 +422,7 @@
     <Compile Include="Models\LAYER.cs" />
     <Compile Include="Models\LOG_EVENTS.cs" />
     <Compile Include="Models\OracleContext.cs" />
-    <Compile Include="Models\PlaceOfUsePolygonView.cs" />
+    <Compile Include="Models\PLACE_OF_USE_VIEW.cs" />
     <Compile Include="Models\POINT_OF_DIVERSION.cs" />
     <Compile Include="Models\PROPOSED_WATER_RIGHT.cs" />
     <Compile Include="Models\PWR_POD.cs" />

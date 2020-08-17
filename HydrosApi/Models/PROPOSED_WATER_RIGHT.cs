@@ -16,7 +16,7 @@ namespace HydrosApi.Models
             PWR_POD = new HashSet<PWR_POD>();
         }
         
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]       
+        [Key]    
         public int ID { get; set; }
 
         public int? WFR_ID { get; set; }

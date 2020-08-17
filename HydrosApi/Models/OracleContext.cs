@@ -14,7 +14,7 @@ namespace HydrosApi.Models
             base.Configuration.ProxyCreationEnabled = false;
         }
 
-        public virtual DbSet<PlaceOfUsePolygonView> PlaceOfUsePolygonView { get; set; }
+        public virtual DbSet<PLACE_OF_USE_VIEW> PLACE_OF_USE_VIEW { get; set; }
          
 
         public virtual DbSet<POINT_OF_DIVERSION> POINT_OF_DIVERSION { get; set; }
@@ -863,6 +863,6 @@ namespace HydrosApi.Models
                 .IsUnicode(false);
         }
 
-        public System.Data.Entity.DbSet<HydrosApi.Models.PlaceOfUsePolygonView> PlaceOfUsePolygonViews { get; set; }
+        public System.Data.Entity.DbSet<HydrosApi.Models.PLACE_OF_USE_VIEW> PLACE_OF_USE_VIEW { get; set; }
     }
 }

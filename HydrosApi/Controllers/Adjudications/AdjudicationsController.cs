@@ -91,20 +91,36 @@ namespace HydrosApi.Controllers.Adjudications
         [HttpGet]
         public IHttpActionResult GetAllPods(int id) //proposed water right ID
         {
+
             //var pwrpod= GetPwrToPod(id);
-            var podlist = PodList(id).ToList();
 
-            var result = from pd in sdeDB.POINT_OF_DIVERSION
-                         where pd.OBJECTID.Equals(podlist.Select(i => i.POD_ID))
-                         select pd;
+            var podList = PodList(id).Select(p => p.POD_ID).ToList();
 
-            if (result == null)
+            var idList = (from p in podList
+                          select new
+                          {
+
+                              value = p.GetValueOrDefault(-1).ToString()
+                          });
+
+             /*
+
+
+
+
+            var result = from p in sdeDB.POINT_OF_DIVERSION 
+                         join i in idList on p.OBJECTID.ToString().Equals
+                         
+                         .Where(pd => pd.OBJECTID.ToString().Contains(idList));*/
+                       
+            
+
+            if (idList == null)
             {
                 return NotFound();
             }
-            return Ok(result);
+            return Ok(idList);
         }
-
 
         [Route("adj/getonepod/{id}")] //GET PODS
         [HttpGet]
@@ -124,6 +140,8 @@ namespace HydrosApi.Controllers.Adjudications
                 {
                     int pid = int.Parse(id);
                     pod = sdeDB.POINT_OF_DIVERSION.Where(p => p.OBJECTID==pid).ToList();
+                    
+                   
 
                 }
             }
@@ -136,9 +154,33 @@ namespace HydrosApi.Controllers.Adjudications
 
         }
 
+        public IHttpActionResult GetPlaceOfUse()
+        {
+
+            var pou = sdeDB.PLACE_OF_USE_VIEW.ToList();
+
+            if (pou == null)
+            {
+                return NotFound();
+            }
+            return Ok(pou);
+        }
+
+        [Route("adj/getplaceofusebyid/{id}")]
+        [HttpGet]
+        public IHttpActionResult GetPlaceOfUseById(string id)       
+        {
+           
+            var pou = sdeDB.PLACE_OF_USE_VIEW.Where(p => p.DWR_ID == id).ToList();
+
+            if (pou == null)
+            {
+                return NotFound();
+            }
+            return Ok(pou);
+        }
 
         //public IEnumerable<POINT_OF_DIVERSION> GetPodById(int id)
-        //{
         //return sdeDB.POINT_OF_DIVERSION.Where(p => p.OBJECTID == id).ToList();
         // }
 
