@@ -24,7 +24,7 @@ namespace HydrosApi.Controllers.Adjudications
         private SDEContext sdeDB = new SDEContext();
         private OracleContext db = new OracleContext();
         //IRR-29-A16011018CBB-01
-        // [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/getproposedwaterright/{id}")]
         [HttpGet]
         public IHttpActionResult GetProposedWaterRight(string id)
