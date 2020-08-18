@@ -13,12 +13,13 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Security.Principal;
 using System.Web;
+using System.Collections;
+using System.Runtime.InteropServices;
 
-
-namespace HydrosApi.Controllers.Adjudications
+namespace HydrosApi.Controllers.Adjudication
 {
 
-    public class AdjudicationsController : ApiController
+    public class AdjudicationController : ApiController
     {
 
         private SDEContext sdeDB = new SDEContext();
@@ -70,52 +71,105 @@ namespace HydrosApi.Controllers.Adjudications
             return db.PWR_POD.Where(p => p.PWR_ID == id).ToList();
         }
 
-        [Route("adj/getpwrtopod/{id}")] //GET THE ASSOCIATED POD IDS
+        [Route("adj/getpod/{id}")]
         [HttpGet]
-        public IHttpActionResult GetPwrToPod(string id) //proposed water right ID
-        {
-
+        public IHttpActionResult GetPod(string id) //USE A PLACE OF USE DWR_ID OR PWR_ID
+        {           
             Regex rgx = new Regex(@"[^0-9]");
             var pwrpod = rgx.IsMatch(id) ? db.PWR_POD.Where(p => p.PROPOSED_WATER_RIGHT.POU_ID == id).ToList() :
-                PodList(int.Parse(id)).ToList();
+                PodList(int.Parse(id));
 
-            if (pwrpod == null)
+            if(pwrpod == null)
             {
                 return NotFound();
             }
-            return Ok(pwrpod);
+            var idList = (from p in pwrpod
+                          where p.POD_ID != null
+                          select new
+                          {
+
+                              value = p.POD_ID.GetValueOrDefault(-1)
+                          }).Distinct().Select(i => i.value).ToList();
+
+            var result = sdeDB.POINT_OF_DIVERSION.Where(p => idList.Contains(p.OBJECTID)).ToList();
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
 
-        [Route("adj/getpod/{id}")]  
-        [HttpGet]
+
+        /* [Route("adj/getpwrtopod/{id}")] //GET THE ASSOCIATED POD IDS
+         [HttpGet]
+         public IHttpActionResult GetPwrToPod(string id) //proposed water right ID
+         {
+
+             Regex rgx = new Regex(@"[^0-9]");
+             var pwrpod = rgx.IsMatch(id) ? db.PWR_POD.Where(p => p.PROPOSED_WATER_RIGHT.POU_ID == id).ToList() :
+                 PodList(int.Parse(id)).ToList();
+
+             if (pwrpod == null)
+             {
+                 return NotFound();
+             }
+             return Ok(pwrpod);
+         }
+        */
+
+
+        //[Route("adj/getpod/{id}")]
+       // [HttpGet]
+
+        public IHttpActionResult GetPodx(int id) //proposed water right ID
+        {
+
+            //var pwrpod= GetPwrToPod(id);
+
+            var idList = (from p in PodList(id)
+                          where p.POD_ID != null
+                          select new
+                          {
+
+                              value = p.POD_ID.GetValueOrDefault(-1)
+                          }).Distinct().Select(i => i.value).ToList();
+
+
+            var result = sdeDB.POINT_OF_DIVERSION.Where(p => idList.Contains(p.OBJECTID)).ToList();
+
+
+
+            if (idList == null)
+            {
+                return NotFound();
+            }
+            return Ok(idList);
+        }
+
+
+       // [Route("adj/getpod/{id}")]
+       // [HttpGet]
+
         public IHttpActionResult GetAllPods(int id) //proposed water right ID
         {
 
             //var pwrpod= GetPwrToPod(id);
 
-            var podList = PodList(id).Select(p => p.POD_ID).ToList();
-
-            var idList = (from p in podList
+            var idList = (from p in PodList(id)
+                          where p.POD_ID != null
                           select new
                           {
 
-                              value = p.GetValueOrDefault(-1).ToString()
-                          });
-
-             /*
+                              value = p.POD_ID.GetValueOrDefault(-1)
+                          }).Distinct().Select(i => i.value).ToList();
 
 
+            var result = sdeDB.POINT_OF_DIVERSION.Where(p => idList.Contains(p.OBJECTID)).ToList();
 
+          
 
-            var result = from p in sdeDB.POINT_OF_DIVERSION 
-                         join i in idList on p.OBJECTID.ToString().Equals
-                         
-                         .Where(pd => pd.OBJECTID.ToString().Contains(idList));*/
-                       
-            
-
-            if (idList == null)
+            if (idList== null)
             {
                 return NotFound();
             }
