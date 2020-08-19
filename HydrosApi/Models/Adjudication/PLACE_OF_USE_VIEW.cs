@@ -21,7 +21,22 @@
         }
 
         [Key]
-        public string DWR_ID { get; set; }
+        [Column("DWR_ID")]
+        public string DwrId { get; set; }
+
+        [Column("POU_NAME")]
+        public string Name { get; set; }
+
+        [Column("SW")]
+        public int? SubWatershed { get; set; }
+
+        [Column("WS")]
+        public string Watershed { get; set; }
+
+        [Column("LCR_REGION")]
+        public string Region { get; set; }
+
+        /*
         public decimal? ACRES { get; set; }
         public string ACTIVE { get; set; }
         public string APN { get; set; }
@@ -60,7 +75,7 @@
         public string IRRIGATION_SYSTEM { get; set; }
         public decimal? IR_EFFICIENCY { get; set; }
         public string LAND_OWNER { get; set; }
-        public string LCR_REGION { get; set; }
+        
         public string LESSEE { get; set; }
         public string LOC_CAD { get; set; }
         public string LOC_LEGAL { get; set; }
@@ -69,7 +84,8 @@
         public string PHOTO_DT { get; set; }
         public string PODS { get; set; }
         public string POU_CODE { get; set; }
-        public string POU_NAME { get; set; }
+        
+       
         public decimal? POU_SEQ { get; set; }
         public string POU_STATUS { get; set; }
         public string PRIORTY_DT { get; set; }
@@ -78,12 +94,16 @@
         public string RGHT_OWNER { get; set; }
         public string SHARED_POD { get; set; }
         public string SOC { get; set; }
-        public decimal? SW { get; set; }
+        
+
         public string VERIFIED { get; set; }
         public decimal? WATER_DUTY { get; set; }
         public string WILDLIFE { get; set; }
-        public string WS { get; set; }
+
+       
+
         public string WTR_SOURCE { get; set; }
         public string XPLANATION { get; set; }
+        */
     }
 }

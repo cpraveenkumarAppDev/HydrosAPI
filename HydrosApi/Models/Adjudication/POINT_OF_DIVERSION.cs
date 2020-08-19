@@ -23,53 +23,81 @@
 
         public int OBJECTID { get; set; } //ObjectId
 
+        [StringLength(50)]
+        [Column("DWR_ID")]
+        public string DwrId { get; set; } //DwrId
 
         [StringLength(50)]
-        public string DWR_ID { get; set; } //DwrId
+        [Column("BOC")]
+        public string PCC { get; set; }
 
         [StringLength(100)]
-        public string POD_OWNER { get; set; }
+        [Column("POD_TYPE")]
+        public string Type { get; set; }
+
+        [StringLength(100)]       
+        [Column("POD_NAME")]
+        public string Name { get; set; }
 
         [StringLength(100)]
-        public string POD_CODE { get; set; }
+        [Column("POD_OWNER")] 
+        public string Owner { get; set; }
 
         [StringLength(100)]
-        public string POD_TYPE { get; set; }
+        [Column("BASIN_NAME")]
+        public string Basin { get; set; }
 
+        [StringLength(100)]
+        [Column("SUBBASIN_N")]
+        public string Subbasin { get; set; }
+
+        [StringLength(100)]
+        [Column("WATERSHED")]
+        public string Watershed { get; set; }
 
         [NotMapped]
+        public int? PWR_POD_ID { get; set; }
 
-        private string podTypeDescription;
         [NotMapped]
+        private string podTypeDescription;        
+     
 
+        [NotMapped]
         public string PodTypeDescription
         {
 
 
             get {
-                switch (POD_TYPE)
+                if (Type == null)
                 {
-                    case "D":
-                        podTypeDescription = "Surfacewater Diversion";
-                        break;
-                    case "Instream Pump":
-                    case "P":
-                        podTypeDescription = "Instream Pump";
-                        break;
-                    case "S":
-                    case "Spring":
-                        podTypeDescription = "Spring";
-                        break;
-                    case "W":
-                    case "Well":
-                        podTypeDescription = "Well";
-                        break;
-                    default:
-                        podTypeDescription = "Unknown Type";
-                        break;
+                    podTypeDescription = "Unknown Type";
                 }
-
-                return podTypeDescription;
+                else
+                {
+                    switch (Type)
+                    {
+                        case "D":
+                            podTypeDescription = "Surfacewater Diversion";
+                            break;
+                        case "Instream Pump":
+                        case "P":
+                            podTypeDescription = "Instream Pump";
+                            break;
+                        case "S":
+                        case "Spring":
+                            podTypeDescription = "Spring";
+                            break;
+                        case "W":
+                        case "Well":
+                            podTypeDescription = "Well";
+                            break;
+                        default:
+                            podTypeDescription = "Other-"+Type;
+                            break;
+                    }
+                }
+                    return podTypeDescription;
+                
             }
             set
             {
@@ -78,31 +106,14 @@
              
         }
 
+        
 
-        /*public string ACTIVE_INACTIVE { get; set; }
-                public string BASIN_NAME { get; set; }
-                public string BOC { get; set; }
 
-                public decimal? CASING_DEP { get; set; }
-                public decimal? CASING_DIA { get; set; }
-                public string CASING_TYP { get; set; }
-                public string CLAIMANT { get; set; }
-                public string COMPLETION { get; set; }
-                public string COUNTY { get; set; }
-                public string DIVERSIO_2 { get; set; }
-                public string DIV_COMPLE { get; set; }
-                public string LAND_OWNER { get; set; }
-                public string INSTALLED { get; set; }
-
-                public string POD_NAME { get; set; }
-
-                public string LOC_CAD { get; set; }*/
         /* 
         
 APN	NVARCHAR2(254)
  
  
-  
 CI_INVEST	NVARCHAR2(254)
  
  

@@ -15,13 +15,14 @@ using System.Security.Principal;
 using System.Web;
 using System.Collections;
 using System.Runtime.InteropServices;
+using System.Drawing;
+using System.Data.Entity.Core.Common.CommandTrees;
 
 namespace HydrosApi.Controllers.Adjudication
 {
 
     public class AdjudicationController : ApiController
     {
-
         private SDEContext sdeDB = new SDEContext();
         private OracleContext db = new OracleContext();
         //IRR-29-A16011018CBB-01
@@ -53,45 +54,56 @@ namespace HydrosApi.Controllers.Adjudication
             return Ok(pwr.ToList());
         }
 
-        [Route("adj/getpodpwrdwr/{id}")]
-        [HttpGet]
-        public IHttpActionResult PodListPwrDwr(string id)
-        {
-            var result=db.PWR_POD.Where(p => p.PROPOSED_WATER_RIGHT.POU_ID==id).ToList();
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-            return Ok(result);
-        }
-
         public IEnumerable<PWR_POD> PodList(int id)
         {
             return db.PWR_POD.Where(p => p.PWR_ID == id).ToList();
         }
 
-        [Route("adj/getpod/{id}")]
+        [Route("adj/getpod/{id?}")]
         [HttpGet]
-        public IHttpActionResult GetPod(string id) //USE A PLACE OF USE DWR_ID OR PWR_ID
+        //USE A PROPOSED_WATER_RIGHT.ID OR PROPOSED_WATER_RIGHT.POU_ID/PLACE_OF_USE.DWR_ID
+        //*or*
+        //adj/getpod (NO PARAMETER) RETURNS ALL PODS
+        public IHttpActionResult GetPod(string id=null) 
         {           
             Regex rgx = new Regex(@"[^0-9]");
-            var pwrpod = rgx.IsMatch(id) ? db.PWR_POD.Where(p => p.PROPOSED_WATER_RIGHT.POU_ID == id).ToList() :
-                PodList(int.Parse(id));
 
-            if(pwrpod == null)
+            List<POINT_OF_DIVERSION> result = null;
+            if (id != null)
             {
-                return NotFound();
+
+                var pwrpod = rgx.IsMatch(id) ? db.PWR_POD.Where(p => p.PROPOSED_WATER_RIGHT.POU_ID == id).ToList() :
+                    PodList(int.Parse(id));
+
+                if (pwrpod == null)
+                {
+                    return NotFound();
+                }
+               
+                //SAVE THE PWR_POD_ID
+                var idList = (from p in pwrpod
+                              where p.POD_ID != null
+                              select new
+                              {
+                                    p.ID,
+                                  POD_ID = p.POD_ID.GetValueOrDefault(-1)
+                              }).Distinct().Select(i => i).ToList();
+
+                var matchIdList = idList.Select(i => i.POD_ID).ToList();
+
+                result = sdeDB.POINT_OF_DIVERSION.Where(p => matchIdList.Contains(p.OBJECTID)).ToList();
+
+                result = (from p in result                                 
+                               join i in idList on p.OBJECTID equals i.POD_ID  
+                               select new {                                   
+                                   PWR_PID=p.PWR_POD_ID=i.ID, //assign pwr_pod.id this should be submitted for deletes and updates to pod
+                                   p //get everything from result
+                               }).Select(p=>p.p).Distinct().ToList();
             }
-            var idList = (from p in pwrpod
-                          where p.POD_ID != null
-                          select new
-                          {
-
-                              value = p.POD_ID.GetValueOrDefault(-1)
-                          }).Distinct().Select(i => i.value).ToList();
-
-            var result = sdeDB.POINT_OF_DIVERSION.Where(p => idList.Contains(p.OBJECTID)).ToList();
+            else // SHOW ALL PODS WHEN NO VALUE IS SUBMITTED
+            {
+                result = sdeDB.POINT_OF_DIVERSION.ToList();
+            }
             if (result == null)
             {
                 return NotFound();
@@ -99,121 +111,35 @@ namespace HydrosApi.Controllers.Adjudication
             return Ok(result);
         }
 
-
-
-        /* [Route("adj/getpwrtopod/{id}")] //GET THE ASSOCIATED POD IDS
-         [HttpGet]
-         public IHttpActionResult GetPwrToPod(string id) //proposed water right ID
-         {
-
-             Regex rgx = new Regex(@"[^0-9]");
-             var pwrpod = rgx.IsMatch(id) ? db.PWR_POD.Where(p => p.PROPOSED_WATER_RIGHT.POU_ID == id).ToList() :
-                 PodList(int.Parse(id)).ToList();
-
-             if (pwrpod == null)
-             {
-                 return NotFound();
-             }
-             return Ok(pwrpod);
-         }
-        */
-
-
-        //[Route("adj/getpod/{id}")]
-       // [HttpGet]
-
-        public IHttpActionResult GetPodx(int id) //proposed water right ID
+        [HttpDelete,Route("adj/deletepod/{id}")]        
+        public IHttpActionResult DeletePod(int id) //<== ID IS THE ID FROM THE PWR_POD TABLE
         {
+            PWR_POD pod = db.PWR_POD.Where(i => i.ID == id).FirstOrDefault();
 
-            //var pwrpod= GetPwrToPod(id);
-
-            var idList = (from p in PodList(id)
-                          where p.POD_ID != null
-                          select new
-                          {
-
-                              value = p.POD_ID.GetValueOrDefault(-1)
-                          }).Distinct().Select(i => i.value).ToList();
-
-
-            var result = sdeDB.POINT_OF_DIVERSION.Where(p => idList.Contains(p.OBJECTID)).ToList();
-
-
-
-            if (idList == null)
+            if(pod==null)
             {
-                return NotFound();
-            }
-            return Ok(idList);
+                return BadRequest("An invalid id was entered");
+            }           
+
+            db.Entry(pod).State = EntityState.Deleted;
+            db.SaveChanges();           
+            return Ok();
         }
 
-
-       // [Route("adj/getpod/{id}")]
-       // [HttpGet]
-
-        public IHttpActionResult GetAllPods(int id) //proposed water right ID
-        {
-
-            //var pwrpod= GetPwrToPod(id);
-
-            var idList = (from p in PodList(id)
-                          where p.POD_ID != null
-                          select new
-                          {
-
-                              value = p.POD_ID.GetValueOrDefault(-1)
-                          }).Distinct().Select(i => i.value).ToList();
-
-
-            var result = sdeDB.POINT_OF_DIVERSION.Where(p => idList.Contains(p.OBJECTID)).ToList();
-
-          
-
-            if (idList== null)
-            {
-                return NotFound();
-            }
-            return Ok(idList);
-        }
-
-        [Route("adj/getonepod/{id}")] //GET PODS
+        [Route("adj/getplaceofuse/{id?}")]
         [HttpGet]
-        public IHttpActionResult Pod(string id)
+        public IHttpActionResult GetPlaceOfUse(string id=null)
         {
-            Regex rgx = new Regex(@"[^0-9]");
-            List<POINT_OF_DIVERSION> pod = null;
-            if (id != null)
+            List<PLACE_OF_USE_VIEW> pou = null;
+
+            if(id !=null)
             {
-                if (rgx.IsMatch(id))
-                {
-
-                    pod = sdeDB.POINT_OF_DIVERSION.Where(p => p.DWR_ID == id).ToList();
-                }
-
-                else
-                {
-                    int pid = int.Parse(id);
-                    pod = sdeDB.POINT_OF_DIVERSION.Where(p => p.OBJECTID==pid).ToList();
-                    
-                   
-
-                }
+                pou = sdeDB.PLACE_OF_USE_VIEW.Where(p=>p.DwrId==id).ToList();
             }
-            if (pod == null)
+            else
             {
-                return NotFound();
-            }
-            return Ok(pod);
-
-
-        }
-
-        [Route("adj/getplaceofuse")]
-        [HttpGet]
-        public IHttpActionResult GetPlaceOfUse()
-        {
-
-            var pou = sdeDB.PLACE_OF_USE_VIEW.ToList();
+                pou = sdeDB.PLACE_OF_USE_VIEW.ToList();
+            }             
 
             if (pou == null)
             {
@@ -221,26 +147,6 @@ namespace HydrosApi.Controllers.Adjudication
             }
             return Ok(pou);
         }
-
-        [Route("adj/getplaceofusebyid/{id}")]
-        [HttpGet]
-        public IHttpActionResult GetPlaceOfUseById(string id)       
-        {
-           
-            var pou = sdeDB.PLACE_OF_USE_VIEW.Where(p => p.DWR_ID == id).ToList();
-
-            if (pou == null)
-            {
-                return NotFound();
-            }
-            return Ok(pou);
-        }
-
-        //public IEnumerable<POINT_OF_DIVERSION> GetPodById(int id)
-        //{
-        //return sdeDB.POINT_OF_DIVERSION.Where(p => p.OBJECTID == id).ToList();
-        // }
-
     }
 }
 
