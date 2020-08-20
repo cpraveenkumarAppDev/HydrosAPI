@@ -15,7 +15,7 @@
 
             base.Configuration.ProxyCreationEnabled = false;
         }
-
+        
         public virtual DbSet<EXPLANATION> EXPLANATIONs { get; set; }
         public virtual DbSet<FILE> FILES { get; set; }
         public virtual DbSet<PROPOSED_WATER_RIGHT> PROPOSED_WATER_RIGHT { get; set; }

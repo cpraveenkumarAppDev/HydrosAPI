@@ -1,108 +1,140 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+using System.Data.Entity; 
+using System.Linq; 
 using System.Web.Http;
-using System.Web.Http.Description;
 using HydrosApi.Models;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Security.Principal;
-using System.Web;
-using System.Collections;
-using System.Runtime.InteropServices;
-using System.Drawing;
-using System.Data.Entity.Core.Common.CommandTrees;
+using System.Text.RegularExpressions; 
+using System.Web; 
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace HydrosApi.Controllers.Adjudication
 {
-
     public class AdjudicationController : ApiController
     {
         private SDEContext sdeDB = new SDEContext();
         private OracleContext db = new OracleContext();
-        //IRR-29-A16011018CBB-01
-        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        [Route("adj/getproposedwaterright/{id}")]
-        [HttpGet]
-        public IHttpActionResult GetProposedWaterRight(string id)
-        {
-            Regex rgx = new Regex(@"[^0-9]");
-            List<PROPOSED_WATER_RIGHT> pwr = null;
 
-            if (id != null)
+         
+        //CREATE A PWR RECORD IF IT DOESN'T EXIST WHEN A SPECIFIC PLACE OF USE IS SELECTED
+        private async Task<IEnumerable<PROPOSED_WATER_RIGHT>> CreateProposedWaterRight(List<PLACE_OF_USE_VIEW>pou) 
+        {   
+            if (pou==null)
             {
-
-                if (rgx.IsMatch(id))
-                {
-                    pwr = db.PROPOSED_WATER_RIGHT.Where(p => p.POU_ID == id).ToList();
-                }
-                else
-                {
-                    pwr = db.PROPOSED_WATER_RIGHT.Where(p => p.ID == int.Parse(id)).ToList();
-                }
+                return null;
             }
 
-            if (pwr == null)
+            var newPwr = new PROPOSED_WATER_RIGHT()
+            {
+                CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
+                CREATEDT = DateTime.Now,
+                POU_ID = pou.Select(p => p.DwrId).FirstOrDefault()
+            };
+
+            db.Entry(newPwr).State = EntityState.Added;
+            await db.SaveChangesAsync();
+
+            List<PROPOSED_WATER_RIGHT> pwr = new List<PROPOSED_WATER_RIGHT>();
+            pwr.Add(newPwr);
+            return pwr;
+        }
+        
+        private async Task<IEnumerable<PROPOSED_WATER_RIGHT>> ProposedWaterRight(string id)
+        {
+            Regex rgx = new Regex(@"[^0-9]");
+
+            if (rgx.IsMatch(id))
+            {
+                return await db.PROPOSED_WATER_RIGHT.Where(p => p.POU_ID == id).ToListAsync();
+            }
+            else
+            {
+                return await db.PROPOSED_WATER_RIGHT.Where(p => p.ID == int.Parse(id)).ToListAsync();
+            }
+        }
+        
+        private async Task<IEnumerable<PWR_POD>> PwrPodList(int id) //GET ID IN PWR_POD TABLE
+        {
+            return await db.PWR_POD.Where(p => p.PWR_ID == id).ToListAsync();
+        }
+      
+        private async Task<IEnumerable<POINT_OF_DIVERSION>> PodObjectList(string id) //the POD dwr_id or the POD objectid
+        {
+            Regex rgx = new Regex(@"[^0-9]");
+
+            if (rgx.IsMatch(id))
+            {
+                return await sdeDB.POINT_OF_DIVERSION.Where(p => p.DwrId == id).ToListAsync();
+            }
+            else
+            {
+                return await sdeDB.POINT_OF_DIVERSION.Where(p => p.OBJECTID == int.Parse(id)).ToListAsync();
+            }
+        }
+
+        //--------------------------------------------------------------------------------------------------------
+        //---------------------------------- WEB SERVICE REQUESTS ------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------
+
+        //IRR-29-A16011018CBB-01
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [Route("adj/getpwr/{id}")]
+        [HttpGet]
+        public async Task<IHttpActionResult> GetProposedWaterRight(string id)
+        {           
+            if (id == null)
+            {
+                return BadRequest("Please enter a valid ID or DwrId");
+            }
+
+            var pwr = await ProposedWaterRight(id);      
+
+            if(pwr == null)
             {
                 return NotFound();
             }
-            return Ok(pwr.ToList());
+            return Ok(pwr);
         }
 
-        public IEnumerable<PWR_POD> PodList(int id)
-        {
-            return db.PWR_POD.Where(p => p.PWR_ID == id).ToList();
-        }
-
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/getpod/{id?}")]
         [HttpGet]
         //USE A PROPOSED_WATER_RIGHT.ID OR PROPOSED_WATER_RIGHT.POU_ID/PLACE_OF_USE.DWR_ID
         //*or*
         //adj/getpod (NO PARAMETER) RETURNS ALL PODS
-        public IHttpActionResult GetPod(string id=null) 
-        {           
+        public async Task<IHttpActionResult> GetPod(string id=null) 
+        {
             Regex rgx = new Regex(@"[^0-9]");
 
             List<POINT_OF_DIVERSION> result = null;
             if (id != null)
             {
+                int? pwrId;
+                var pwr= ProposedWaterRight(id).Result.Select(i => i.ID).FirstOrDefault();
 
-                var pwrpod = rgx.IsMatch(id) ? db.PWR_POD.Where(p => p.PROPOSED_WATER_RIGHT.POU_ID == id).ToList() :
-                    PodList(int.Parse(id));
-
-                if (pwrpod == null)
+                if (rgx.IsMatch(id))
                 {
-                    return NotFound();
+                    pwrId = ProposedWaterRight(id).Result.Select(i => i.ID).FirstOrDefault();
                 }
-               
-                //SAVE THE PWR_POD_ID
-                var idList = (from p in pwrpod
-                              where p.POD_ID != null
-                              select new
-                              {
-                                    p.ID,
-                                  POD_ID = p.POD_ID.GetValueOrDefault(-1)
-                              }).Distinct().Select(i => i).ToList();
+                else
+                {
+                    pwrId = int.Parse(id);
+                }
 
-                var matchIdList = idList.Select(i => i.POD_ID).ToList();
+                result = (from pp in PwrPodList(pwrId ?? -1).Result.Select(i => i)
+                               join pd in await sdeDB.POINT_OF_DIVERSION.ToListAsync() on pp.POD_ID equals pd.OBJECTID
+                               select new
+                               {
+                                   pd,
+                                   PWR_PID = pd.PWR_POD_ID = pp.ID
+                               }).Select(pd=>pd.pd).Distinct().ToList();
 
-                result = sdeDB.POINT_OF_DIVERSION.Where(p => matchIdList.Contains(p.OBJECTID)).ToList();
-
-                result = (from p in result                                 
-                               join i in idList on p.OBJECTID equals i.POD_ID  
-                               select new {                                   
-                                   PWR_PID=p.PWR_POD_ID=i.ID, //assign pwr_pod.id this should be submitted for deletes and updates to pod
-                                   p //get everything from result
-                               }).Select(p=>p.p).Distinct().ToList();
             }
             else // SHOW ALL PODS WHEN NO VALUE IS SUBMITTED
             {
-                result = sdeDB.POINT_OF_DIVERSION.ToList();
+                result = await sdeDB.POINT_OF_DIVERSION.ToListAsync();
             }
             if (result == null)
             {
@@ -110,43 +142,97 @@ namespace HydrosApi.Controllers.Adjudication
             }
             return Ok(result);
         }
-
-        [HttpDelete,Route("adj/deletepod/{id}")]        
-        public IHttpActionResult DeletePod(int id) //<== ID IS THE ID FROM THE PWR_POD TABLE
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpPost, Route("adj/addpod/{podobjectid}/{pwrId}")]
+        //add a relationship between the Place Of Use and Point of Diversion
+        //the pwrId should be stored in the Place of Use model
+        public async Task<IHttpActionResult> AddPod(int podobjectid,int pwrId)  
         {
-            PWR_POD pod = db.PWR_POD.Where(i => i.ID == id).FirstOrDefault();
+            //FIND THE PROPOSED WATER RIGHT
+            var pwrPodList = await db.PWR_POD.Where(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == pwrId).ToListAsync();            
 
-            if(pod==null)
+            if(pwrPodList.Count() > 0)
+            {   
+                return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
+            }
+
+            var newPwrPod = new PWR_POD()
+            {
+                CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
+                CREATEDT = DateTime.Now,
+                POD_ID = podobjectid,
+                PWR_ID=pwrId
+            };
+            db.Entry(newPwrPod).State = EntityState.Added;
+            await db.SaveChangesAsync();
+            return Ok();         
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpDelete,Route("adj/deletepod/{id}")]
+        public async Task<IHttpActionResult> DeletePod(int id) //<== ID IS THE ID FROM THE PWR_POD TABLE
+        {
+            PWR_POD pod = await db.PWR_POD.Where(i => i.ID == id).FirstOrDefaultAsync();
+            PROPOSED_WATER_RIGHT pwr = await db.PROPOSED_WATER_RIGHT.Where(p => p.ID == pod.PWR_ID.GetValueOrDefault(-1)).FirstOrDefaultAsync();
+
+            if(pod==null || pwr==null)
             {
                 return BadRequest("An invalid id was entered");
             }           
 
             db.Entry(pod).State = EntityState.Deleted;
-            db.SaveChanges();           
+            await db.SaveChangesAsync();           
             return Ok();
         }
 
-        [Route("adj/getplaceofuse/{id?}")]
-        [HttpGet]
-        public IHttpActionResult GetPlaceOfUse(string id=null)
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpGet,Route("adj/getpou/{id?}")]      
+        public async Task<IHttpActionResult> GetPlaceOfUse(string id = null)
         {
+            Regex rgx = new Regex(@"[^0-9]");           
             List<PLACE_OF_USE_VIEW> pou = null;
-
-            if(id !=null)
+           
+            if (id != null)
             {
-                pou = sdeDB.PLACE_OF_USE_VIEW.Where(p=>p.DwrId==id).ToList();
+                if(!rgx.IsMatch(id))
+                {
+                    return BadRequest("An invalid DwrId was entered");
+                }
+                
+                pou = await sdeDB.PLACE_OF_USE_VIEW.Where(p => p.DwrId == id).ToListAsync(); 
+
+                if(pou == null)
+                {
+                    return BadRequest("No Place of Use was found.");
+                }
+
+                var pwr = ProposedWaterRight(id).Result.Select(i => i).FirstOrDefault(); 
+
+                if(pwr==null)
+                {
+                    pwr = CreateProposedWaterRight(pou).Result.Select(i => i).FirstOrDefault(); //create a pwr record if not exists
+                }
+
+                if (pwr != null)
+                {
+                    pou.FirstOrDefault().PWR_ID = pwr.ID;
+                    pou.FirstOrDefault().PWR_COMMENTS = pwr.COMMENTS;
+                }
             }
             else
             {
-                pou = sdeDB.PLACE_OF_USE_VIEW.ToList();
-            }             
+                pou = await sdeDB.PLACE_OF_USE_VIEW.ToListAsync();
+            }
 
             if (pou == null)
             {
                 return NotFound();
             }
             return Ok(pou);
+            
         }
+
+
     }
 }
 
