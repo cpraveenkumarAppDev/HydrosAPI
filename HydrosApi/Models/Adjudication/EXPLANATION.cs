@@ -1,4 +1,4 @@
-namespace HydrosApi.Models
+﻿namespace HydrosApi.Models
 {
     using System;
     using System.Collections.Generic;

@@ -379,6 +379,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Adjudication\EXPLANATION.cs" />
     <Compile Include="Models\CD_AQUIFER_TYPE.cs" />
     <Compile Include="Models\CD_DRILLERS_LOG.cs" />
     <Compile Include="Models\CD_FORMATIONS.cs" />
@@ -394,16 +395,15 @@
     <Compile Include="Models\CD_SECONDARY_AQUIFER.cs" />
     <Compile Include="Models\CD_TERTIARY_AQUIFER.cs" />
     <Compile Include="Models\CD_USCS.cs" />
-    <Compile Include="Models\EXPLANATION.cs" />
     <Compile Include="Models\FILE.cs" />
     <Compile Include="Models\LAYER.cs" />
     <Compile Include="Models\LOG_EVENTS.cs" />
-    <Compile Include="Models\OracleContext.cs" />
+    <Compile Include="Data\OracleContext.cs" />
     <Compile Include="Models\Adjudication\PLACE_OF_USE_VIEW.cs" />
     <Compile Include="Models\Adjudication\POINT_OF_DIVERSION.cs" />
     <Compile Include="Models\Adjudication\PROPOSED_WATER_RIGHT.cs" />
     <Compile Include="Models\Adjudication\PWR_POD.cs" />
-    <Compile Include="Models\SOC_AIS_VIEW.cs" />
+    <Compile Include="Models\Adjudication\SOC_AIS_VIEW.cs" />
     <Compile Include="Models\SW_AIS_VIEW.cs" />
     <Compile Include="Models\WATERSHED_FILE_REPORT.cs" />
     <Compile Include="Models\WELLS_VIEW.cs" />

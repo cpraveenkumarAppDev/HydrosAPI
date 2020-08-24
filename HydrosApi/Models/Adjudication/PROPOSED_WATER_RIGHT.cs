@@ -34,75 +34,79 @@ namespace HydrosApi.Models
 
         public DateTime? UPDATEDT { get; set; }
 
-        [StringLength(50)]
+      [StringLength(50)]
         public string POU_ID { get; set; }
 
-        [StringLength(255)]
-        public string WATER_STRUCTURE_FAC_TYPE { get; set; }
+        [NotMapped]
 
-        public decimal? WATER_STRUCTURE_FAC_CAP { get; set; }
+        public List<POINT_OF_DIVERSION> PointOfDiversionList { get; set; }
+        /* 
+       [StringLength(255)]
+       public string WATER_STRUCTURE_FAC_TYPE { get; set; }
 
-        [StringLength(500)]
-        public string WATER_STRUCTURE_FAC_PUR { get; set; }
+       public decimal? WATER_STRUCTURE_FAC_CAP { get; set; }
 
-        [StringLength(255)]
-        public string WATER_REUSE_PROGRAM { get; set; }
+       [StringLength(500)]
+       public string WATER_STRUCTURE_FAC_PUR { get; set; }
 
-        [StringLength(255)]
-        public string DISCHARGE_OF_WAISTWATER { get; set; }
+       [StringLength(255)]
+       public string WATER_REUSE_PROGRAM { get; set; }
 
-        [StringLength(255)]
-        public string TREATMENT_OF_WAISTWATER { get; set; }
+       [StringLength(255)]
+       public string DISCHARGE_OF_WAISTWATER { get; set; }
 
-        [StringLength(255)]
-        public string PERIODS_OF_INACTIVITY { get; set; }
+       [StringLength(255)]
+       public string TREATMENT_OF_WAISTWATER { get; set; }
 
-        public short? INACTIVITY_MONTHS { get; set; }
+       [StringLength(255)]
+       public string PERIODS_OF_INACTIVITY { get; set; }
 
-        public short? PEOPLE { get; set; }
+       public short? INACTIVITY_MONTHS { get; set; }
 
-        [StringLength(255)]
-        public string EXPANSION_PLANS { get; set; }
+       public short? PEOPLE { get; set; }
 
-        [StringLength(500)]
-        public string EXPANSION_EXPLANATION { get; set; }
+       [StringLength(255)]
+       public string EXPANSION_PLANS { get; set; }
 
-        [StringLength(20)]
-        public string DRILL_DATE { get; set; }
+       [StringLength(500)]
+       public string EXPANSION_EXPLANATION { get; set; }
 
-        public decimal? DEPTH { get; set; }
+       [StringLength(20)]
+       public string DRILL_DATE { get; set; }
 
-        [StringLength(25)]
-        public string ADEQ_ID { get; set; }
+       public decimal? DEPTH { get; set; }
 
-        [StringLength(25)]
-        public string PWS_ID_NO { get; set; }
+       [StringLength(25)]
+       public string ADEQ_ID { get; set; }
 
-        [StringLength(25)]
-        public string CWS_ID_NO { get; set; }
+       [StringLength(25)]
+       public string PWS_ID_NO { get; set; }
 
-        [StringLength(25)]
-        public string ACC_DOC_NO { get; set; }
+       [StringLength(25)]
+       public string CWS_ID_NO { get; set; }
 
-        public short? NO_CONN { get; set; }
+       [StringLength(25)]
+       public string ACC_DOC_NO { get; set; }
 
-        [StringLength(10)]
-        public string ACTIVE { get; set; }
+       public short? NO_CONN { get; set; }
 
-        [StringLength(50)]
-        public string CTY_DOC_NO { get; set; }
+       [StringLength(10)]
+       public string ACTIVE { get; set; }
 
-        [StringLength(50)]
-        public string OLD_WFR { get; set; }
+       [StringLength(50)]
+       public string CTY_DOC_NO { get; set; }
 
-        [StringLength(50)]
-        public string DIVERSION_STATUS { get; set; }
+       [StringLength(50)]
+       public string OLD_WFR { get; set; }
 
-        [StringLength(50)]
-        public string STATUS_SOURCE { get; set; }
+       [StringLength(50)]
+       public string DIVERSION_STATUS { get; set; }
 
-        
-         
+       [StringLength(50)]
+       public string STATUS_SOURCE { get; set; }
+
+       */
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         
 

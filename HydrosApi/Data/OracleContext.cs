@@ -59,7 +59,7 @@ namespace HydrosApi.Models
 
        
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+       protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EXPLANATION>()
                 .Property(e => e.EXP_TYPE)
@@ -121,7 +121,7 @@ namespace HydrosApi.Models
                 .Property(e => e.POU_ID)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
+            /*modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
                 .Property(e => e.WATER_STRUCTURE_FAC_TYPE)
                 .IsUnicode(false);
 
@@ -199,7 +199,7 @@ namespace HydrosApi.Models
 
             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
                 .Property(e => e.STATUS_SOURCE)
-                .IsUnicode(false);
+                .IsUnicode(false);*/
 
             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
                 .HasMany(e => e.PWR_POD)
