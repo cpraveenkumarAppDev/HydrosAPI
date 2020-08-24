@@ -26,6 +26,7 @@ namespace HydrosApi.Models
 
         public DateTime? UPDATEDT { get; set; }
 
+        [NotMapped]
         public virtual PROPOSED_WATER_RIGHT PROPOSED_WATER_RIGHT { get; set; }
     }
 }

@@ -382,10 +382,10 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Controllers\Adjudications\AdjudicationsController.cs" />
-    <Compile Include="Controllers\Adjudications\AISController.cs" />
+    <Compile Include="Controllers\Adjudication\AdjudicationController.cs" />
     <Compile Include="Controllers\ADWR\ADWRController.cs" />
     <Compile Include="Controllers\LayersController.cs" />
+    <Compile Include="Data\ADWRContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -409,10 +409,10 @@
     <Compile Include="Models\LAYER.cs" />
     <Compile Include="Models\LOG_EVENTS.cs" />
     <Compile Include="Models\OracleContext.cs" />
-    <Compile Include="Models\PLACE_OF_USE_VIEW.cs" />
-    <Compile Include="Models\POINT_OF_DIVERSION.cs" />
-    <Compile Include="Models\PROPOSED_WATER_RIGHT.cs" />
-    <Compile Include="Models\PWR_POD.cs" />
+    <Compile Include="Models\Adjudication\PLACE_OF_USE_VIEW.cs" />
+    <Compile Include="Models\Adjudication\POINT_OF_DIVERSION.cs" />
+    <Compile Include="Models\Adjudication\PROPOSED_WATER_RIGHT.cs" />
+    <Compile Include="Models\Adjudication\PWR_POD.cs" />
     <Compile Include="Models\SOC_AIS_VIEW.cs" />
     <Compile Include="Models\SW_AIS_VIEW.cs" />
     <Compile Include="Models\WATERSHED_FILE_REPORT.cs" />
