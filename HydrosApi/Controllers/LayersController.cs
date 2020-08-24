@@ -13,11 +13,7 @@ using HydrosApi.Models;
 namespace HydrosApi.Controllers
 {
 
-<<<<<<< HEAD
-    public class LayerActionController : ApiController
-=======
     /*public class LayerActionController : ApiController
->>>>>>> cee76ef5bcbf04b00940d58e9a87e167316ba60a
     {
         private SDEContext db = new SDEContext();
 
@@ -61,11 +57,7 @@ namespace HydrosApi.Controllers
         //IMP-34-A17023011CBB-01
 
     }
-<<<<<<< HEAD
-
-=======
     */
->>>>>>> cee76ef5bcbf04b00940d58e9a87e167316ba60a
     public class LayersController : ApiController
     {
         private OracleContext db = new OracleContext();
