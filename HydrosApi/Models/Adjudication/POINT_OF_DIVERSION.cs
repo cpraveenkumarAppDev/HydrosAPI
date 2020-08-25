@@ -17,51 +17,105 @@
             //LAYERS = new HashSet<LAYER>();
 
         }
-
-
-        [Key]
-
+               
         public int OBJECTID { get; set; } //ObjectId
 
+        [Key]
         [StringLength(50)]
         [Column("DWR_ID")]
         public string DwrId { get; set; } //DwrId
 
-        [StringLength(50)]
-        [Column("BOC")]
-        public string PCC { get; set; }
-
-        [StringLength(100)]
-        [Column("POD_TYPE")]
-        public string Type { get; set; }
-
-        [StringLength(100)]       
-        [Column("POD_NAME")]
-        public string Name { get; set; }
-
-        [StringLength(100)]
-        [Column("POD_OWNER")] 
-        public string Owner { get; set; }
+        [StringLength(500)]
+        public string APN { get; set; } //Parcel
 
         [StringLength(100)]
         [Column("BASIN_NAME")]
         public string Basin { get; set; }
 
+        [StringLength(50)]
+        [Column("BOC")]
+        public string PCC { get; set; } //Well
+
+        [StringLength(300)]
+        public string CLAIMANT{ get; set; }
+
+        [StringLength(100)]
+        public string COUNTY { get; set; }
+
+        public DateTime? INSTALLED { get; set; }
+
+        [StringLength(100)]       
+        public string LAND_OWNER { get; set; }
+
+        [StringLength(100)]
+        public string LOC_CAD { get; set; } //Cadastral Location
+
+        [StringLength(100)]
+        [Column("POD_NAME")]
+        public string Name { get; set; } //Name of Facility
+
+        [StringLength(100)]
+        [Column("POD_OWNER")]
+        public string Owner { get; set; }
+
+        [StringLength(700)]
+        public string POD_REMARK { get; set; }
+
+        [StringLength(20)]
+        public string POD_SEQ { get; set; }
+
+        [StringLength(100)]
+        [Column("POD_TYPE")]
+        public string Type { get; set; }
+
+        [StringLength(20)]
+        public string LCR_REGION { get; set; }
+
+        [StringLength(100)]
+        public string LOC_LEGAL { get; set; } //Legal Location
+
+        [StringLength(300)]
+        public string PUMPED_VOL { get; set; } //Pumped Vol Current Year - 5
+
+        [StringLength(300)]
+        public string PUMPED_V_1 { get; set; } //Pumped Vol Current Year - 4
+
+        [StringLength(300)]
+        public string PUMPED_V_2 { get; set; } //Pumped Vol Current Year - 3
+
+        [StringLength(300)]
+        public string PUMPED_V_3 { get; set; } //Pumped Vol Current Year - 2
+
+        [StringLength(300)]
+        public string PUMPED_V_4 { get; set; } //Pumped Vol Current Year - 1       
+
+        [StringLength(100)]
+        public string SHARED_POD { get; set; } //Shared Well/Diversion
+
         [StringLength(100)]
         [Column("SUBBASIN_N")]
         public string Subbasin { get; set; }
+
+        public Decimal? UTM_X { get; set; }
+
+        public Decimal? UTM_Y { get; set; }
 
         [StringLength(100)]
         [Column("WATERSHED")]
         public string Watershed { get; set; }
 
-        [NotMapped]
-        public int? PWR_POD_ID { get; set; }
+        [StringLength(300)]
+        public string WTR_SOURCE { get; set; }
+
+        [StringLength(700)]
+        public string XPLANATION { get; set; }
 
         [NotMapped]
-        private string podTypeDescription;        
+        public int? PWR_POD_ID { get; set; } //This is populated at runtime
+
+        [NotMapped]
+        private string podTypeDescription;       
      
-
         [NotMapped]
         public string PodTypeDescription
         {

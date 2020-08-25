@@ -7,6 +7,7 @@
     using System.Data.Entity.Spatial;
     using System.Data.SqlTypes;
     using System.Linq;
+    using System.Runtime.Serialization;
     using System.Spatial;
     using System.Web.UI.WebControls;
     using HydrosApi.Data;
@@ -112,5 +113,52 @@
 
         [NotMapped]
         public string PWR_COMMENTS { get; set; }
+
+        [NotMapped]
+        public List<SOC_AIS_VIEW> SocAisView { get; set; }
+
+        [NotMapped]
+        public PROPOSED_WATER_RIGHT ProposedWaterRight { get; set; }
+
+        [NotMapped]
+        public List<POINT_OF_DIVERSION> PointOfDiversion { get; set; }
+
+        [NotMapped]
+        public List<SOC_AIS_VIEW> StatementOfClaim { get; set; }
+
+        /* [NotMapped]
+         public PROPOSED_WATER_RIGHT ProposedWaterRight { get; set; }
+         [NotMapped]
+         public List<PWR_POD> PwrPod { get; set; }
+         [NotMapped]
+         public POINT_OF_DIVERSION PointOfDiversion { get; set; }*/
+        /*
+
+        [NotMapped]
+        private IEnumerable<string> socIdList;
+
+        [NotMapped]
+        public IEnumerable<string> SocIdList 
+        {
+
+            get
+            {
+                socIdList= (from s in SOC.Split(',')
+                        select s);
+
+                return socIdList;
+            }
+
+            set
+            {
+                socIdList = value;
+
+            }            
+        }
+
+        [NotMapped]
+        public List<SOC_AIS_VIEW> SocAisView { get; set; }
+        */
+
     }
 }

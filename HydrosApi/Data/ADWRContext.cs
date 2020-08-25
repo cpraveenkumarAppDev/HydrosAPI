@@ -16,7 +16,7 @@
             base.Configuration.ProxyCreationEnabled = false;
         }
         
-        public virtual DbSet<EXPLANATION> EXPLANATIONs { get; set; }
+        public virtual DbSet<EXPLANATION> EXPLANATION { get; set; }
         public virtual DbSet<FILE> FILES { get; set; }
         public virtual DbSet<PROPOSED_WATER_RIGHT> PROPOSED_WATER_RIGHT { get; set; }
         public virtual DbSet<PWR_POD> PWR_POD { get; set; }
@@ -44,7 +44,7 @@
 
 
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+       protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EXPLANATION>()
                 .Property(e => e.EXP_TYPE)
@@ -106,7 +106,7 @@
                 .Property(e => e.POU_ID)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
+           /* modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
                 .Property(e => e.WATER_STRUCTURE_FAC_TYPE)
                 .IsUnicode(false);
 
@@ -184,7 +184,7 @@
 
             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
                 .Property(e => e.STATUS_SOURCE)
-                .IsUnicode(false);
+                .IsUnicode(false);*/
 
             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
                 .HasMany(e => e.PWR_POD)
