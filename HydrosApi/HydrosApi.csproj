@@ -385,6 +385,7 @@
     <Compile Include="Controllers\Adjudication\AdjudicationController.cs" />
     <Compile Include="Controllers\ADWR\ADWRController.cs" />
     <Compile Include="Controllers\LayersController.cs" />
+    <Compile Include="Controllers\Permitting\AAWS\AAWSController.cs" />
     <Compile Include="Data\ADWRContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -414,6 +415,7 @@
     <Compile Include="Models\Adjudication\PROPOSED_WATER_RIGHT.cs" />
     <Compile Include="Models\Adjudication\PWR_POD.cs" />
     <Compile Include="Models\Adjudication\SOC_AIS_VIEW.cs" />
+    <Compile Include="Models\Permitting\AAWS\V_AWS_GENERAL_INFO.cs" />
     <Compile Include="Models\SW_AIS_VIEW.cs" />
     <Compile Include="Models\WATERSHED_FILE_REPORT.cs" />
     <Compile Include="Models\WELLS_VIEW.cs" />
@@ -463,6 +465,7 @@
     <Folder Include="bin\SqlServerTypes\x86\" />
     <Folder Include="bin\zh-Hans\" />
     <Folder Include="bin\zh-Hant\" />
+    <Folder Include="Views\AAWS\" />
     <Folder Include="Views\ADWR\" />
     <Folder Include="Views\AIS\" />
   </ItemGroup>
