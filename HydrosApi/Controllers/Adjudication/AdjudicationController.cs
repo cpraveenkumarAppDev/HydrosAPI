@@ -63,6 +63,40 @@ namespace HydrosApi.Controllers.Adjudication
             return newPwr;
         }
 
+        private async Task<IEnumerable<SOC_AIS_VIEW>> StatementOfClaimList(string socField)
+        {
+            Regex rgx = new Regex(@"[^0-9]");
+            if (socField != null)
+            {
+                var socList = (from f in socField.Split(',').ToList<string>()
+                               select new
+                               {
+                                   fileId = int.Parse(rgx.Replace(f.Replace("39-", ""), ""))
+
+                               }).Select(f => f.fileId).Distinct();
+
+                var soc = await db.SOC_AIS_VIEW.Where(s => socList.Contains(s.FILE_NO)).ToListAsync();
+                return soc;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private async Task<IEnumerable<WELLS_VIEW>> WellList(List<string>fileNo)
+        {
+            Regex rgx = new Regex(@"[^0-9]");
+            if (fileNo != null)
+            {
+                return await db.WELLS_VIEW.Where(w => fileNo.Contains(w.FILE_NO) && w.PROGRAM == "55").ToListAsync();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public async Task<IEnumerable<PLACE_OF_USE_VIEW>> PlaceOfUseForm(string id)
         {
             Regex rgx = new Regex(@"[^0-9]");
@@ -91,8 +125,9 @@ namespace HydrosApi.Controllers.Adjudication
             }
 
             if (pwr != null)
-            {                
-               pou.FirstOrDefault().ProposedWaterRight = pwr;
+            {
+                pou.FirstOrDefault().PWR_ID = pwr.ID; 
+                pou.FirstOrDefault().ProposedWaterRight = pwr;
             }
 
             if (newPwr == null && pwr != null)
@@ -119,14 +154,42 @@ namespace HydrosApi.Controllers.Adjudication
                 }               
             }
 
-            var socField = pou.Select(i => i.SOC).FirstOrDefault();
+            //STATEMENTS OF CLAIM INFORMATION
+            var soc = await StatementOfClaimList(pou.FirstOrDefault().SOC);
 
-            if (socField !=null)
+            if(soc != null)
+            {
+                pou.FirstOrDefault().StatementOfClaim = soc.ToList();
+            }
+
+            var bocField = pou.FirstOrDefault().BAS_OF_CLM;
+
+            if (bocField != null)
+            {
+                var bocList = (from f in bocField.Split(',').ToList<string>()
+                               select new
+                               {
+                                   fileType = f.IndexOf("-") > -1 ? f.Substring(0, f.IndexOf("-")) : "00",
+                                   fileId = f.IndexOf("-") > -1 ? f.Substring(f.IndexOf("-") + 1) : rgx.Replace(f, "")
+
+                               }).Select(f => f).Distinct();
+                var wellList =await WellList(bocList.Where(w => w.fileType == "55").Select(w => w.fileId).ToList());
+
+                if(wellList != null)
+                {
+                    pou.FirstOrDefault().Well = wellList.ToList();
+                }
+               
+            }
+
+            /*var socField = pou.Select(i => i.SOC).FirstOrDefault();
+
+            if (pou.FirstOrDefault().SOC !=null)
             {                 
                 var socList = (from f in socField.Split(',').ToList<string>()
                                select new
                                {
-                                   fileId = int.Parse(rgx.Replace(f.Replace("35-", ""),""))
+                                   fileId = int.Parse(rgx.Replace(f.Replace("39-", ""),""))
 
                                }).Select(f => f.fileId).Distinct();
                 
@@ -135,7 +198,7 @@ namespace HydrosApi.Controllers.Adjudication
                 {
                     pou.FirstOrDefault().StatementOfClaim = soc;
                 }
-            }            
+            }  */          
             return pou;
         }
 
@@ -216,10 +279,13 @@ namespace HydrosApi.Controllers.Adjudication
             return Ok(await sdeDB.POINT_OF_DIVERSION.ToListAsync());
         }
 
+        //REMEMBER!!!!=========================================
+        //TO RECREATE THE PWR_POD TABLE WITH THE NEW IDENTITY COLUMN FEATURE
+        //NO NEED FOR THE TRIGGER
+        //========================================================
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        [HttpPost, Route("adj/addpod/{podobjectid}/{pwrId}")]
-        //add a relationship between the Place Of Use and Point of Diversion
-        //the pwrId should be stored in the Place of Use model
+        [Route("adj/addpod/{podobjectid}/{pwrId}")]
+        [HttpPost]        
         public async Task<IHttpActionResult> AddPod(int podobjectid,int pwrId)  
         {
             //FIND THE PROPOSED WATER RIGHT
@@ -231,7 +297,7 @@ namespace HydrosApi.Controllers.Adjudication
             }
 
             var newPwrPod = new PWR_POD()
-            {
+            {                
                 CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
                 CREATEDT = DateTime.Now,
                 POD_ID = podobjectid,

@@ -7,9 +7,14 @@ namespace HydrosApi.Models
     using System.Data.Entity.Spatial;
 
     [Table("ADJ_INV.PWR_POD")]
+
+    //REMEMBER!!!!=========================================
+    //TO RECREATE THIS TABLE WITH THE NEW IDENTITY COLUMN FEATURE
+    //NO NEED FOR THE TRIGGER
+    //========================================================
     public partial class PWR_POD
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
         public int? PWR_ID { get; set; }

@@ -380,6 +380,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Adjudication\EXPLANATION.cs" />
+    <Compile Include="Models\Adjudication\WELLS_VIEW.cs" />
     <Compile Include="Models\CD_AQUIFER_TYPE.cs" />
     <Compile Include="Models\CD_DRILLERS_LOG.cs" />
     <Compile Include="Models\CD_FORMATIONS.cs" />
@@ -406,7 +407,6 @@
     <Compile Include="Models\Adjudication\SOC_AIS_VIEW.cs" />
     <Compile Include="Models\SW_AIS_VIEW.cs" />
     <Compile Include="Models\WATERSHED_FILE_REPORT.cs" />
-    <Compile Include="Models\WELLS_VIEW.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

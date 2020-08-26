@@ -114,9 +114,7 @@
         [NotMapped]
         public string PWR_COMMENTS { get; set; }
 
-        [NotMapped]
-        public List<SOC_AIS_VIEW> SocAisView { get; set; }
-
+      
         [NotMapped]
         public PROPOSED_WATER_RIGHT ProposedWaterRight { get; set; }
 
@@ -125,6 +123,9 @@
 
         [NotMapped]
         public List<SOC_AIS_VIEW> StatementOfClaim { get; set; }
+
+        [NotMapped]
+        public List<WELLS_VIEW> Well { get; set; }
 
         /* [NotMapped]
          public PROPOSED_WATER_RIGHT ProposedWaterRight { get; set; }
