@@ -23,6 +23,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <WebGreaseLibPath>..\packages\WebGrease.1.5.2\lib</WebGreaseLibPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,6 +44,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.4.1.9004, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -144,6 +148,9 @@
     <Reference Include="System.Web.Mvc, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.0\lib\net45\System.Web.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.0\lib\net45\System.Web.Razor.dll</HintPath>
     </Reference>
@@ -163,6 +170,9 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebGrease, Version=1.5.2.14234, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
@@ -375,6 +385,7 @@
     <Compile Include="Controllers\Adjudication\AdjudicationController.cs" />
     <Compile Include="Controllers\ADWR\ADWRController.cs" />
     <Compile Include="Controllers\LayersController.cs" />
+    <Compile Include="Controllers\Permitting\AAWS\AAWSController.cs" />
     <Compile Include="Data\ADWRContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -405,6 +416,7 @@
     <Compile Include="Models\Adjudication\PROPOSED_WATER_RIGHT.cs" />
     <Compile Include="Models\Adjudication\PWR_POD.cs" />
     <Compile Include="Models\Adjudication\SOC_AIS_VIEW.cs" />
+    <Compile Include="Models\Permitting\AAWS\V_AWS_GENERAL_INFO.cs" />
     <Compile Include="Models\SW_AIS_VIEW.cs" />
     <Compile Include="Models\WATERSHED_FILE_REPORT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -453,6 +465,9 @@
     <Folder Include="bin\SqlServerTypes\x86\" />
     <Folder Include="bin\zh-Hans\" />
     <Folder Include="bin\zh-Hant\" />
+    <Folder Include="Views\AAWS\" />
+    <Folder Include="Views\ADWR\" />
+    <Folder Include="Views\AIS\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

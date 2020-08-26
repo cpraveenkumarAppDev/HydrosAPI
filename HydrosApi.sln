@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydrosApi", "HydrosApi\HydrosApi.csproj", "{FF19675A-A690-458E-871E-E0302D03453F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydrosApi.Tests", "HydrosApi.Tests\HydrosApi.Tests.csproj", "{76A61E32-7D10-40D1-B49D-A1582F889B34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{FF19675A-A690-458E-871E-E0302D03453F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF19675A-A690-458E-871E-E0302D03453F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF19675A-A690-458E-871E-E0302D03453F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76A61E32-7D10-40D1-B49D-A1582F889B34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76A61E32-7D10-40D1-B49D-A1582F889B34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76A61E32-7D10-40D1-B49D-A1582F889B34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76A61E32-7D10-40D1-B49D-A1582F889B34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

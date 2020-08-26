@@ -4,6 +4,7 @@ namespace HydrosApi.Models
     using System.Data.Entity;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
+    using AdwrApi.Models.Permitting.AAWS;
 
     public partial class SDEContext : DbContext
     {
@@ -57,9 +58,10 @@ namespace HydrosApi.Models
         public virtual DbSet<SW_AIS_VIEW> SW_AIS_VIEW { get; set; }
         public virtual DbSet<SOC_AIS_VIEW> SOC_AIS_VIEW { get; set; }
 
-       
+        public virtual DbSet<V_AWS_GENERAL_INFO> V_AWS_GENERAL_INFO { get; set; }
 
-       protected override void OnModelCreating(DbModelBuilder modelBuilder)
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EXPLANATION>()
                 .Property(e => e.EXP_TYPE)
