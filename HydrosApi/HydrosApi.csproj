@@ -386,6 +386,7 @@
     <Compile Include="Controllers\ADWR\ADWRController.cs" />
     <Compile Include="Controllers\LayersController.cs" />
     <Compile Include="Controllers\Permitting\AAWS\AAWSController.cs" />
+    <Compile Include="Models\Permitting\AAWS\AWS_OVER_VIEW.cs" />
     <Compile Include="Data\ADWRContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

@@ -29,5 +29,20 @@ namespace AdwrApi.Controllers.Permitting.AAWS
             var data = db.V_AWS_GENERAL_INFO.ToListAsync();
             return Ok(data);
         }
+
+        [System.Web.Http.Route("aws/getgeneralInfoById/{id}")]
+        [System.Web.Http.HttpGet]
+        public IHttpActionResult GetGeneralInfoById(string id)
+        {
+            var pcc = id.Replace("~",".");
+            List<V_AWS_GENERAL_INFO> data = null;
+            using (ADWRContext db = new ADWRContext())
+            {
+                data=db.V_AWS_GENERAL_INFO.Where(p => p.ProgramCertificateConveyance == pcc).ToList();
+                var overView = new AWS_OVER_VIEW();
+                data.FirstOrDefault().OverView = overView;
+            }
+                return Ok(data);
+        }
     }
 }

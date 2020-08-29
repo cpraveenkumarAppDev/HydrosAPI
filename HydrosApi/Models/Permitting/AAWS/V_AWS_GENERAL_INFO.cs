@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AdwrApi.Controllers.Permitting.AAWS;
+using HydrosApi.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -36,5 +38,7 @@ namespace AdwrApi.Models.Permitting.AAWS
         public string AMADescription { get; set; }
         [Column("PRIMARY_PROV_NAME")]
         public string PrimaryProviderName { get; set; }
+        [NotMapped]
+        public AWS_OVER_VIEW OverView { get; set; }
     }
 }
