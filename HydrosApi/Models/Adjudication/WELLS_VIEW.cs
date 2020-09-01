@@ -1,12 +1,10 @@
-namespace HydrosApi.Models
+namespace HydrosApi 
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
-    using HydrosApi.Models.Adjudication;
-    using HydrosApi.Data;
+     
     using System.Linq;
     using SharedUtilities;
 

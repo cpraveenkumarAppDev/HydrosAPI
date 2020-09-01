@@ -6,8 +6,7 @@ namespace HydrosApi.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
     using SharedUtilities;
-    using HydrosApi.Models.Adjudication;
-    using HydrosApi.Data;
+     
 
     [Table("ADWR.SW_AIS_VIEW")]
     public partial class SW_AIS_VIEW

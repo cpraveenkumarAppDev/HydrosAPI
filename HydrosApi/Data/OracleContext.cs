@@ -1,28 +1,12 @@
-namespace HydrosApi.Models
+namespace HydrosApi 
+    //*** SHOULD BE REPLACED BY ADWRCONTEXT AND SDECONTEXT WHICH MORE CLOSELY DESCRIBES THEIR SERVER/SCHEMA LOCATIONS    
 {
     using System;
     using System.Data.Entity;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
-    using HydrosApi.Models.Permitting.AAWS;
+    using Models;
+    
 
-    public partial class SDEContext : DbContext
-    {
-        public SDEContext()
-            : base("name=SDEContext")
-        {
-
-            base.Configuration.ProxyCreationEnabled = false;
-        }
-
-        public virtual DbSet<PLACE_OF_USE_VIEW> PLACE_OF_USE_VIEW { get; set; }
-         
-
-        public virtual DbSet<POINT_OF_DIVERSION> POINT_OF_DIVERSION { get; set; }
-
-
-    }
-
+    
         public partial class OracleContext : DbContext
     {
         public OracleContext()
@@ -865,6 +849,6 @@ namespace HydrosApi.Models
                 .IsUnicode(false);
         }
 
-        public System.Data.Entity.DbSet<HydrosApi.Models.PLACE_OF_USE_VIEW> PLACE_OF_USE_VIEW { get; set; }
+        public System.Data.Entity.DbSet<PLACE_OF_USE_VIEW> PLACE_OF_USE_VIEW { get; set; }
     }
 }

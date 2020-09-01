@@ -1,12 +1,7 @@
-﻿namespace HydrosApi.Data
-{
-    using System;
-    using System.Data.Entity;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
-    using HydrosApi.Models;
-    using HydrosApi.Models.Permitting.AAWS;
-
+﻿namespace HydrosApi 
+{ 
+    using System.Data.Entity;    
+    using Models;
 
     public partial class ADWRContext : DbContext
     {
@@ -43,7 +38,6 @@
         public virtual DbSet<SW_AIS_VIEW> SW_AIS_VIEW { get; set; }
         public virtual DbSet<SOC_AIS_VIEW> SOC_AIS_VIEW { get; set; }
         public virtual DbSet<V_AWS_GENERAL_INFO> V_AWS_GENERAL_INFO { get; set; }
-
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -850,6 +844,6 @@
                 .IsUnicode(false);
         }
 
-        public System.Data.Entity.DbSet<HydrosApi.Models.PLACE_OF_USE_VIEW> PLACE_OF_USE_VIEW { get; set; }
+        public System.Data.Entity.DbSet<PLACE_OF_USE_VIEW> PLACE_OF_USE_VIEW { get; set; }
     }
 }

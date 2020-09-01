@@ -1,7 +1,6 @@
-namespace HydrosApi.Models
+namespace HydrosApi 
 {
-    using HydrosApi.Models.Adjudication;
-    using HydrosApi.Data;
+    
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;

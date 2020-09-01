@@ -1,28 +1,18 @@
-﻿using System;
+﻿namespace HydrosApi
+{ 
+
+using System;
 using System.Collections.Generic;
-using System.Data;
+
 using System.Data.Entity; 
 using System.Linq; 
 using System.Web.Http;
-using HydrosApi.Models;
-using System.Text.RegularExpressions; 
-using System.Web; 
-using System.Threading.Tasks;
-using System.Diagnostics;
-using HydrosApi.Data;
-using System.Web.Http.Description;
-using System.Runtime.Remoting.Messaging;
-using System.Net.Http;
-using System.Data.Entity.Core.Objects;
-using System.Net.Http.Formatting;
-using System.Web.Http.Controllers;
-using System.Web.Security;
-using Microsoft.AspNet.Identity;
-using System.Security.Principal; 
-using HydrosApi.Models.Adjudication;
+using Models;
+using System.Text.RegularExpressions;  
+using System.Threading.Tasks; 
+ 
 
-namespace HydrosApi.Controllers.Adjudication
-{
+
     //[Authorize]
     public class AdjudicationController : ApiController
     {

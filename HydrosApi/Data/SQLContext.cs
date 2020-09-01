@@ -1,12 +1,11 @@
-﻿ 
- 
-using System.Data.Entity;
- 
-using HydrosApi.Models;
- 
+﻿
 
-namespace HydrOS.Data
+
+namespace HydrosApi
 {
+    using System.Data.Entity;
+
+    using Models;
     public partial class SqlContext : DbContext
     {
         public SqlContext()

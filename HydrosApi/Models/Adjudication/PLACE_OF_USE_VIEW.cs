@@ -1,4 +1,4 @@
-﻿namespace HydrosApi.Models
+﻿namespace HydrosApi 
 {
     using System;
     using System.Collections.Generic;
@@ -10,8 +10,9 @@
     using System.Runtime.Serialization;
     using System.Spatial;
     using System.Web.UI.WebControls;
-    using HydrosApi.Data;
+ 
     using Microsoft.SqlServer.Types;
+    using Models;
 
 
     [Table("ADJ.PLACE_OF_USE_VIEW")]
