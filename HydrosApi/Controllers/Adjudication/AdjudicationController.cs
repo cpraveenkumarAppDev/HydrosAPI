@@ -10,97 +10,54 @@ using System.Web;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using HydrosApi.Data;
+using System.Web.Http.Description;
 using System.Runtime.Remoting.Messaging;
+using System.Net.Http;
+using System.Data.Entity.Core.Objects;
+using System.Net.Http.Formatting;
+using System.Web.Http.Controllers;
+using System.Web.Security;
+using Microsoft.AspNet.Identity;
+using System.Security.Principal; 
+using HydrosApi.Models.Adjudication;
 
 namespace HydrosApi.Controllers.Adjudication
 {
+    //[Authorize]
     public class AdjudicationController : ApiController
     {
         private SDEContext sdeDB = new SDEContext();
         private ADWRContext db = new ADWRContext();
-
-
-        //CREATE A PROPOSED_WATER_RIGHT RECORD IF IT DOESN'T
-        private async Task<IEnumerable<PROPOSED_WATER_RIGHT>> CreateProposedWaterRight(List<PLACE_OF_USE_VIEW> pou)
-        {
-            if (pou == null)
-            {
-                return null;
-            }
-
-            var newPwr = new PROPOSED_WATER_RIGHT()
-            {
-                CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
-                CREATEDT = DateTime.Now,
-                POU_ID = pou.Select(p => p.DwrId).FirstOrDefault()
-            };
-
-            db.Entry(newPwr).State = EntityState.Added;
-            await db.SaveChangesAsync();
-
-            List<PROPOSED_WATER_RIGHT> pwr = new List<PROPOSED_WATER_RIGHT>();
-            pwr.Add(newPwr);
-            return pwr;
-        }
-
+               
+        ///private async Task<PROPOSED_WATER_RIGHT> AddProposedWaterRight(PLACE_OF_USE_VIEW pou)
         private async Task<PROPOSED_WATER_RIGHT> AddProposedWaterRight(PLACE_OF_USE_VIEW pou)
         {
+            PROPOSED_WATER_RIGHT status = new PROPOSED_WATER_RIGHT();
+           
             if (pou == null)
             {
-                return null;
+                status.StatusMessage = "Invalid place of use was submitted";
+                return status;
             }
 
             var newPwr = new PROPOSED_WATER_RIGHT()
             {
                 CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
                 CREATEDT = DateTime.Now,
-                POU_ID = pou.DwrId
+                POU_ID = pou.DWR_ID
             };
-
+            
             db.Entry(newPwr).State = EntityState.Added;
             await db.SaveChangesAsync();
-
             return newPwr;
-        }
-
-        private async Task<IEnumerable<SOC_AIS_VIEW>> StatementOfClaimList(string socField)
-        {
-            Regex rgx = new Regex(@"[^0-9]");
-            if (socField != null)
-            {
-                var socList = (from f in socField.Split(',').ToList<string>()
-                               select new
-                               {
-                                   fileId = int.Parse(rgx.Replace(f.Replace("39-", ""), ""))
-
-                               }).Select(f => f.fileId).Distinct();
-
-                var soc = await db.SOC_AIS_VIEW.Where(s => socList.Contains(s.FILE_NO)).ToListAsync();
-                return soc;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        private async Task<IEnumerable<WELLS_VIEW>> WellList(List<string>fileNo)
-        {
-            Regex rgx = new Regex(@"[^0-9]");
-            if (fileNo != null)
-            {
-                return await db.WELLS_VIEW.Where(w => fileNo.Contains(w.FILE_NO) && w.PROGRAM == "55").ToListAsync();
-            }
-            else
-            {
-                return null;
-            }
         }
 
         public async Task<IEnumerable<PLACE_OF_USE_VIEW>> PlaceOfUseForm(string id)
         {
             Regex rgx = new Regex(@"[^0-9]");
-            List<PLACE_OF_USE_VIEW> pou = null;
+            List<PLACE_OF_USE_VIEW> placeOfUse = new List<PLACE_OF_USE_VIEW>();
+
+            //var userInRole = RoleCheck.ThisUser("AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications");
 
             int? newPwr = null;
 
@@ -109,7 +66,7 @@ namespace HydrosApi.Controllers.Adjudication
                 return null;
             }
 
-            pou = await sdeDB.PLACE_OF_USE_VIEW.Where(p => p.DwrId == id).ToListAsync();
+            var pou = await sdeDB.PLACE_OF_USE_VIEW.Where(p => p.DWR_ID == id).FirstOrDefaultAsync();
 
             if (pou == null)
             {
@@ -118,16 +75,17 @@ namespace HydrosApi.Controllers.Adjudication
 
             var pwr = await db.PROPOSED_WATER_RIGHT.Where(p => p.POU_ID == id).FirstOrDefaultAsync();
 
-            if (pwr == null)
+            if (pwr == null) //User must be in role to Add
             {
                 newPwr = 1;
-                pwr = await AddProposedWaterRight(pou.FirstOrDefault()); //create a pwr record if not exists
+
+                pwr= await AddProposedWaterRight(pou);
             }
 
             if (pwr != null)
             {
-                pou.FirstOrDefault().PWR_ID = pwr.ID; 
-                pou.FirstOrDefault().ProposedWaterRight = pwr;
+                pou.PWR_ID = pwr.ID; 
+                pou.ProposedWaterRight = pwr;
             }
 
             if (newPwr == null && pwr != null)
@@ -145,61 +103,35 @@ namespace HydrosApi.Controllers.Adjudication
                         pd,
                         PWR_PID = pd.PWR_POD_ID = pp.ID
                     }).Distinct().Select(x => x.pd).ToList();
-
                     
                     if(pod != null)
                     {
-                        pou.FirstOrDefault().PointOfDiversion = pod;
+                        pou.PointOfDiversion = pod;
                     }
                 }               
             }
 
-            //STATEMENTS OF CLAIM INFORMATION
-            var soc = await StatementOfClaimList(pou.FirstOrDefault().SOC);
+            //STATEMENTS OF CLAIM INFORMATION           
 
-            if(soc != null)
+            var socField = pou.SOC;
+
+            if(socField != null)
             {
-                pou.FirstOrDefault().StatementOfClaim = soc.ToList();
+                pou.StatementOfClaim = SOC_AIS_VIEW.StatementOfClaimView(socField);
+                pou.Surfacewater = SW_AIS_VIEW.SurfaceWaterView(socField);
             }
 
-            var bocField = pou.FirstOrDefault().BAS_OF_CLM;
+            var bocField = pou.BAS_OF_CLM;
 
             if (bocField != null)
-            {
-                var bocList = (from f in bocField.Split(',').ToList<string>()
-                               select new
-                               {
-                                   fileType = f.IndexOf("-") > -1 ? f.Substring(0, f.IndexOf("-")) : "00",
-                                   fileId = f.IndexOf("-") > -1 ? f.Substring(f.IndexOf("-") + 1) : rgx.Replace(f, "")
-
-                               }).Select(f => f).Distinct();
-                var wellList =await WellList(bocList.Where(w => w.fileType == "55").Select(w => w.fileId).ToList());
-
-                if(wellList != null)
-                {
-                    pou.FirstOrDefault().Well = wellList.ToList();
-                }
-               
+            {                
+                pou.Well = WELLS_VIEW.WellsView(bocField);                            
             }
 
-            /*var socField = pou.Select(i => i.SOC).FirstOrDefault();
+            pou.Explanation = await db.EXPLANATIONS.Where(i => i.PWR_ID == pwr.ID).ToListAsync();
 
-            if (pou.FirstOrDefault().SOC !=null)
-            {                 
-                var socList = (from f in socField.Split(',').ToList<string>()
-                               select new
-                               {
-                                   fileId = int.Parse(rgx.Replace(f.Replace("39-", ""),""))
-
-                               }).Select(f => f.fileId).Distinct();
-                
-                var soc = await db.SOC_AIS_VIEW.Where(s => socList.Contains(s.FILE_NO)).ToListAsync();
-                if (soc != null)
-                {
-                    pou.FirstOrDefault().StatementOfClaim = soc;
-                }
-            }  */          
-            return pou;
+            placeOfUse.Add(pou);
+            return placeOfUse;
         }
 
         //GET PROPOSED_WATER_RIGHT RECORD USING A PROPOSED_WATER_RIGHT.ID 
@@ -210,14 +142,12 @@ namespace HydrosApi.Controllers.Adjudication
         {
             Regex rgx = new Regex(@"[^0-9]");
 
-
             if (rgx.IsMatch(id))
             {
                 return await db.PROPOSED_WATER_RIGHT.Where(p => p.POU_ID == id).ToListAsync();
             }
             else
             {
-
                 var numericId = int.Parse(id);
 
                 return await db.PROPOSED_WATER_RIGHT.Where(p => p.ID == numericId).ToListAsync();
@@ -228,18 +158,18 @@ namespace HydrosApi.Controllers.Adjudication
         {
             return await db.PWR_POD.Where(p => p.PWR_ID == id).ToListAsync();
         }
-
-        private async Task<IEnumerable<POINT_OF_DIVERSION>> PodObjectList(string id) //GET A POINT_OF_DIVERSION RECORD
+        
+        private async Task<POINT_OF_DIVERSION> PodByPodId(string id) //GET A SINGLE POINT_OF_DIVERSION RECORD
         {
             Regex rgx = new Regex(@"[^0-9]");
 
             if (rgx.IsMatch(id))
             {
-                return await sdeDB.POINT_OF_DIVERSION.Where(p => p.DwrId == id).ToListAsync();
+                return await sdeDB.POINT_OF_DIVERSION.Where(p => p.DWR_ID == id).FirstOrDefaultAsync();
             }
             else
             {
-                return await sdeDB.POINT_OF_DIVERSION.Where(p => p.OBJECTID == int.Parse(id)).ToListAsync();
+                return await sdeDB.POINT_OF_DIVERSION.Where(p => p.OBJECTID == int.Parse(id)).FirstOrDefaultAsync();
             }
         }
 
@@ -248,7 +178,7 @@ namespace HydrosApi.Controllers.Adjudication
         //--------------------------------------------------------------------------------------------------------
 
         //IRR-29-A16011018CBB-01
-        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/getpwr/{id}")]
         [HttpGet]
         public async Task<IHttpActionResult> GetProposedWaterRight(string id)
@@ -267,8 +197,7 @@ namespace HydrosApi.Controllers.Adjudication
             return Ok(pwr);
         }
 
-
-        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/getallpod")]
         [HttpGet]
         //USE A PROPOSED_WATER_RIGHT.ID OR PROPOSED_WATER_RIGHT.POU_ID/PLACE_OF_USE.DWR_ID
@@ -278,17 +207,13 @@ namespace HydrosApi.Controllers.Adjudication
         {
             return Ok(await sdeDB.POINT_OF_DIVERSION.ToListAsync());
         }
-
-        //REMEMBER!!!!=========================================
-        //TO RECREATE THE PWR_POD TABLE WITH THE NEW IDENTITY COLUMN FEATURE
-        //NO NEED FOR THE TRIGGER
-        //========================================================
+        
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/addpod/{podobjectid}/{pwrId}")]
         [HttpPost]        
         public async Task<IHttpActionResult> AddPod(int podobjectid,int pwrId)  
-        {
-            //FIND THE PROPOSED WATER RIGHT
+        {           
+            //Ensure a relationship doesn't already exist
             var pwrPodList = await db.PWR_POD.Where(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == pwrId).ToListAsync();            
 
             if(pwrPodList.Count() > 0)
@@ -305,17 +230,19 @@ namespace HydrosApi.Controllers.Adjudication
             };
             db.Entry(newPwrPod).State = EntityState.Added;
             await db.SaveChangesAsync();
-            return Ok(newPwrPod);         
+
+            var pod = await PodByPodId(podobjectid.ToString());
+            pod.PWR_POD_ID = newPwrPod.ID;
+            return Ok(pod);         
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpDelete,Route("adj/deletepod/{id}")]
         public async Task<IHttpActionResult> DeletePod(int id) //<== ID IS THE ID FROM THE PWR_POD TABLE
         {
-            PWR_POD pod = await db.PWR_POD.Where(i => i.ID == id).FirstOrDefaultAsync();
-            PROPOSED_WATER_RIGHT pwr = await db.PROPOSED_WATER_RIGHT.Where(p => p.ID == pod.PWR_ID.GetValueOrDefault(-1)).FirstOrDefaultAsync();
+            PWR_POD pod = await db.PWR_POD.Where(i => i.ID == id).FirstOrDefaultAsync();            
 
-            if(pod==null || pwr==null)
+            if(pod==null)
             {
                 return BadRequest("An invalid id was entered");
             }           
@@ -326,6 +253,44 @@ namespace HydrosApi.Controllers.Adjudication
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpDelete, Route("adj/deleteexp/{id}")]
+        public async Task<IHttpActionResult> DeleteExplanation(int id) //<== ID IS THE ID FROM THE EXPLANATION TABLE
+        {
+            EXPLANATIONS exp = await db.EXPLANATIONS.Where(i => i.ID == id).FirstOrDefaultAsync();
+
+            if (exp == null)
+            {
+                return BadRequest("An invalid id was entered");
+            }
+
+            db.Entry(exp).State = EntityState.Deleted;
+            await db.SaveChangesAsync();
+            return Ok();
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpPost, Route("adj/addexp/{id}")]
+        public async Task<IHttpActionResult> AddExplanation([FromBody] EXPLANATIONS explanation) //SEND ALL VALUES, USE DATABASE/MODEL COLUMN NAMES
+        {
+            if( !(explanation != null && explanation.PWR_ID != null))
+            {
+                return BadRequest("An invalid proposed water right ID was entered.");
+            }
+
+            var newExplanation = new EXPLANATIONS()
+            {
+                CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
+                CREATEDT = DateTime.Now,                 
+                PWR_ID = explanation.PWR_ID,
+                EXP_TYPE=explanation.EXP_TYPE,
+                EXPLANATION=explanation.EXPLANATION
+            };
+            db.Entry(newExplanation).State = EntityState.Added;
+            await db.SaveChangesAsync();
+            
+            return Ok(newExplanation);
+        }
+
         [HttpGet, Route("adj/getpou/{id?}")]
         public async Task<IHttpActionResult> GetPlaceOfUse(string id = null)
         {

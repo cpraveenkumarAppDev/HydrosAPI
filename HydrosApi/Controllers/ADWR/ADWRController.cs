@@ -15,7 +15,7 @@ using System.Security.Principal;
 using System.Web;
 using System.Web.Http.Cors;
 
-namespace AdwrApi.Controllers
+namespace HydrosApi.Controllers
 {
     public class ADWRController : ApiController
     {

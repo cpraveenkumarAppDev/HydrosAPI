@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using HydrosApi.Data;
 using System.Runtime.Remoting.Messaging;
-using AdwrApi.Models.Permitting.AAWS;
+using HydrosApi.Models.Permitting.AAWS;
 
-namespace AdwrApi.Controllers.Permitting.AAWS
+namespace HydrosApi.Controllers.Permitting.AAWS
 {
     public class AAWSController : ApiController
     {

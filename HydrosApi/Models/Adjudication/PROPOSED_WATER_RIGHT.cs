@@ -40,6 +40,10 @@ namespace HydrosApi.Models
         [NotMapped]
 
         public List<POINT_OF_DIVERSION> PointOfDiversionList { get; set; }
+
+        [NotMapped]
+        public string StatusMessage { get; set; }
+
         /* 
        [StringLength(255)]
        public string WATER_STRUCTURE_FAC_TYPE { get; set; }

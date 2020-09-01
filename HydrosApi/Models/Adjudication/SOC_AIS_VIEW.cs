@@ -1,13 +1,16 @@
 namespace HydrosApi.Models
 {
+    using HydrosApi.Models.Adjudication;
+    using HydrosApi.Data;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
+    using System.Linq;
+    using SharedUtilities;
 
     [Table("SOC.SOC_AIS_VIEW")]
-    public partial class SOC_AIS_VIEW
+    public partial class SOC_AIS_VIEW 
     {
         public decimal? ID { get; set; }
 
@@ -38,5 +41,35 @@ namespace HydrosApi.Models
         public DateTime? FILE_DATE { get; set; }
 
         public DateTime? AMEND_DATE { get; set; }
+
+        [NotMapped]
+        [StringLength(4000)]
+        public string FILE_LINK
+        {
+            get; set;
+
+        }
+
+        public static List<SOC_AIS_VIEW> StatementOfClaimView(string socList) //a comma-delimited list
+        {
+            var db = new ADWRContext();            
+            var socMatch = DelimitedColumnHandler.FileInformation(socList).Select(i => i.FileNumber == null ? -1 : int.Parse(i.FileNumber)).ToList();
+
+             
+            var soc = db.SOC_AIS_VIEW.Where(s => socMatch.Contains(s.FILE_NO)).Distinct().ToList();
+
+            if (soc == null)
+                return null;
+
+            foreach(var item in soc)
+            {
+                var socFile = DocuShareManager.GetFileLink("39-" + item.FILE_NO.ToString(), "", "SOC");
+                item.FILE_LINK = socFile;
+            }
+
+            return soc.Distinct().ToList();
+
+        }
+
     }
 }

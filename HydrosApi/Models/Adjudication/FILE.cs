@@ -9,7 +9,7 @@ namespace HydrosApi.Models
     [Table("ADJ_INV.FILES")]
     public partial class FILE
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        //[DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
 
         public int? WFR_ID { get; set; }

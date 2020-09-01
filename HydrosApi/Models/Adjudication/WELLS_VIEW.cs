@@ -5,6 +5,10 @@ namespace HydrosApi.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using HydrosApi.Models.Adjudication;
+    using HydrosApi.Data;
+    using System.Linq;
+    using SharedUtilities;
 
     [Table("ADJ_INV.WELLS_VIEW")]
     public partial class WELLS_VIEW
@@ -42,5 +46,34 @@ namespace HydrosApi.Models
         public DateTime? APPLICATION_DATE { get; set; }
 
         public DateTime? INSTALL_DATE { get; set; }
+
+        [NotMapped]
+        [StringLength(4000)]
+        public string FILE_LINK
+        {
+            get; set;
+        }
+
+        public static List<WELLS_VIEW> WellsView(string wellList)
+        {
+            var db = new ADWRContext();
+            var wellMatch = DelimitedColumnHandler.FileInformation(wellList).Where(i=>i.FileType=="55").Select(i => i.FileNumber).ToList();
+
+            if (wellMatch == null)
+                return null;
+             
+            var well = db.WELLS_VIEW.Where(w => wellMatch.Contains(w.FILE_NO)).Distinct().ToList();
+
+            if (well == null)
+                return null;            
+
+            foreach (var item in well)
+            {
+                var wellFile = DocuShareManager.GetFileLink(item.FILE_NO, "", "WELL");                
+                item.FILE_LINK = wellFile;
+            }
+
+            return well;
+        }
     }
 }

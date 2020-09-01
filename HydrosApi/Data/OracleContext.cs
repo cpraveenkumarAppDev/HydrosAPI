@@ -4,7 +4,7 @@ namespace HydrosApi.Models
     using System.Data.Entity;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
-    using AdwrApi.Models.Permitting.AAWS;
+    using HydrosApi.Models.Permitting.AAWS;
 
     public partial class SDEContext : DbContext
     {
@@ -32,7 +32,7 @@ namespace HydrosApi.Models
             base.Configuration.ProxyCreationEnabled = false;
         }
 
-        public virtual DbSet<EXPLANATION> EXPLANATIONs { get; set; }
+        public virtual DbSet<EXPLANATIONS> EXPLANATIONs { get; set; }
         public virtual DbSet<FILE> FILES { get; set; }
         public virtual DbSet<PROPOSED_WATER_RIGHT> PROPOSED_WATER_RIGHT { get; set; }
         public virtual DbSet<PWR_POD> PWR_POD { get; set; }
@@ -63,23 +63,23 @@ namespace HydrosApi.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<EXPLANATION>()
+            modelBuilder.Entity<EXPLANATIONS>()
                 .Property(e => e.EXP_TYPE)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<EXPLANATION>()
+            modelBuilder.Entity<EXPLANATIONS>()
                 .Property(e => e.LOCATION)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<EXPLANATION>()
-                .Property(e => e.EXPLANATION1)
+            modelBuilder.Entity<EXPLANATIONS>()
+                .Property(e => e.EXPLANATION)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<EXPLANATION>()
+            modelBuilder.Entity<EXPLANATIONS>()
                 .Property(e => e.CREATEBY)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<EXPLANATION>()
+            modelBuilder.Entity<EXPLANATIONS>()
                 .Property(e => e.UPDATEBY)
                 .IsUnicode(false);
 

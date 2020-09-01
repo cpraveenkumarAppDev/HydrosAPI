@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
-namespace AdwrApi.Models.Permitting.AAWS
+namespace HydrosApi.Models.Permitting.AAWS
 {
     [Table("AWS.V_AWS_GENERAL_INFO")]
     public class V_AWS_GENERAL_INFO
