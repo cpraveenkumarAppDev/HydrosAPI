@@ -4,7 +4,7 @@ namespace HydrosApi.Models
     using System.Data.Entity;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
-    using AdwrApi.Models.Permitting.AAWS;
+    using HydrosApi.Models.Permitting.AAWS;
 
     public partial class SDEContext : DbContext
     {

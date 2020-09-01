@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using HydrosApi.Data;
 using System.Runtime.Remoting.Messaging;
-using AdwrApi.Models.Permitting.AAWS;
+using HydrosApi.Models.Permitting.AAWS;
+using HydrosApi.ViewModel.AAWS;
 
 namespace AdwrApi.Controllers.Permitting.AAWS
 {
@@ -26,8 +27,7 @@ namespace AdwrApi.Controllers.Permitting.AAWS
         [System.Web.Http.HttpGet]
         public IHttpActionResult GetGeneralInfo()
         {
-            var data = db.V_AWS_GENERAL_INFO.ToListAsync();
-            return Ok(data);
+            return Ok(V_AWS_GENERAL_INFO.GetAll());
         }
 
         [System.Web.Http.Route("aws/getgeneralInfoById/{id}")]
@@ -35,14 +35,17 @@ namespace AdwrApi.Controllers.Permitting.AAWS
         public IHttpActionResult GetGeneralInfoById(string id)
         {
             var pcc = id.Replace("~",".");
-            List<V_AWS_GENERAL_INFO> data = null;
-            using (ADWRContext db = new ADWRContext())
-            {
-                data=db.V_AWS_GENERAL_INFO.Where(p => p.ProgramCertificateConveyance == pcc).ToList();
-                var overView = new AWS_OVER_VIEW();
-                data.FirstOrDefault().OverView = overView;
-            }
-                return Ok(data);
+            //List<V_AWS_GENERAL_INFO> data = null;
+            //List<AWS_OVER_VIEW> overView = null;
+            //using (ADWRContext db = new ADWRContext())
+            //{
+            //    data=db.V_AWS_GENERAL_INFO.Where(p => p.ProgramCertificateConveyance == pcc).ToList();
+            //     overView = db.AWS_OVER_VIEW.Where(p => p.ProgramCertificateConveyance == pcc).ToList();
+            //    var comments = new AWS_COMMENTS();
+            //    //data.FirstOrDefault().Comments = comments;
+            //}
+
+                return Json(AAWSProgramInfoViewModel.GetData(pcc));
         }
     }
 }

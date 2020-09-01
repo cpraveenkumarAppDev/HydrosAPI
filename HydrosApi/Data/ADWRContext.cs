@@ -5,7 +5,8 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
     using HydrosApi.Models;
-    using AdwrApi.Models.Permitting.AAWS;
+    using HydrosApi.Models.Permitting.AAWS;
+    using HydrosApi.Controllers.Permitting.AAWS;
 
     public partial class ADWRContext : DbContext
     {
