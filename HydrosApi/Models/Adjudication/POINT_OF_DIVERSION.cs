@@ -22,15 +22,15 @@
 
         [Key]
         [StringLength(50)]
-        [Column("DWR_ID")]
-        public string DwrId { get; set; } //DwrId
+        
+        public string DWR_ID { get; set; } //DwrId
 
         [StringLength(500)]
         public string APN { get; set; } //Parcel
 
         [StringLength(100)]
-        [Column("BASIN_NAME")]
-        public string Basin { get; set; }
+       
+        public string BASIN_NAME { get; set; } //Basin
 
         [StringLength(50)]
         [Column("BOC")]

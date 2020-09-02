@@ -1,14 +1,10 @@
-﻿using AdwrApi.Controllers.Permitting.AAWS;
-using HydrosApi.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
+﻿namespace HydrosApi.Models 
+{    
+ 
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System;
 
-namespace HydrosApi.Models.Permitting.AAWS
-{
     [Table("AWS.V_AWS_GENERAL_INFO")]
     public class V_AWS_GENERAL_INFO : Repository<V_AWS_GENERAL_INFO>
     {

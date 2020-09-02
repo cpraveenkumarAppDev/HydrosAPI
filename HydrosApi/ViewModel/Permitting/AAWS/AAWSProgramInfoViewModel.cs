@@ -1,14 +1,8 @@
-﻿
-using HydrosApi.Controllers.Permitting.AAWS;
-using HydrosApi.Models.Permitting.AAWS;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Http.Results;
-
-namespace HydrosApi.ViewModel.AAWS
+﻿namespace HydrosApi
 {
+
+    using Models;
+
     public class AAWSProgramInfoViewModel
     {
         public AWS_OVER_VIEW OverView { get; set; }

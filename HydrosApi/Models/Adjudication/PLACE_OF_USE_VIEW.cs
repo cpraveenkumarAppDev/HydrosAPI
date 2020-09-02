@@ -1,4 +1,4 @@
-﻿namespace HydrosApi.Models
+﻿namespace HydrosApi 
 {
     using System;
     using System.Collections.Generic;
@@ -10,8 +10,9 @@
     using System.Runtime.Serialization;
     using System.Spatial;
     using System.Web.UI.WebControls;
-    using HydrosApi.Data;
+ 
     using Microsoft.SqlServer.Types;
+    using Models;
 
 
     [Table("ADJ.PLACE_OF_USE_VIEW")]
@@ -24,26 +25,26 @@
         }
 
         [Key]
-        [Column("DWR_ID")]
-        public string DwrId { get; set; }
+        
+        public string DWR_ID { get; set; } //Formerly DwrId
 
-        [Column("POU_NAME")]
-        public string Name { get; set; }
+        
+        public string POU_NAME { get; set; } //formerly Name
 
-        [Column("POU_CODE")]
-        public string Code { get; set; }
+         
+        public string POU_CODE { get; set; } //formerly Code
 
-        [Column("SW")]
-        public int? SubWatershed { get; set; }
+       
+        public int? SW { get; set; } //formerly SubWatershed
 
-        [Column("WS")]
-        public string Watershed { get; set; }
+        
+        public string WS { get; set; } //formerly Watershed
 
-        [Column("LCR_REGION")]
-        public string Region { get; set; }
+        
+        public string LCR_REGION { get; set; } //formerly Region
 
-        [Column("POU_USE")]
-        public string Use { get; set; }
+         
+        public string POU_USE { get; set; } //formerly Use
 
         
         public decimal? ACRES { get; set; }
@@ -126,6 +127,12 @@
 
         [NotMapped]
         public List<WELLS_VIEW> Well { get; set; }
+
+        [NotMapped]
+        public List<SW_AIS_VIEW> Surfacewater { get; set; }
+
+        [NotMapped]
+        public List<EXPLANATIONS> Explanation { get; set; }
 
         /* [NotMapped]
          public PROPOSED_WATER_RIGHT ProposedWaterRight { get; set; }

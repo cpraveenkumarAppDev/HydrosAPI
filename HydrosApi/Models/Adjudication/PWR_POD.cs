@@ -8,10 +8,6 @@ namespace HydrosApi.Models
 
     [Table("ADJ_INV.PWR_POD")]
 
-    //REMEMBER!!!!=========================================
-    //TO RECREATE THIS TABLE WITH THE NEW IDENTITY COLUMN FEATURE
-    //NO NEED FOR THE TRIGGER
-    //========================================================
     public partial class PWR_POD
     {
         //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]

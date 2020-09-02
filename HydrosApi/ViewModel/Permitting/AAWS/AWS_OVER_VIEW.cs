@@ -1,16 +1,8 @@
-﻿using AdwrApi.Controllers.Permitting.AAWS;
-using HydrosApi.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
-
-namespace HydrosApi.Controllers.Permitting.AAWS
+﻿namespace HydrosApi
 {
+    using System;
 
-    public class AWS_OVER_VIEW 
+    public class AWS_OVER_VIEW
     {
         public string PrimaryProviderName { get; set; }
         public string SecondaryProviderName { get; set; }

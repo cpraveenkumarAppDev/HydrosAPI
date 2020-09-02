@@ -10,6 +10,7 @@ namespace HydrosApi
     {
         public static void Register(HttpConfiguration config)
         {
+           
             // Web API configuration and services
             var cors = new EnableCorsAttribute("http://localhost:3000", "Access-Control-Allow-Headers,Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With", "GET, POST, PUT, DELETE, OPTIONS") { SupportsCredentials = true };
             config.EnableCors(cors);
@@ -21,7 +22,7 @@ namespace HydrosApi
                 routeTemplate: "{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
-
+            
             
 
             var appXmlType = config.Formatters.XmlFormatter.SupportedMediaTypes.FirstOrDefault(t => t.MediaType == "application/xml");

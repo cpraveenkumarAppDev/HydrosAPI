@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Web.Http;
-using HydrosApi.Models;
-using System.Text.RegularExpressions;
-using System.Web;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using HydrosApi.Data;
-using System.Runtime.Remoting.Messaging;
-using HydrosApi.Models.Permitting.AAWS;
-using HydrosApi.ViewModel.AAWS;
-
-namespace AdwrApi.Controllers.Permitting.AAWS
+﻿
+namespace HydrosApi
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.Entity;
+    using System.Linq;
+    using System.Web.Http;
+    using Models;
     public class AAWSController : ApiController
     {
 
@@ -34,7 +26,7 @@ namespace AdwrApi.Controllers.Permitting.AAWS
         [System.Web.Http.HttpGet]
         public IHttpActionResult GetGeneralInfoById(string id)
         {
-            var pcc = id.Replace("~",".");
+            var pcc = id.Replace("~", ".");
             //List<V_AWS_GENERAL_INFO> data = null;
             //List<AWS_OVER_VIEW> overView = null;
             //using (ADWRContext db = new ADWRContext())
@@ -45,7 +37,7 @@ namespace AdwrApi.Controllers.Permitting.AAWS
             //    //data.FirstOrDefault().Comments = comments;
             //}
 
-                return Json(AAWSProgramInfoViewModel.GetData(pcc));
+            return Json(AAWSProgramInfoViewModel.GetData(pcc));
         }
     }
 }
