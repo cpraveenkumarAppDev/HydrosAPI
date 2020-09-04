@@ -1,16 +1,16 @@
 ﻿namespace HydrosApi
-{ 
+{
 
-using System;
-using System.Collections.Generic;
+    using System;
+    using System.Collections.Generic;
 
-using System.Data.Entity; 
-using System.Linq; 
-using System.Web.Http;
-using Models;
-using System.Text.RegularExpressions;  
-using System.Threading.Tasks; 
- 
+    using System.Data.Entity;
+    using System.Linq;
+    using System.Web.Http;
+    using Models;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
+
 
 
     //[Authorize]
@@ -18,12 +18,12 @@ using System.Threading.Tasks;
     {
         private SDEContext sdeDB = new SDEContext();
         private ADWRContext db = new ADWRContext();
-               
+
         ///private async Task<PROPOSED_WATER_RIGHT> AddProposedWaterRight(PLACE_OF_USE_VIEW pou)
         private async Task<PROPOSED_WATER_RIGHT> AddProposedWaterRight(PLACE_OF_USE_VIEW pou)
         {
             PROPOSED_WATER_RIGHT status = new PROPOSED_WATER_RIGHT();
-           
+
             if (pou == null)
             {
                 status.StatusMessage = "Invalid place of use was submitted";
@@ -36,7 +36,7 @@ using System.Threading.Tasks;
                 CREATEDT = DateTime.Now,
                 POU_ID = pou.DWR_ID
             };
-            
+
             db.Entry(newPwr).State = EntityState.Added;
             await db.SaveChangesAsync();
             return newPwr;
@@ -69,43 +69,43 @@ using System.Threading.Tasks;
             {
                 newPwr = 1;
 
-                pwr= await AddProposedWaterRight(pou);
+                pwr = await AddProposedWaterRight(pou);
             }
 
             if (pwr != null)
             {
-                pou.PWR_ID = pwr.ID; 
+                pou.PWR_ID = pwr.ID;
                 pou.ProposedWaterRight = pwr;
             }
 
             if (newPwr == null && pwr != null)
             {
-                var pwrToPod= await PwrPodList(pwr.ID);
-                
-                if(pwrToPod != null)
-                {                 
-                    var matchList = pwrToPod.Select(i => i.POD_ID ?? -1).Distinct();                    
+                var pwrToPod = await PwrPodList(pwr.ID);
+
+                if (pwrToPod != null)
+                {
+                    var matchList = pwrToPod.Select(i => i.POD_ID ?? -1).Distinct();
 
                     var pod = (from pd in (await sdeDB.POINT_OF_DIVERSION.Where(p => matchList.Contains(p.OBJECTID)).ToListAsync())
-                    join pp in pwrToPod.ToList() on pd.OBJECTID equals pp.POD_ID ?? -1
-                    select new
-                    {
-                        pd,
-                        PWR_PID = pd.PWR_POD_ID = pp.ID
-                    }).Distinct().Select(x => x.pd).ToList();
-                    
-                    if(pod != null)
+                               join pp in pwrToPod.ToList() on pd.OBJECTID equals pp.POD_ID ?? -1
+                               select new
+                               {
+                                   pd,
+                                   PWR_PID = pd.PWR_POD_ID = pp.ID
+                               }).Distinct().Select(x => x.pd).ToList();
+
+                    if (pod != null)
                     {
                         pou.PointOfDiversion = pod;
                     }
-                }               
+                }
             }
 
             //STATEMENTS OF CLAIM INFORMATION           
 
             var socField = pou.SOC;
 
-            if(socField != null)
+            if (socField != null)
             {
                 pou.StatementOfClaim = SOC_AIS_VIEW.StatementOfClaimView(socField);
                 pou.Surfacewater = SW_AIS_VIEW.SurfaceWaterView(socField);
@@ -114,8 +114,8 @@ using System.Threading.Tasks;
             var bocField = pou.BAS_OF_CLM;
 
             if (bocField != null)
-            {                
-                pou.Well = WELLS_VIEW.WellsView(bocField);                            
+            {
+                pou.Well = WELLS_VIEW.WellsView(bocField);
             }
 
             pou.Explanation = await db.EXPLANATIONS.Where(i => i.PWR_ID == pwr.ID).ToListAsync();
@@ -148,7 +148,7 @@ using System.Threading.Tasks;
         {
             return await db.PWR_POD.Where(p => p.PWR_ID == id).ToListAsync();
         }
-        
+
         private async Task<POINT_OF_DIVERSION> PodByPodId(string id) //GET A SINGLE POINT_OF_DIVERSION RECORD
         {
             Regex rgx = new Regex(@"[^0-9]");
@@ -193,53 +193,53 @@ using System.Threading.Tasks;
         //USE A PROPOSED_WATER_RIGHT.ID OR PROPOSED_WATER_RIGHT.POU_ID/PLACE_OF_USE.DWR_ID
         //*or*
         //adj/getpod (NO PARAMETER) RETURNS ALL PODS
-        public async Task<IHttpActionResult> GetAllPod() 
+        public async Task<IHttpActionResult> GetAllPod()
         {
             return Ok(await sdeDB.POINT_OF_DIVERSION.ToListAsync());
         }
-        
+
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/addpod/{podobjectid}/{pwrId}")]
-        [HttpPost]        
-        public async Task<IHttpActionResult> AddPod(int podobjectid,int pwrId)  
-        {           
+        [HttpPost]
+        public async Task<IHttpActionResult> AddPod(int podobjectid, int pwrId)
+        {
             //Ensure a relationship doesn't already exist
-            var pwrPodList = await db.PWR_POD.Where(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == pwrId).ToListAsync();            
+            var pwrPodList = await db.PWR_POD.Where(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == pwrId).ToListAsync();
 
-            if(pwrPodList.Count() > 0)
-            {   
+            if (pwrPodList.Count() > 0)
+            {
                 return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
             }
 
             var newPwrPod = new PWR_POD()
-            {                
+            {
                 CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
                 CREATEDT = DateTime.Now,
                 POD_ID = podobjectid,
-                PWR_ID=pwrId
+                PWR_ID = pwrId
             };
             db.Entry(newPwrPod).State = EntityState.Added;
             await db.SaveChangesAsync();
 
-            var pod = await PodByPodId(podobjectid.ToString());
+            var pod = PodByPodId(podobjectid.ToString()).Result;
             pod.PWR_POD_ID = newPwrPod.ID;
-            return Ok(pod);         
+            return Ok(pod);
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        [HttpDelete,Route("adj/deletepod/{id}")]
+        [HttpDelete, Route("adj/deletepod/{id}")]
         public async Task<IHttpActionResult> DeletePod(int id) //<== ID IS THE ID FROM THE PWR_POD TABLE
         {
-            PWR_POD pod = await db.PWR_POD.Where(i => i.ID == id).FirstOrDefaultAsync();            
+            PWR_POD pod = await db.PWR_POD.Where(i => i.ID == id).FirstOrDefaultAsync();
 
-            if(pod==null)
+            if (pod == null)
             {
                 return BadRequest("An invalid id was entered");
-            }           
+            }
 
             db.Entry(pod).State = EntityState.Deleted;
-            await db.SaveChangesAsync();           
-            return Ok();
+            await db.SaveChangesAsync();
+            return Ok("Deleted");
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
@@ -262,7 +262,7 @@ using System.Threading.Tasks;
         [HttpPost, Route("adj/addexp/{id}")]
         public async Task<IHttpActionResult> AddExplanation([FromBody] EXPLANATIONS explanation) //SEND ALL VALUES, USE DATABASE/MODEL COLUMN NAMES
         {
-            if( !(explanation != null && explanation.PWR_ID != null))
+            if (!(explanation != null && explanation.PWR_ID != null))
             {
                 return BadRequest("An invalid proposed water right ID was entered.");
             }
@@ -270,14 +270,14 @@ using System.Threading.Tasks;
             var newExplanation = new EXPLANATIONS()
             {
                 CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
-                CREATEDT = DateTime.Now,                 
+                CREATEDT = DateTime.Now,
                 PWR_ID = explanation.PWR_ID,
-                EXP_TYPE=explanation.EXP_TYPE,
-                EXPLANATION=explanation.EXPLANATION
+                EXP_TYPE = explanation.EXP_TYPE,
+                EXPLANATION = explanation.EXPLANATION
             };
             db.Entry(newExplanation).State = EntityState.Added;
             await db.SaveChangesAsync();
-            
+
             return Ok(newExplanation);
         }
 
@@ -289,9 +289,9 @@ using System.Threading.Tasks;
             {
                 var pouForm = await PlaceOfUseForm(id);
 
-                if(pouForm==null)
+                if (pouForm == null)
                 {
-                   return NotFound();
+                    return NotFound();
                 }
 
                 return Ok(pouForm.ToList());
@@ -310,7 +310,3 @@ using System.Threading.Tasks;
         }
     }
 }
-
-
-    
- 
