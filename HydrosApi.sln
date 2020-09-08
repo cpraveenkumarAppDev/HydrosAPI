@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HydrosApi", "HydrosApi\HydrosApi.csproj", "{FF19675A-A690-458E-871E-E0302D03453F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedUtilities", "..\..\..\VisualStudio 2017\SharedUtilities\SharedUtilities\SharedUtilities.csproj", "{FE621455-502D-4281-B956-61A4433AAED0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedUtilities", "..\..\SharedUtilities\SharedUtilities\SharedUtilities.csproj", "{B4248DC9-081B-41AE-8232-6CDB399F2869}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,18 +29,18 @@ Global
 		{FF19675A-A690-458E-871E-E0302D03453F}.Test|Any CPU.Build.0 = Release|Any CPU
 		{FF19675A-A690-458E-871E-E0302D03453F}.Web.CWS.Production.config|Any CPU.ActiveCfg = Release|Any CPU
 		{FF19675A-A690-458E-871E-E0302D03453F}.Web.CWS.Production.config|Any CPU.Build.0 = Release|Any CPU
-		{FE621455-502D-4281-B956-61A4433AAED0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FE621455-502D-4281-B956-61A4433AAED0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FE621455-502D-4281-B956-61A4433AAED0}.Production_CWS|Any CPU.ActiveCfg = Production_CWS|Any CPU
-		{FE621455-502D-4281-B956-61A4433AAED0}.Production_CWS|Any CPU.Build.0 = Production_CWS|Any CPU
-		{FE621455-502D-4281-B956-61A4433AAED0}.Production|Any CPU.ActiveCfg = Production|Any CPU
-		{FE621455-502D-4281-B956-61A4433AAED0}.Production|Any CPU.Build.0 = Production|Any CPU
-		{FE621455-502D-4281-B956-61A4433AAED0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FE621455-502D-4281-B956-61A4433AAED0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FE621455-502D-4281-B956-61A4433AAED0}.Test|Any CPU.ActiveCfg = Test|Any CPU
-		{FE621455-502D-4281-B956-61A4433AAED0}.Test|Any CPU.Build.0 = Test|Any CPU
-		{FE621455-502D-4281-B956-61A4433AAED0}.Web.CWS.Production.config|Any CPU.ActiveCfg = Web.CWS.Production.config|Any CPU
-		{FE621455-502D-4281-B956-61A4433AAED0}.Web.CWS.Production.config|Any CPU.Build.0 = Web.CWS.Production.config|Any CPU
+		{B4248DC9-081B-41AE-8232-6CDB399F2869}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4248DC9-081B-41AE-8232-6CDB399F2869}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4248DC9-081B-41AE-8232-6CDB399F2869}.Production_CWS|Any CPU.ActiveCfg = Production_CWS|Any CPU
+		{B4248DC9-081B-41AE-8232-6CDB399F2869}.Production_CWS|Any CPU.Build.0 = Production_CWS|Any CPU
+		{B4248DC9-081B-41AE-8232-6CDB399F2869}.Production|Any CPU.ActiveCfg = Production|Any CPU
+		{B4248DC9-081B-41AE-8232-6CDB399F2869}.Production|Any CPU.Build.0 = Production|Any CPU
+		{B4248DC9-081B-41AE-8232-6CDB399F2869}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4248DC9-081B-41AE-8232-6CDB399F2869}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4248DC9-081B-41AE-8232-6CDB399F2869}.Test|Any CPU.ActiveCfg = Test|Any CPU
+		{B4248DC9-081B-41AE-8232-6CDB399F2869}.Test|Any CPU.Build.0 = Test|Any CPU
+		{B4248DC9-081B-41AE-8232-6CDB399F2869}.Web.CWS.Production.config|Any CPU.ActiveCfg = Web.CWS.Production.config|Any CPU
+		{B4248DC9-081B-41AE-8232-6CDB399F2869}.Web.CWS.Production.config|Any CPU.Build.0 = Web.CWS.Production.config|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -13,7 +13,7 @@ namespace HydrosApi
         [System.Web.Http.Authorize]
         public IHttpActionResult WindowsAuthentication()
         {
-
+            //comment test ron
             //To autmoatically login -> http://www.scip.be/index.php?Page=ArticlesNET38&Lang=EN
             var user = User.Identity.Name;
             if (user.Equals(""))

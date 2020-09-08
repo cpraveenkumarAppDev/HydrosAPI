@@ -504,8 +504,8 @@
     <Folder Include="Views\AIS\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\VisualStudio 2017\SharedUtilities\SharedUtilities\SharedUtilities.csproj">
-      <Project>{fe621455-502d-4281-b956-61a4433aaed0}</Project>
+    <ProjectReference Include="..\..\..\SharedUtilities\SharedUtilities\SharedUtilities.csproj">
+      <Project>{b4248dc9-081b-41ae-8232-6cdb399f2869}</Project>
       <Name>SharedUtilities</Name>
     </ProjectReference>
   </ItemGroup>
