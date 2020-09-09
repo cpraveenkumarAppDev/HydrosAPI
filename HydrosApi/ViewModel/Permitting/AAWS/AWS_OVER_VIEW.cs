@@ -5,6 +5,7 @@
     public class AWS_OVER_VIEW
     {
         public string PrimaryProviderName { get; set; }
+        public string Subdivision { get; set; }
         public string SecondaryProviderName { get; set; }
         public bool Application_Form_Complete { get; set; }
         public bool Correct_Fees_Received { get; set; }
