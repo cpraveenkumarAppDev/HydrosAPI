@@ -14,6 +14,7 @@ using System.Threading;
 using System.Security.Principal;
 using System.Web;
 using System.Web.Http.Cors;
+using HydrosApi;
 
 namespace AdwrApi.Controllers.Adjudications
 {

@@ -1,5 +1,6 @@
 namespace HydrosApi.Models
 {
+    using HydrosApi.Services;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;

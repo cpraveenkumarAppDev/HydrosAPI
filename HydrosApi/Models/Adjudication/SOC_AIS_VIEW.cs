@@ -1,6 +1,6 @@
 namespace HydrosApi 
 {
-    
+    using HydrosApi.Services;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -58,9 +58,11 @@ namespace HydrosApi
 
             if (soc == null)
                 return null;
-
+            DocushareService docuService = new DocushareService();
             foreach(var item in soc)
             {
+                string socFileLink = docuService.getSocDoc("39-" + item.FILE_NO);
+                item.FILE_LINK = socFileLink;
                 //var socFile = DocuShareManager.GetFileLink("39-" + item.FILE_NO.ToString(), "", "SOC");
                 //item.FILE_LINK = socFile;
             }

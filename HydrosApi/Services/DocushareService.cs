@@ -1,4 +1,4 @@
-﻿using AdwrApi.Models.Docushare;
+﻿using HydrosApi.Models.Docushare;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace AdwrApi.Services
+namespace HydrosApi.Services
 {
     public class DocushareService
     {
@@ -15,17 +15,17 @@ namespace AdwrApi.Services
         public DocushareService()
         {
             this.client = new HttpClient();
-            this.client.BaseAddress = new Uri("dwrsrvc.azwater.gov/dsapi/api/");
+            this.client.BaseAddress = new Uri("http://dwrsrvc.azwater.gov/dsapi/api/");
         }
-        public async Task<string> getSocDoc(string pcc)
+        public string getSocDoc(string pcc)
         {
             //call DSAPI
-            var result = await this.client.GetAsync("soc/getsocdocuments?fileNumber=" + pcc);
+            var result = this.client.GetAsync("soc/getsocdocuments?fileNumber=" + pcc).Result;
 
             if (result.IsSuccessStatusCode)
             {
                 //send json object back
-                var content = await result.Content.ReadAsStringAsync();
+                var content = result.Content.ReadAsStringAsync().Result;
                 var socDocs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<SOCDOC>>(content);
                 var firstDoc = socDocs.FirstOrDefault();
                 return firstDoc.FileUrl;

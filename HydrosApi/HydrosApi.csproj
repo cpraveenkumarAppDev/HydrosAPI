@@ -247,12 +247,16 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\Adjudications\AdjudicationsController.cs" />
+    <Compile Include="Controllers\Adjudications\AISController.cs" />
     <Compile Include="Controllers\Adjudication\AdjudicationController.cs" />
     <Compile Include="Controllers\ADWR\ADWRController.cs" />
     <Compile Include="Controllers\LayersController.cs" />
     <Compile Include="Controllers\Permitting\AAWS\AAWSController.cs" />
+    <Compile Include="Models\Docushare\SOCDOC.cs" />
     <Compile Include="Models\Permitting\AAWS\AWS_COMMENTS.cs" />
     <Compile Include="Data\SDEContext.cs" />
+    <Compile Include="Services\DocushareService.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWS_OVER_VIEW.cs" />
     <Compile Include="Data\ADWRContext.cs" />
     <Compile Include="Data\SQLContext.cs" />
