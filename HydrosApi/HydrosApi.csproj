@@ -331,12 +331,6 @@
     <Folder Include="Views\ADWR\" />
     <Folder Include="Views\AIS\" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\VisualStudio 2017\SharedUtilities\SharedUtilities\SharedUtilities.csproj">
-      <Project>{f6d45731-25bd-4ab4-8319-031423eb4d6d}</Project>
-      <Name>SharedUtilities</Name>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

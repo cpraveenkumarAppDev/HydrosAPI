@@ -5,7 +5,6 @@ namespace HydrosApi.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
-    using SharedUtilities;
      
 
     [Table("ADWR.SW_AIS_VIEW")]
@@ -61,8 +60,8 @@ namespace HydrosApi.Models
 
                 if (item.ART_APPLI_NO != null)
                 {
-                    var swFile = DocuShareManager.GetFileLink(item.ART_APPLI_NO.ToString(), "", "SW");
-                    item.FILE_LINK = swFile;
+                    //var swFile = DocuShareManager.GetFileLink(item.ART_APPLI_NO.ToString(), "", "SW");
+                    //item.FILE_LINK = swFile;
                 }
             }
 

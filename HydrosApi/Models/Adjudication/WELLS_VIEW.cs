@@ -6,7 +6,6 @@ namespace HydrosApi
     using System.ComponentModel.DataAnnotations.Schema;
      
     using System.Linq;
-    using SharedUtilities;
 
     [Table("ADJ_INV.WELLS_VIEW")]
     public partial class WELLS_VIEW
@@ -67,8 +66,8 @@ namespace HydrosApi
 
             foreach (var item in well)
             {
-                var wellFile = DocuShareManager.GetFileLink(item.FILE_NO, "", "WELL");                
-                item.FILE_LINK = wellFile;
+                //var wellFile = DocuShareManager.GetFileLink(item.FILE_NO, "", "WELL");                
+                //item.FILE_LINK = wellFile;
             }
 
             return well;
