@@ -1,11 +1,12 @@
-﻿using System;
+﻿using HydrosApi.Services.docushareClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace HydrosApi.Models.Docushare
+namespace AdwrApi.Services.docushareClient
 {
-    public class SOCDOC
+    public class SWDOC : IDSAPIdoc
     {
         public string Handle { get; set; }
         public string DocType { get; set; }

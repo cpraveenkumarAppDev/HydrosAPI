@@ -253,10 +253,13 @@
     <Compile Include="Controllers\ADWR\ADWRController.cs" />
     <Compile Include="Controllers\LayersController.cs" />
     <Compile Include="Controllers\Permitting\AAWS\AAWSController.cs" />
-    <Compile Include="Models\Docushare\SOCDOC.cs" />
+    <Compile Include="Services\docushareClient\IDSAPIdoc.cs" />
     <Compile Include="Models\Permitting\AAWS\AWS_COMMENTS.cs" />
     <Compile Include="Data\SDEContext.cs" />
-    <Compile Include="Services\DocushareService.cs" />
+    <Compile Include="Services\docushareClient\DocushareService.cs" />
+    <Compile Include="Services\docushareClient\SOCDOC.cs" />
+    <Compile Include="Services\docushareClient\SWDOC.cs" />
+    <Compile Include="Services\docushareClient\WELLDOC.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWS_OVER_VIEW.cs" />
     <Compile Include="Data\ADWRContext.cs" />
     <Compile Include="Data\SQLContext.cs" />
