@@ -247,12 +247,19 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\Adjudications\AdjudicationsController.cs" />
+    <Compile Include="Controllers\Adjudications\AISController.cs" />
     <Compile Include="Controllers\Adjudication\AdjudicationController.cs" />
     <Compile Include="Controllers\ADWR\ADWRController.cs" />
     <Compile Include="Controllers\LayersController.cs" />
     <Compile Include="Controllers\Permitting\AAWS\AAWSController.cs" />
+    <Compile Include="Services\docushareClient\IDSAPIdoc.cs" />
     <Compile Include="Models\Permitting\AAWS\AWS_COMMENTS.cs" />
     <Compile Include="Data\SDEContext.cs" />
+    <Compile Include="Services\docushareClient\DocushareService.cs" />
+    <Compile Include="Services\docushareClient\SOCDOC.cs" />
+    <Compile Include="Services\docushareClient\SWDOC.cs" />
+    <Compile Include="Services\docushareClient\WELLDOC.cs" />
     <Compile Include="Models\Permitting\AAWS\AW_VERIFIED_OAWS.cs" />
     <Compile Include="Models\Permitting\AAWS\V_CD_AW_APP_FEE_RATES.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWSNewApp.cs" />
@@ -332,12 +339,6 @@
     <Folder Include="Views\AAWS\" />
     <Folder Include="Views\ADWR\" />
     <Folder Include="Views\AIS\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\VisualStudio 2017\SharedUtilities\SharedUtilities\SharedUtilities.csproj">
-      <Project>{f6d45731-25bd-4ab4-8319-031423eb4d6d}</Project>
-      <Name>SharedUtilities</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

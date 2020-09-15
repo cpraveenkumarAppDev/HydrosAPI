@@ -1,12 +1,13 @@
+using HydrosApi.Services;
+using HydrosApi.Services.docushareClient;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+
 namespace HydrosApi.Models
-{
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
-    using SharedUtilities;
-     
+{ 
 
     [Table("ADWR.SW_AIS_VIEW")]
     public partial class SW_AIS_VIEW
@@ -55,13 +56,14 @@ namespace HydrosApi.Models
             var swMatch = DelimitedColumnHandler.FileInformation(swList).Where(i=>i.FileType != "55" && i.FileType != "35").Select(i => i.FileNumber == null ? -1 : int.Parse(i.FileNumber)).ToList();
 
             var sw = db.SW_AIS_VIEW.Where(s => swMatch.Contains(s.ART_APPLI_NO ?? -1)).ToList();
-
+            DocushareService docuService = new DocushareService();
             foreach (var item in sw)
             {
 
                 if (item.ART_APPLI_NO != null)
                 {
-                    var swFile = DocuShareManager.GetFileLink(item.ART_APPLI_NO.ToString(), "", "SW");
+                    var swFile = docuService.getSurfaceWaterDocs(item.ART_APPLI_NO.ToString());
+                    //var swFile = DocuShareManager.GetFileLink(item.ART_APPLI_NO.ToString(), "", "SW");
                     item.FILE_LINK = swFile;
                 }
             }

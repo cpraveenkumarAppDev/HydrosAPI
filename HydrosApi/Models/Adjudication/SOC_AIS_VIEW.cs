@@ -1,13 +1,12 @@
+using HydrosApi.Services.docushareClient;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+
 namespace HydrosApi 
 {
-    
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
-    using SharedUtilities;
-
     [Table("SOC.SOC_AIS_VIEW")]
     public partial class SOC_AIS_VIEW 
     {
@@ -59,11 +58,13 @@ namespace HydrosApi
 
             if (soc == null)
                 return null;
-
+            DocushareService docuService = new DocushareService();
             foreach(var item in soc)
             {
-                var socFile = DocuShareManager.GetFileLink("39-" + item.FILE_NO.ToString(), "", "SOC");
-                item.FILE_LINK = socFile;
+                string socFileLink = docuService.GetSocDocs("39-" + item.FILE_NO);
+                item.FILE_LINK = socFileLink;
+                //var socFile = DocuShareManager.GetFileLink("39-" + item.FILE_NO.ToString(), "", "SOC");
+                //item.FILE_LINK = socFile;
             }
 
             return soc.Distinct().ToList();

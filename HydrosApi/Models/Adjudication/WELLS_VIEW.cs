@@ -1,12 +1,12 @@
+using HydrosApi.Services.docushareClient;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+
 namespace HydrosApi 
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-     
-    using System.Linq;
-    using SharedUtilities;
 
     [Table("ADJ_INV.WELLS_VIEW")]
     public partial class WELLS_VIEW
@@ -63,11 +63,12 @@ namespace HydrosApi
             var well = db.WELLS_VIEW.Where(w => wellMatch.Contains(w.FILE_NO)).Distinct().ToList();
 
             if (well == null)
-                return null;            
-
+                return null;
+            DocushareService docuService = new DocushareService();
             foreach (var item in well)
             {
-                var wellFile = DocuShareManager.GetFileLink(item.FILE_NO, "", "WELL");                
+                var wellFile = docuService.getWellDocs(item.FILE_NO);
+                //var wellFile = DocuShareManager.GetFileLink(item.FILE_NO, "", "WELL");                
                 item.FILE_LINK = wellFile;
             }
 
