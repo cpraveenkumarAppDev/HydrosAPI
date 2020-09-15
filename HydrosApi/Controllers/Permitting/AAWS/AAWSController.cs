@@ -7,7 +7,10 @@ namespace HydrosApi
     using System.Data.Entity;
     using System.Linq;
     using System.Web.Http;
+    using System.Web.Http.Cors;
+    using AdwrApi.ViewModel.Permitting.AAWS;
     using Models;
+
     public class AAWSController : ApiController
     {
 
@@ -26,16 +29,16 @@ namespace HydrosApi
         public IHttpActionResult GetGeneralInfoById(string id)
         {
             var pcc = id.Replace("~", ".");
-            //List<V_AWS_GENERAL_INFO> data = null;
-            //List<AWS_OVER_VIEW> overView = null;
-            //using (ADWRContext db = new ADWRContext())
-            //{
-            //    data=db.V_AWS_GENERAL_INFO.Where(p => p.ProgramCertificateConveyance == pcc).ToList();
-            //     overView = db.AWS_OVER_VIEW.Where(p => p.ProgramCertificateConveyance == pcc).ToList();
-            //    var comments = new AWS_COMMENTS();
-            //    //data.FirstOrDefault().Comments = comments;
-            //}
             return Json(AAWSProgramInfoViewModel.GetData(pcc));
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        [System.Web.Http.Route("aws/GetNewApplicationCredentials")]
+        [System.Web.Http.HttpGet]
+        public IHttpActionResult GetNewApplicationCredentials()
+        {
+
+            return Json(AWSNewAppViewModel.GetNewAppData());
         }
     }
 }

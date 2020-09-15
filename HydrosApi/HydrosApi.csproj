@@ -253,6 +253,9 @@
     <Compile Include="Controllers\Permitting\AAWS\AAWSController.cs" />
     <Compile Include="Models\Permitting\AAWS\AWS_COMMENTS.cs" />
     <Compile Include="Data\SDEContext.cs" />
+    <Compile Include="Models\Permitting\AAWS\AW_VERIFIED_OAWS.cs" />
+    <Compile Include="Models\Permitting\AAWS\V_CD_AW_APP_FEE_RATES.cs" />
+    <Compile Include="ViewModel\Permitting\AAWS\AWSNewApp.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWS_OVER_VIEW.cs" />
     <Compile Include="Data\ADWRContext.cs" />
     <Compile Include="Data\SQLContext.cs" />
@@ -326,7 +329,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="ViewModel\AAWS\" />
     <Folder Include="Views\AAWS\" />
     <Folder Include="Views\ADWR\" />
     <Folder Include="Views\AIS\" />
