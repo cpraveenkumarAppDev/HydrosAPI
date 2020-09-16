@@ -251,6 +251,7 @@
     <Compile Include="Controllers\ADWR\ADWRController.cs" />
     <Compile Include="Controllers\LayersController.cs" />
     <Compile Include="Controllers\Permitting\AAWS\AAWSController.cs" />
+    <Compile Include="Models\Permitting\AAWS\V_AWS_OAWS.cs" />
     <Compile Include="Services\docushareClient\IDSAPIdoc.cs" />
     <Compile Include="Models\Permitting\AAWS\AWS_COMMENTS.cs" />
     <Compile Include="Data\SDEContext.cs" />
