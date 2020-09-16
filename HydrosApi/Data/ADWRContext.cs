@@ -40,6 +40,7 @@
         public virtual DbSet<SOC_AIS_VIEW> SOC_AIS_VIEW { get; set; }
         public virtual DbSet<V_AWS_GENERAL_INFO> V_AWS_GENERAL_INFO { get; set; }
         public virtual DbSet<V_AWS_OAWS> V_AWS_OAWS { get; set; }
+        public virtual DbSet<V_CD_AW_APP_FEE_RATES> V_CD_AW_APP_FEE_RATES { get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
