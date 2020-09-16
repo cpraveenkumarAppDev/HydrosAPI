@@ -1,13 +1,10 @@
-﻿using HydrosApi.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
-
-namespace AdwrApi.Models.Permitting.AAWS
+﻿namespace HydrosApi.Models
 {
+    
+using System.ComponentModel.DataAnnotations.Schema;
+
+
+
     [Table("AWS.V_CD_AW_APP_FEE_RATES")]
     public class V_CD_AW_APP_FEE_RATES : Repository<V_CD_AW_APP_FEE_RATES>
     {

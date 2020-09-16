@@ -8,7 +8,7 @@ namespace HydrosApi
     using System.Linq;
     using System.Web.Http;
     using System.Web.Http.Cors;
-    using AdwrApi.ViewModel.Permitting.AAWS;
+    
     using Models;
 
     public class AAWSController : ApiController

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace HydrosApi.Models { 
+   
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
+ 
 
-namespace AdwrApi.Models.Permitting.AAWS
-{
+
     [Table("AWS.AW_VERIFIED_OAWS")]
     public class AW_VERIFIED_OAWS
     {
