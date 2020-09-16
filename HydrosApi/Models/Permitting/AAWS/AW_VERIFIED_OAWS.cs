@@ -9,13 +9,13 @@ using System.ComponentModel.DataAnnotations.Schema;
     public class AW_VERIFIED_OAWS
     {
         [Key]
-        [Column("WRF_ID")]
+        
         public int WRF_ID { get; set; }
 
-        [Column("APP_COMPLETE")]
+     
         public string APP_COMPLETE { get; set; }
 
-        [Column("APP_ACCEPTED")]
+       
         public string APP_ACCEPTED { get; set; }
 
         //hydro_study_contracts varchar2(1)

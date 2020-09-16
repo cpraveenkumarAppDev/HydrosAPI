@@ -8,7 +8,7 @@
 
     //[Table("ADJ.POINT_OF_DIVERSION_VIEW")]
     [Table("ADJ.LLC_PODS_ALL")]
-    public partial class POINT_OF_DIVERSION
+    public partial class POINT_OF_DIVERSION  
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 

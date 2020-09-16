@@ -17,7 +17,7 @@
         private SDEContext sdeDB = new SDEContext();
         private ADWRContext db = new ADWRContext();
 
-        ///private async Task<PROPOSED_WATER_RIGHT> AddProposedWaterRight(PLACE_OF_USE_VIEW pou)
+        
         private async Task<PROPOSED_WATER_RIGHT> AddProposedWaterRight(PLACE_OF_USE_VIEW pou)
         {
             PROPOSED_WATER_RIGHT status = new PROPOSED_WATER_RIGHT();
@@ -78,7 +78,7 @@
 
             if (newPwr == null && pwr != null)
             {
-                var pwrToPod = await PwrPodList(pwr.ID);
+                var pwrToPod = await db.PWR_POD.Where(p => p.PWR_ID == pwr.ID).ToListAsync();
 
                 if (pwrToPod != null)
                 {
@@ -141,11 +141,6 @@
 
                 return await db.PROPOSED_WATER_RIGHT.Where(p => p.ID == numericId).ToListAsync();
             }
-        }
-
-        private async Task<IEnumerable<PWR_POD>> PwrPodList(int id) //GET PROPOSED_WATER_RIGHT RECORD USING THE PROPOSED_WATER_RIGHT.ID
-        {
-            return await db.PWR_POD.Where(p => p.PWR_ID == id).ToListAsync();
         }
 
         private async Task<POINT_OF_DIVERSION> PodByPodId(string id) //GET A SINGLE POINT_OF_DIVERSION RECORD

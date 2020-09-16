@@ -32,6 +32,7 @@ namespace HydrosApi
             return Json(AAWSProgramInfoViewModel.GetData(pcc));
         }
 
+       
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [System.Web.Http.Route("aws/GetNewApplicationCredentials")]
         [System.Web.Http.HttpGet]
