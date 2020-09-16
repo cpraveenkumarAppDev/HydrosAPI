@@ -10,10 +10,8 @@
     using Models;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using System.Web.Http.Cors;
 
-
-
-    //[Authorize]
     public class AdjudicationController : ApiController
     {
         private SDEContext sdeDB = new SDEContext();

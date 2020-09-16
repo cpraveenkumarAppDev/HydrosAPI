@@ -1,6 +1,7 @@
 ﻿namespace HydrosApi 
 { 
-    using System.Data.Entity;    
+    using System.Data.Entity;
+    using AdwrApi.Models.Permitting.AAWS;
     using Models;
 
     public partial class ADWRContext : DbContext
@@ -38,6 +39,7 @@
         public virtual DbSet<SW_AIS_VIEW> SW_AIS_VIEW { get; set; }
         public virtual DbSet<SOC_AIS_VIEW> SOC_AIS_VIEW { get; set; }
         public virtual DbSet<V_AWS_GENERAL_INFO> V_AWS_GENERAL_INFO { get; set; }
+        public virtual DbSet<V_AWS_OAWS> V_AWS_OAWS { get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
