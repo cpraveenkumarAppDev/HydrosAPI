@@ -61,10 +61,9 @@ namespace HydrosApi
             DocushareService docuService = new DocushareService();
             foreach(var item in soc)
             {
-                string socFileLink = docuService.GetSocDocs("39-" + item.FILE_NO);
-                item.FILE_LINK = socFileLink;
-                //var socFile = DocuShareManager.GetFileLink("39-" + item.FILE_NO.ToString(), "", "SOC");
-                //item.FILE_LINK = socFile;
+                var url = docuService.GetSocDocs("39-" + item.FILE_NO).FirstOrDefault().FileUrl;
+                item.FILE_LINK = url;
+               
             }
 
             return soc.Distinct().ToList();

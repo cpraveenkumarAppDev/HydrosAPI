@@ -55,7 +55,7 @@ namespace HydrosApi
         public static List<WELLS_VIEW> WellsView(string wellList)
         {
             var db = new ADWRContext();
-            var wellMatch = DelimitedColumnHandler.FileInformation(wellList).Where(i=>i.FileType=="55").Select(i => i.FileNumber).ToList();
+            var wellMatch = DelimitedColumnHandler.FileInformation(wellList).Where(i=>i.FileType=="55"||i.FileType=="35").Select(i => i.FileNumber).ToList();
 
             if (wellMatch == null)
                 return null;
@@ -66,10 +66,8 @@ namespace HydrosApi
                 return null;
             DocushareService docuService = new DocushareService();
             foreach (var item in well)
-            {
-                var wellFile = docuService.getWellDocs(item.FILE_NO);
-                //var wellFile = DocuShareManager.GetFileLink(item.FILE_NO, "", "WELL");                
-                item.FILE_LINK = wellFile;
+            {                
+                item.FILE_LINK = docuService.getWellDocs(item.REGISTRY_ID).FileUrl;
             }
 
             return well;

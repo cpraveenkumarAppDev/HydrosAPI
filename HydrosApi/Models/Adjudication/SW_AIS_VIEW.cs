@@ -44,8 +44,8 @@ namespace HydrosApi.Models
         public string USE { get; set; }
 
         [NotMapped]
-        [StringLength(4000)]
-        public string FILE_LINK
+         
+        public List<string> FILE_LINK
         {
             get; set;
         }
@@ -53,19 +53,19 @@ namespace HydrosApi.Models
         public static List<SW_AIS_VIEW> SurfaceWaterView(string swList) //a comma-delimited list
         {
             var db = new ADWRContext();
-            var swMatch = DelimitedColumnHandler.FileInformation(swList).Where(i=>i.FileType != "55" && i.FileType != "35").Select(i => i.FileNumber == null ? -1 : int.Parse(i.FileNumber)).ToList();
+            var swMatch = DelimitedColumnHandler.FileInformation(swList).Where(i=>i.FileType != "55" && i.FileType != "35").ToList();
+            var sw = new List<SW_AIS_VIEW>();
 
-            var sw = db.SW_AIS_VIEW.Where(s => swMatch.Contains(s.ART_APPLI_NO ?? -1)).ToList();
             DocushareService docuService = new DocushareService();
-            foreach (var item in sw)
+            foreach (var item in swMatch)
             {
+                int fileNo = int.Parse(item.FileNumber);
+                var swItem = db.SW_AIS_VIEW.Where(s => s.ART_APPLI_NO == fileNo && s.ART_PROGRAM == item.FileType).ToList();
+                var swFile=docuService.getSurfaceWaterDocs(item.FileType+"-"+item.FileNumber).Select(f => f.FileUrl).Distinct();
+                swItem.Select(d => { d.FILE_LINK = swFile.ToList(); return d; }).ToList();
+              
+                sw.AddRange(swItem); //<== it might be possible to have multiple documents related to the one item 
 
-                if (item.ART_APPLI_NO != null)
-                {
-                    var swFile = docuService.getSurfaceWaterDocs(item.ART_APPLI_NO.ToString());
-                    //var swFile = DocuShareManager.GetFileLink(item.ART_APPLI_NO.ToString(), "", "SW");
-                    item.FILE_LINK = swFile;
-                }
             }
 
             return sw;

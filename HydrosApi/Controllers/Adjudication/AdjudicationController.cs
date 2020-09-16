@@ -106,7 +106,7 @@
             if (socField != null)
             {
                 pou.StatementOfClaim = SOC_AIS_VIEW.StatementOfClaimView(socField);
-                pou.Surfacewater = SW_AIS_VIEW.SurfaceWaterView(socField);
+               // pou.Surfacewater = SW_AIS_VIEW.SurfaceWaterView(socField);
             }
 
             var bocField = pou.BAS_OF_CLM;
@@ -114,6 +114,7 @@
             if (bocField != null)
             {
                 pou.Well = WELLS_VIEW.WellsView(bocField);
+                pou.Surfacewater = SW_AIS_VIEW.SurfaceWaterView(bocField);
             }
 
             pou.Explanation = await db.EXPLANATIONS.Where(i => i.PWR_ID == pwr.ID).ToListAsync();
@@ -196,7 +197,7 @@
             return Ok(await sdeDB.POINT_OF_DIVERSION.ToListAsync());
         }
 
-        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/addpod/{podobjectid}/{pwrId}")]
         [HttpPost]
         public async Task<IHttpActionResult> AddPod(int podobjectid, int pwrId)
@@ -224,7 +225,7 @@
             return Ok(pod);
         }
 
-        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpDelete, Route("adj/deletepod/{id}")]
         public async Task<IHttpActionResult> DeletePod(int id) //<== ID IS THE ID FROM THE PWR_POD TABLE
         {

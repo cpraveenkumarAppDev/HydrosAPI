@@ -1,11 +1,9 @@
-﻿using AdwrApi.Services.docushareClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web;
-
+using Newtonsoft.Json;
+ 
 namespace HydrosApi.Services.docushareClient
 {
     public class DocushareService
@@ -17,42 +15,66 @@ namespace HydrosApi.Services.docushareClient
             this.client = new HttpClient();
             this.client.BaseAddress = new Uri("http://dwrsrvc.azwater.gov/dsapi/api/");
         }
-        public string GetSocDocs(string pcc)
+        public List<SOCDOC>GetSocDocs(string pcc)
         {
             //call DSAPI
             var result = this.client.GetAsync("soc/getsocdocuments?fileNumber=" + pcc).Result;
-
+            List<SOCDOC> socDocs = new List<SOCDOC>();
+          
             if (result.IsSuccessStatusCode)
             {
                 //send json object back
                 var content = result.Content.ReadAsStringAsync().Result;
-                var socDocs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<SOCDOC>>(content);
-                var firstDoc = socDocs.FirstOrDefault();
-                return firstDoc.FileUrl;
+                if(content.Contains("No records found"))
+                {
+                    socDocs.FirstOrDefault().Status= $"No records found for "+pcc;
+                    return socDocs;
+                }
+                socDocs = JsonConvert.DeserializeObject<List<SOCDOC>>(content);
+               
+                return socDocs;
+                //var firstDoc = socDocs.FirstOrDefault();
+                //return firstDoc.FileUrl;
+                //return result;
             }
 
-            return $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
+            socDocs.FirstOrDefault().Status = $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
+            return socDocs;
         }
 
-        public string getSurfaceWaterDocs(string pcc)
+        public List<SWDOC> getSurfaceWaterDocs(string pcc)
         {
             //call DSAPI
+
+            List<SWDOC> swDoc = new List<SWDOC>();
             var result = this.client.GetAsync("surfacewater/Getswdocuments?pc=" + pcc).Result;
 
             if (result.IsSuccessStatusCode)
             {
                 //send json object back
                 var content = result.Content.ReadAsStringAsync().Result;
-                var socDocs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<SWDOC>>(content);
-                var firstDoc = socDocs.FirstOrDefault();
-                return firstDoc.FileUrl;
+
+                if (content.Contains("No records found"))
+                {
+                    swDoc.FirstOrDefault().Status= $"No records found for " + pcc;
+                    return swDoc;
+                }
+                
+                swDoc=JsonConvert.DeserializeObject<List<SWDOC>>(content);
+                return swDoc;
             }
 
-            return $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
+            //swDoc.FirstOrDefault().Status = $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
+            var swStatus = new SWDOC();
+            swStatus.Status = $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
+            swDoc.Add(swStatus);
+            return swDoc;
+
         }
 
-        public string getWellDocs(string pcc)
+        public WELLDOC getWellDocs(string pcc)
         {
+            WELLDOC wellDoc = new WELLDOC();
             //call DSAPI
             var result = this.client.GetAsync("wellregdoc/get?regid=" + pcc).Result;
 
@@ -60,12 +82,14 @@ namespace HydrosApi.Services.docushareClient
             {
                 //send json object back
                 var content = result.Content.ReadAsStringAsync().Result;
-                var socDocs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<WELLDOC>>(content);
-                var firstDoc = socDocs.FirstOrDefault();
-                return firstDoc.FileUrl;
+                wellDoc = JsonConvert.DeserializeObject<WELLDOC>(content);      
+                return wellDoc;
             }
 
-            return $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
+            wellDoc.Status = $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
+             
+            return wellDoc;
+
         }
     }
 }

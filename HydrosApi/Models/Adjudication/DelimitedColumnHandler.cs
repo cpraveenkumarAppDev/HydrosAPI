@@ -21,7 +21,7 @@ using Microsoft.Ajax.Utilities;
 
         public static List<DelimitedColumnHandler> FileInformation(string columnValue)
         {
-            var rgx = new Regex(@"[^0-9-,]");
+            var rgx = new Regex(@"[^0-9a-zA-z-,]");
 
             var delimitedColumnHandler = new List<DelimitedColumnHandler>();
             
@@ -31,8 +31,8 @@ using Microsoft.Ajax.Utilities;
                              select new
                              {
                                  PCC = f,
-                                 FileType = f.IndexOf("-") > -1 ? rgx.Replace(f, "").Split('-')[0] : "00",
-                                 FileNumber = f.IndexOf("-") > -1 ? rgx.Replace(f, "").Split('-')[1] : rgx.Replace(f, "")
+                                 FileType = f.IndexOf("-") > -1 ? f.Split('-')[0] : "00",
+                                 FileNumber = f.IndexOf("-") > -1 ? f.Split('-')[1] : rgx.Replace(f, "")
 
                              }).Distinct();
             
