@@ -34,7 +34,7 @@ namespace HydrosApi
 
        
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [System.Web.Http.Route("aws/GetNewApplicationCredentials")]
+        [System.Web.Http.Route("aws/GetNewAWSRight")]
         [System.Web.Http.HttpGet]
         public IHttpActionResult GetNewApplicationCredentials()
         {
