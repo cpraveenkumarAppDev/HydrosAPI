@@ -5,10 +5,12 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     //[Table("ADJ.POINT_OF_DIVERSION_VIEW")]
     [Table("ADJ.LLC_PODS_ALL")]
-    public partial class POINT_OF_DIVERSION  
+    public partial class POINT_OF_DIVERSION 
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 
@@ -119,8 +121,6 @@
         [NotMapped]
         public string PodTypeDescription
         {
-
-
             get {
                 if (Type == null)
                 {
@@ -150,18 +150,80 @@
                             break;
                     }
                 }
-                    return podTypeDescription;
-                
+                    return podTypeDescription;                
             }
             set
             {
                 podTypeDescription = value;
-            }
-             
+            }             
         }
 
-        
+        ///get the point of diversion with a list of Proposed Water Right/and Point of Diversion pairs (populates the pwr_pod_id)
+        public static List<POINT_OF_DIVERSION> PointOfDiversion(List<PWR_POD> pwrPod) 
+        {    
+            var matchList = pwrPod.Select(i => i.POD_ID ?? -1).Distinct();
+            var podList = POINT_OF_DIVERSION.PointOfDiversion(matchList);
 
+            var pod = (from pd in podList
+                        join pp in pwrPod on pd.OBJECTID equals pp.POD_ID ?? -1
+                        select new
+                        {
+                            pd,
+                            pwrPid = pd.PWR_POD_ID = pp.ID
+                        }).Distinct().Select(x => x.pd).ToList();
+
+            return pod;            
+        }
+
+        ///get the point of diversion with a single Proposed Water Right/and Point of Diversion pair (populates the pwr_pod_id)
+        public static POINT_OF_DIVERSION PointOfDiversion(PWR_POD pwrPod) 
+        {
+            var objectid = pwrPod.POD_ID ?? -1;
+
+            if(objectid > -1)
+            { 
+                var pod = POINT_OF_DIVERSION.PointOfDiversion(objectid);
+                pod.PWR_POD_ID = pwrPod.ID;
+                return pod;
+            }
+            return null;
+        }
+
+        ///get the point of diversion using its dwr_id
+        public static POINT_OF_DIVERSION PointOfDiversion(string dwrid)
+        {
+            using (var sdeDB = new SDEContext())
+            {
+                return sdeDB.POINT_OF_DIVERSION.Where(p => p.DWR_ID == dwrid).FirstOrDefault();                 
+            }
+        }
+
+        ///get the point of diversion using its objectid
+        public static  POINT_OF_DIVERSION PointOfDiversion(int objectid)
+        {
+            using (var sdeDB = new SDEContext())
+            {
+                return sdeDB.POINT_OF_DIVERSION.Where(p => p.OBJECTID == objectid).FirstOrDefault();                
+            }
+        }
+
+        ///get all points of diversion
+        public static List<POINT_OF_DIVERSION> PointOfDiversion()
+        {
+            using (var sdeDB = new SDEContext())
+            {
+                return sdeDB.POINT_OF_DIVERSION.ToList();
+            }
+        }
+
+        ///get a list of points of diversion with the provided object ids
+        public static List<POINT_OF_DIVERSION> PointOfDiversion(IEnumerable<int> objectids)
+        {
+            using (var sdeDB = new SDEContext())
+            {
+                return sdeDB.POINT_OF_DIVERSION.Where(p => objectids.Contains(p.OBJECTID)).ToList();     
+            }
+        }
 
         /* 
         

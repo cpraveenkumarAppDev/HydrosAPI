@@ -40,35 +40,40 @@
             return newPwr;
         }
 
+        //PlaceOfUseForm returns EVERYTHING needed to populate the form
         public async Task<IEnumerable<PLACE_OF_USE_VIEW>> PlaceOfUseForm(string id)
         {
             Regex rgx = new Regex(@"[^0-9]");
             List<PLACE_OF_USE_VIEW> placeOfUse = new List<PLACE_OF_USE_VIEW>();
-
             //var userInRole = RoleCheck.ThisUser("AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications");
 
             int? newPwr = null;
 
+            //The id should be the DWR_ID, at least make sure it has letters in it
             if (!rgx.IsMatch(id))
             {
                 return null;
             }
 
-            var pou = await sdeDB.PLACE_OF_USE_VIEW.Where(p => p.DWR_ID == id).FirstOrDefaultAsync();
+            //Get the place of use
+            var pou = await sdeDB.PLACE_OF_USE_VIEW.Where(p => p.DWR_ID == id).FirstOrDefaultAsync();                 
 
             if (pou == null)
             {
-                return null;
+                return null;                
             }
 
+            //if there is no proposed water right, then create one
             var pwr = await db.PROPOSED_WATER_RIGHT.Where(p => p.POU_ID == id).FirstOrDefaultAsync();
 
-            if (pwr == null) //User must be in role to Add
+            if (pwr == null) 
             {
                 newPwr = 1;
-
                 pwr = await AddProposedWaterRight(pou);
             }
+
+            //now there should be a proposed water right but check anyway
+            //and populate the pwr.ID in for the place of use, and the ProposedWaterRight List  
 
             if (pwr != null)
             {
@@ -76,45 +81,38 @@
                 pou.ProposedWaterRight = pwr;
             }
 
+            //if a proposed water right already exists (and wasn't just added) get the associated pods
             if (newPwr == null && pwr != null)
             {
-                var pwrToPod = await db.PWR_POD.Where(p => p.PWR_ID == pwr.ID).ToListAsync();
+                var pwrToPod = await Task.FromResult(PWR_POD.ProposedWaterRightAllPoint(pwr.ID));
 
                 if (pwrToPod != null)
                 {
-                    var matchList = pwrToPod.Select(i => i.POD_ID ?? -1).Distinct();
-
-                    var pod = (from pd in (await sdeDB.POINT_OF_DIVERSION.Where(p => matchList.Contains(p.OBJECTID)).ToListAsync())
-                               join pp in pwrToPod.ToList() on pd.OBJECTID equals pp.POD_ID ?? -1
-                               select new
-                               {
-                                   pd,
-                                   PWR_PID = pd.PWR_POD_ID = pp.ID
-                               }).Distinct().Select(x => x.pd).ToList();
-
-                    if (pod != null)
+                    //pass the PWR_POD relationship list in.  This will add the PWR_POD's ID 
+                    //to the PointOfDiversion so that it can be passed if the pod is deleted
+                    var pod = await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion(pwrToPod));
+                    if(pod!=null)
                     {
                         pou.PointOfDiversion = pod;
                     }
                 }
             }
 
-            //STATEMENTS OF CLAIM INFORMATION           
-
+            //Statements of Claim, Wells and Surfacewater
+            //Place of Use table has comma delimited list for these
             var socField = pou.SOC;
 
             if (socField != null)
             {
-                pou.StatementOfClaim = SOC_AIS_VIEW.StatementOfClaimView(socField);
-               // pou.Surfacewater = SW_AIS_VIEW.SurfaceWaterView(socField);
+                pou.StatementOfClaim = await Task.FromResult(SOC_AIS_VIEW.StatementOfClaimView(socField));               
             }
 
             var bocField = pou.BAS_OF_CLM;
 
             if (bocField != null)
             {
-                pou.Well = WELLS_VIEW.WellsView(bocField);
-                pou.Surfacewater = SW_AIS_VIEW.SurfaceWaterView(bocField);
+                pou.Well = await Task.FromResult(WELLS_VIEW.WellsView(bocField));
+                pou.Surfacewater = await Task.FromResult(SW_AIS_VIEW.SurfaceWaterView(bocField));
             }
 
             pou.Explanation = await db.EXPLANATIONS.Where(i => i.PWR_ID == pwr.ID).ToListAsync();
@@ -122,12 +120,8 @@
             placeOfUse.Add(pou);
             return placeOfUse;
         }
-
-        //GET PROPOSED_WATER_RIGHT RECORD USING A PROPOSED_WATER_RIGHT.ID 
-        //*OR* POU_ID (A DWR_ID)
-
+      
         private async Task<IEnumerable<PROPOSED_WATER_RIGHT>> ProposedWaterRight(string id)
-
         {
             Regex rgx = new Regex(@"[^0-9]");
 
@@ -138,30 +132,14 @@
             else
             {
                 var numericId = int.Parse(id);
-
                 return await db.PROPOSED_WATER_RIGHT.Where(p => p.ID == numericId).ToListAsync();
-            }
-        }
-
-        private async Task<POINT_OF_DIVERSION> PodByPodId(string id) //GET A SINGLE POINT_OF_DIVERSION RECORD
-        {
-            Regex rgx = new Regex(@"[^0-9]");
-
-            if (rgx.IsMatch(id))
-            {
-                return await sdeDB.POINT_OF_DIVERSION.Where(p => p.DWR_ID == id).FirstOrDefaultAsync();
-            }
-            else
-            {
-                return await sdeDB.POINT_OF_DIVERSION.Where(p => p.OBJECTID == int.Parse(id)).FirstOrDefaultAsync();
             }
         }
 
         //--------------------------------------------------------------------------------------------------------
         //---------------------------------- WEB SERVICE REQUESTS ------------------------------------------------
         //--------------------------------------------------------------------------------------------------------
-
-        //IRR-29-A16011018CBB-01
+       
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/getpwr/{id}")]
         [HttpGet]
@@ -183,24 +161,20 @@
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/getallpod")]
-        [HttpGet]
-        //USE A PROPOSED_WATER_RIGHT.ID OR PROPOSED_WATER_RIGHT.POU_ID/PLACE_OF_USE.DWR_ID
-        //*or*
-        //adj/getpod (NO PARAMETER) RETURNS ALL PODS
+        [HttpGet]       
         public async Task<IHttpActionResult> GetAllPod()
         {
-            return Ok(await sdeDB.POINT_OF_DIVERSION.ToListAsync());
+            return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion()));
         }
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/addpod/{podobjectid}/{pwrId}")]
         [HttpPost]
         public async Task<IHttpActionResult> AddPod(int podobjectid, int pwrId)
-        {
-            //Ensure a relationship doesn't already exist
-            var pwrPodList = await db.PWR_POD.Where(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == pwrId).ToListAsync();
+        {            
+            var pwrPodList = await Task.FromResult(PWR_POD.ProposedWaterRightToPoint(podobjectid, pwrId));
 
-            if (pwrPodList.Count() > 0)
+            if (pwrPodList != null && pwrPodList.Count() > 0)
             {
                 return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
             }
@@ -215,16 +189,14 @@
             db.Entry(newPwrPod).State = EntityState.Added;
             await db.SaveChangesAsync();
 
-            var pod = PodByPodId(podobjectid.ToString()).Result;
-            pod.PWR_POD_ID = newPwrPod.ID;
-            return Ok(pod);
+            return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion(newPwrPod)));
         }
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpDelete, Route("adj/deletepod/{id}")]
         public async Task<IHttpActionResult> DeletePod(int id) //<== ID IS THE ID FROM THE PWR_POD TABLE
         {
-            PWR_POD pod = await db.PWR_POD.Where(i => i.ID == id).FirstOrDefaultAsync();
+            PWR_POD pod = await Task.FromResult(PWR_POD.ProposedWaterRightToPoint(id));
 
             if (pod == null)
             {
@@ -233,7 +205,7 @@
 
             db.Entry(pod).State = EntityState.Deleted;
             await db.SaveChangesAsync();
-            return Ok("Deleted");
+            return Ok("Point of Diversion Deleted");
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
@@ -249,7 +221,7 @@
 
             db.Entry(exp).State = EntityState.Deleted;
             await db.SaveChangesAsync();
-            return Ok();
+            return Ok("Explanation deleted");
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
