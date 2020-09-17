@@ -16,7 +16,7 @@
 
 
     [Table("ADJ.PLACE_OF_USE_VIEW")]
-    public partial class PLACE_OF_USE_VIEW
+    public partial class PLACE_OF_USE_VIEW 
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PLACE_OF_USE_VIEW()
