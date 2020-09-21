@@ -8,18 +8,18 @@
     //GET USER ROLES
     public partial class RoleCheck
     {
-        public static bool ThisUser(string role)
+        public static string ThisUser(string role)
         {                        
             List<string> roleList = role.Split(',').ToList();
             
             foreach(var r in roleList)
             {
                 if (HttpContext.Current.User.IsInRole(r.ToString()))
-                {                    
-                    return true;                     
+                {
+                    return HttpContext.Current.User.Identity.Name;
                 }                
             }
-            return false;
+            return "";
         }         
     }
 }

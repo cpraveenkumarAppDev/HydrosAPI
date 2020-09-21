@@ -7,10 +7,10 @@ namespace HydrosApi.Models
     using System.Data.Entity.Spatial;
 
     [Table("ADJ_INV.FILES")]
-    public partial class FILE
+    public partial class FILE:AdwrRepository<FILE>
     {
         //[DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int ID { get; set; }
+        public int? ID { get; set; }
 
         public int? WFR_ID { get; set; }
 
@@ -37,5 +37,18 @@ namespace HydrosApi.Models
 
         [StringLength(100)]
         public string DESCRIPTION { get; set; }
+
+        [NotMapped]
+        public string FILE_SHARE_LINK {
+
+            get { 
+                if(LOCATION.IndexOf("\\\\") > -1)
+                { 
+                    return "file:///" + LOCATION.Replace("\\", "/");
+                }
+                return null;
+            }           
+        
+        }
     }
 }

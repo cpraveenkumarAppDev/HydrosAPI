@@ -16,7 +16,7 @@
 
 
     [Table("ADJ.PLACE_OF_USE_VIEW")]
-    public partial class PLACE_OF_USE_VIEW 
+    public partial class PLACE_OF_USE_VIEW :SdeRepository<PLACE_OF_USE_VIEW>
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PLACE_OF_USE_VIEW()
@@ -133,6 +133,26 @@
 
         [NotMapped]
         public List<EXPLANATIONS> Explanation { get; set; }
+
+        [NotMapped]
+        public List<FILE> FileList { get; set; }
+
+
+        /*public static PLACE_OF_USE_VIEW PlaceOfUseView(string id)
+        {
+            using (var db = new SDEContext())
+            {
+                return db.PLACE_OF_USE_VIEW.Where(p => p.DWR_ID == id).FirstOrDefault();
+            }
+        }
+
+        public static List<PLACE_OF_USE_VIEW> PlaceOfUseView()
+        {
+            using (var db = new SDEContext())
+            {
+                return db.PLACE_OF_USE_VIEW.ToList();
+            }
+        }*/
 
         /* [NotMapped]
          public PROPOSED_WATER_RIGHT ProposedWaterRight { get; set; }
