@@ -1,5 +1,4 @@
-﻿namespace HydrosApi 
-{
+﻿namespace HydrosApi.Models { 
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -7,7 +6,7 @@
     using System.Data.Entity.Spatial;
 
     [Table("ADJ_INV.EXPLANATION")]
-    public partial class EXPLANATIONS //I called this "EXPLANATIONS" because it also has a column named EXPLANATION
+    public partial class EXPLANATIONS : AdwrRepository<EXPLANATIONS>//I called this "EXPLANATIONS" because it also has a column named EXPLANATION
     {
         //[DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }

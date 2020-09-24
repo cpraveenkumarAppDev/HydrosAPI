@@ -12,9 +12,7 @@ namespace HydrosApi
     using Models;
 
     public class AAWSController : ApiController
-    {
-
-        private ADWRContext db = new ADWRContext();
+    {       
         // GET: AAWS
         //IRR-29-A16011018CBB-01
         [System.Web.Http.Route("aws/getgeneralInfo")]

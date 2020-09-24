@@ -251,6 +251,7 @@
     <Compile Include="Controllers\ADWR\ADWRController.cs" />
     <Compile Include="Controllers\LayersController.cs" />
     <Compile Include="Controllers\Permitting\AAWS\AAWSController.cs" />
+    <Compile Include="Data\AdwrRepository.cs" />
     <Compile Include="Data\SdeRepository.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_OAWS.cs" />
     <Compile Include="Models\Repository.cs" />
@@ -270,7 +271,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Adjudication\DelimitedColumnHandler.cs" />
+    <Compile Include="ViewModel\DelimitedColumnHandler.cs" />
     <Compile Include="Models\Adjudication\EXPLANATION.cs" />
     <Compile Include="Models\Adjudication\WELLS_VIEW.cs" />
     <Compile Include="Models\CD_AQUIFER_TYPE.cs" />

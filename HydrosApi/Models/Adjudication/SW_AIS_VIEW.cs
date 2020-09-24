@@ -10,7 +10,7 @@ namespace HydrosApi.Models
 { 
 
     [Table("ADWR.SW_AIS_VIEW")]
-    public partial class SW_AIS_VIEW
+    public partial class SW_AIS_VIEW:AdwrRepository<SW_AIS_VIEW>
     {
         [Key]
         [Column(Order = 0)]
@@ -52,7 +52,7 @@ namespace HydrosApi.Models
 
         public static List<SW_AIS_VIEW> SurfaceWaterView(string swList) //a comma-delimited list
         {
-            var db = new ADWRContext();
+            
             var swMatch = DelimitedColumnHandler.FileInformation(swList).Where(i=>i.FileType != "55" && i.FileType != "35").ToList();
             var sw = new List<SW_AIS_VIEW>();
 
@@ -60,7 +60,7 @@ namespace HydrosApi.Models
             foreach (var item in swMatch)
             {
                 int fileNo = int.Parse(item.FileNumber);
-                var swItem = db.SW_AIS_VIEW.Where(s => s.ART_APPLI_NO == fileNo && s.ART_PROGRAM == item.FileType).ToList();
+                var swItem = SW_AIS_VIEW.GetList(s => s.ART_APPLI_NO == fileNo && s.ART_PROGRAM == item.FileType);
                 var swFile=docuService.getSurfaceWaterDocs(item.FileType+"-"+item.FileNumber).Select(f => f.FileUrl).Distinct();
                 swItem.Select(d => { d.FILE_LINK = swFile.ToList(); return d; }).ToList();
               

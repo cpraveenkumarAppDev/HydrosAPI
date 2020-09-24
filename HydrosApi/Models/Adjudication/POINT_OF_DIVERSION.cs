@@ -10,7 +10,7 @@
 
     //[Table("ADJ.POINT_OF_DIVERSION_VIEW")]
     [Table("ADJ.LLC_PODS_ALL")]
-    public partial class POINT_OF_DIVERSION 
+    public partial class POINT_OF_DIVERSION : SdeRepository<POINT_OF_DIVERSION>
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 
@@ -192,37 +192,25 @@
         ///get the point of diversion using its dwr_id
         public static POINT_OF_DIVERSION PointOfDiversion(string dwrid)
         {
-            using (var sdeDB = new SDEContext())
-            {
-                return sdeDB.POINT_OF_DIVERSION.Where(p => p.DWR_ID == dwrid).FirstOrDefault();                 
-            }
+            return POINT_OF_DIVERSION.Get(p => p.DWR_ID == dwrid);             
         }
 
         ///get the point of diversion using its objectid
-        public static  POINT_OF_DIVERSION PointOfDiversion(int objectid)
-        {
-            using (var sdeDB = new SDEContext())
-            {
-                return sdeDB.POINT_OF_DIVERSION.Where(p => p.OBJECTID == objectid).FirstOrDefault();                
-            }
+        public static POINT_OF_DIVERSION PointOfDiversion(int objectid)
+        {           
+            return POINT_OF_DIVERSION.Get(p => p.OBJECTID == objectid);             
         }
 
         ///get all points of diversion
         public static List<POINT_OF_DIVERSION> PointOfDiversion()
-        {
-            using (var sdeDB = new SDEContext())
-            {
-                return sdeDB.POINT_OF_DIVERSION.ToList();
-            }
+        {            
+            return POINT_OF_DIVERSION.GetAll();            
         }
 
         ///get a list of points of diversion with the provided object ids
         public static List<POINT_OF_DIVERSION> PointOfDiversion(IEnumerable<int> objectids)
         {
-            using (var sdeDB = new SDEContext())
-            {
-                return sdeDB.POINT_OF_DIVERSION.Where(p => objectids.Contains(p.OBJECTID)).ToList();     
-            }
+            return POINT_OF_DIVERSION.GetList(p => objectids.Contains(p.OBJECTID));              
         }
 
         /* 

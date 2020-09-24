@@ -6,15 +6,16 @@ namespace HydrosApi.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
     using System.Linq;
+    using System.Text.RegularExpressions;
 
     [Table("ADJ_INV.PROPOSED_WATER_RIGHT")]
-    public partial class PROPOSED_WATER_RIGHT
+    public partial class PROPOSED_WATER_RIGHT:AdwrRepository<PROPOSED_WATER_RIGHT>
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public PROPOSED_WATER_RIGHT()
-        {
+       public PROPOSED_WATER_RIGHT()
+       {
             PWR_POD = new HashSet<PWR_POD>();
-        }
+       }
         
         [Key]    
         public int ID { get; set; }
@@ -37,12 +38,23 @@ namespace HydrosApi.Models
       [StringLength(50)]
         public string POU_ID { get; set; }
 
-        [NotMapped]
-
-        public List<POINT_OF_DIVERSION> PointOfDiversionList { get; set; }
+       
 
         [NotMapped]
         public string StatusMessage { get; set; }
+
+        public static PROPOSED_WATER_RIGHT ProposedWaterRight(string pouId)
+        {
+            Regex rgx = new Regex(@"[^0-9]");
+            var pwr= !rgx.IsMatch(pouId) ? PROPOSED_WATER_RIGHT.ProposedWaterRight(int.Parse(pouId)) 
+                : PROPOSED_WATER_RIGHT.Get(p => p.POU_ID == pouId);
+            return pwr;
+        }
+
+        public static PROPOSED_WATER_RIGHT ProposedWaterRight(int id)
+        {            
+            return PROPOSED_WATER_RIGHT.Get(p => p.ID == id);             
+        }
 
         /* 
        [StringLength(255)]
