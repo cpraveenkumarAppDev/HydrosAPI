@@ -27,7 +27,14 @@
 
         [Column("PROGRAM_CODE")]
         public string ProgramCode { get; set; }
-
+        [Column("FILE_REVIEWER")]
+        public string FileReviewer { get; set; }
+        [Column("SECONDARY_PROV_SYS")] //replace once LTFDaysRemaining is added to the view
+        public string LTFDaysRemaining { get; set; }
+        [Column("APP_STATUS_DESCR")]
+        public string status { get; set; }
+        [Column("APP_STATUS_DT")]
+        public DateTime? StatusDate { get; set; }
         [Column("SECONDARY_PROV_NAME")]
         public string SecondaryProviderName { get; set; }
         [Column("PRIMARY_PROV_NAME")]
