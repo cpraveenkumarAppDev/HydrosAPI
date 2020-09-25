@@ -4,7 +4,11 @@ namespace HydrosApi.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
+    using Data;
+    using System.Linq;
+    using System.IO;
+    using System.Configuration;
+    using System.ComponentModel;
 
     [Table("ADJ_INV.FILES")]
     public partial class FILE:AdwrRepository<FILE>
@@ -39,16 +43,95 @@ namespace HydrosApi.Models
         public string DESCRIPTION { get; set; }
 
         [NotMapped]
-        public string FILE_SHARE_LINK {
+        public string STATUS { get; set; }
 
-            get { 
-                if(LOCATION.IndexOf("\\\\") > -1)
-                { 
-                    return "file:///" + LOCATION.Replace("\\", "/");
+
+        public static FILE UploadFile(HandleForm provider, string User)
+        {
+
+            var uploadFilePath = @"" + ConfigurationManager.AppSettings["FileUploadLocation"];
+                         
+            var fileInfo = new FILE();            
+            string fieldName;
+            string newFileName="";            
+
+            var form = provider.FormData;
+
+            //get all the form data (ie not the file stream yet)
+            //------------------------------------------------------------------
+            //eventually move this block into a class or function so it can be used anywhere.
+            //also use it for non-multipart/form-data types
+
+            foreach (var key in form)
+            {
+                var keyValue = form.GetValues(key.ToString()).FirstOrDefault();
+                fieldName = key.ToString().Trim('\"');
+                var property = fileInfo.GetType().GetProperty(fieldName);
+
+                //Convert the form value to the correct data type
+                var converter = TypeDescriptor.GetConverter(property.PropertyType); 
+                if (property != null)
+                {
+                    try
+                    {
+                        property.SetValue(fileInfo, converter.ConvertFrom(keyValue));
+                    }
+                    catch
+                    {
+                        fileInfo.STATUS = String.Format("The value '{0}' provided for {1} is not valid. It should be a {2}", keyValue,fieldName,property.PropertyType);
+                        return fileInfo;
+                    }
                 }
-                return null;
-            }           
-        
+            }
+
+            //--end eventually move this into a class or function so it can be used anywhere
+            //-------------------------------------------------------------------------------
+
+            if (fileInfo.PWR_ID==null || provider.Files.Count() == 0) 
+            {
+                fileInfo = new FILE();
+                fileInfo.STATUS = fileInfo.PWR_ID==null ? "An ID for Proposed Water Right was not provided." : "Please select a valid file.";
+                return fileInfo;
+            }
+
+            fileInfo.CREATEBY = User;
+            fileInfo.CREATEDT = DateTime.Now;
+            
+            //Create a descriptive filename to make removing orphans easier
+            //by inserting the record and adding -FILE-{ID} at the end
+            FILE.Add(fileInfo);
+
+            foreach (var file in provider.Files)
+            {
+                var fileInput = file.ReadAsStreamAsync().Result;
+                
+                fieldName = file.Headers.ContentDisposition.Name.Trim('\"');
+                var fileName = file.Headers.ContentDisposition.FileName.Trim('\"');
+
+                var field = fileInfo.GetType().GetProperty(fieldName);
+
+                if (field != null)
+                {
+                    newFileName = Guid.NewGuid().ToString();
+
+                    //Make the GUID a little bit smaller to accommodate the -FILE-{ID} value appended 
+                    newFileName = newFileName.Substring(0,newFileName.LastIndexOf('-'))+"-FILE-"+fileInfo.ID.ToString(); 
+                    var fieldType = field.PropertyType.Name;                    
+                    field.SetValue(fileInfo, fileName);   
+
+                    //field.SetValue(oneFile, fileInput);
+                    fileInfo.TYPE = Path.GetExtension(fileName).ToLower();
+                    fileInfo.LOCATION = Path.Combine(uploadFilePath, newFileName+fileInfo.TYPE);
+                    using (Stream stream = File.OpenWrite(fileInfo.LOCATION))
+                    {
+                        fileInput.CopyTo(stream);
+                        //close file  
+                        stream.Close();
+                    }
+                    FILE.Update(fileInfo);
+                }
+            }         
+            return fileInfo;                        
         }
     }
 }

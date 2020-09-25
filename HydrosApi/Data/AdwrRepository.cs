@@ -122,6 +122,20 @@ namespace HydrosApi.Models
             databaseContext.Set<T>().Remove(entity);
         }
 
+        public static T Update(T entity)
+        {
+            using (var databaseContext = new ADWRContext())
+            {
+                databaseContext.Set<T>().Attach(entity);
+                databaseContext.Entry(entity).State = EntityState.Modified;
+                databaseContext.SaveChanges();
+                
+                return entity;
+            }
+        }
+
+      
+
         public static List<T> ExecuteStoredProcedure(string sqlStatement, params object[] parameters)
         {
             using (var databaseContext = new ADWRContext())

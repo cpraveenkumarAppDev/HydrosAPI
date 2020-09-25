@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Cors;
 
@@ -13,6 +14,8 @@ namespace HydrosApi
            
             // Web API configuration and services
             var cors = new EnableCorsAttribute("http://localhost:3000", "Access-Control-Allow-Headers,Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With", "GET, POST, PUT, DELETE, OPTIONS") { SupportsCredentials = true };
+
+            config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("multipart/form-data"));
             config.EnableCors(cors);
             // Web API routes
             config.MapHttpAttributeRoutes();

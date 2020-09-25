@@ -9,8 +9,16 @@
     using System.Threading.Tasks;    
     using System.Configuration;
     using System.IO;
+    using System.Net;
+    using Newtonsoft.Json;
+    using System.Net.Http;
+    using System.Web.Http.Description;
+    using HydrosApi.Data;
+    
+  
 
-    //[Authorize] //at minimum, ensure this is an authorized user, granular permissions will be added later
+    [Authorize] 
+    //at minimum, ensure this is an authorized user, granular permissions will be added later
     public class AdjudicationController : ApiController
     {
         private async Task<PROPOSED_WATER_RIGHT> AddProposedWaterRight(PLACE_OF_USE_VIEW pou)
@@ -116,9 +124,8 @@
       
         //--------------------------------------------------------------------------------------------------------
         //---------------------------------- WEB SERVICE REQUESTS ------------------------------------------------
-        //--------------------------------------------------------------------------------------------------------
-       
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        //--------------------------------------------------------------------------------------------------------       
+        
         [Route("adj/getpwr/{id}")]
         [HttpGet]
         public async Task<IHttpActionResult> GetProposedWaterRight(string id)
@@ -136,8 +143,7 @@
             }
             return Ok(pwr);
         }
-
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        
         [Route("adj/getallpod")]
         [HttpGet]       
         public async Task<IHttpActionResult> GetAllPod()
@@ -145,12 +151,42 @@
             return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion()));
         }
 
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpGet, Route("adj/getpou/{id?}")]
+        public async Task<IHttpActionResult> GetPlaceOfUse(string id = null)
+        {
+            List<PLACE_OF_USE_VIEW> pou;
+            if (id != null)
+            {
+                var pouForm = await PlaceOfUseForm(id);
+
+                if (pouForm == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(pouForm.ToList());
+            }
+
+            else
+            {
+                pou = await Task.FromResult(PLACE_OF_USE_VIEW.GetAll()); //return all places of use
+            }
+
+            if (pou == null)
+            {
+                return NotFound();
+            }
+            return Ok(pou);
+        }
+
+        //--------------------------------------------------------------------------------------------------------
+        //---------------------------------- ADD/ DELETE/U PDATE ------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------       
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/addpod/{podobjectid}/{pwrId}")]
         [HttpPost]
         public async Task<IHttpActionResult> AddPod(int podobjectid, int pwrId)
-        {
-            //var pwrPodList = await Task.FromResult(PWR_POD.ProposedWaterRightToPoint(podobjectid, pwrId));
+        {            
             var pwrPodList = await Task.FromResult(PWR_POD.GetList(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == pwrId));
 
             if (pwrPodList != null && pwrPodList.Count() > 0)
@@ -169,7 +205,7 @@
             return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion(newPwrPod)));
         }
 
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpDelete, Route("adj/deletepod/{id}")]
         public async Task<IHttpActionResult> DeletePod(int id) //<== ID IS THE ID FROM THE PWR_POD TABLE
         {
@@ -181,50 +217,30 @@
             }
             PWR_POD.Delete(pod);
             return Ok("Point of Diversion Deleted");
+        }      
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpPost, Route("adj/addfile/")] //PWR_ID or an error message is returned       
+        public async Task<IHttpActionResult> AddFile() //<== ID IS THE ID FROM THE EXPLANATION TABLE
+        {
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+            
+            var provider = await Request.Content.ReadAsMultipartAsync<HandleForm>(new HandleForm());
+            var fileList = await Task.FromResult(FILE.UploadFile(provider, User.Identity.Name.Replace("AZWATER0\\", "")));
+
+            if(fileList != null && fileList.STATUS==null)
+            {
+                return Ok(fileList);
+            }
+
+            return BadRequest(fileList.STATUS);
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        [HttpDelete, Route("adj/deleteexp/{id}")]
-        public async Task<IHttpActionResult> DeleteExplanation(int id) //<== ID IS THE ID FROM THE EXPLANATION TABLE
-        {            
-            // EXPLANATIONS exp = await db.EXPLANATIONS.Where(i => i.ID == id).FirstOrDefaultAsync();
-            EXPLANATIONS exp = await Task.FromResult(EXPLANATIONS.Get(p => p.ID == id));
-
-            if (exp == null)
-            {
-                return BadRequest("An invalid id was entered");
-            }
-
-            EXPLANATIONS.Delete(exp);
-            return Ok("Explanation deleted");             
-        }
-
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        [HttpPost, Route("adj/addfile")] //pwr id
-        public async Task<IHttpActionResult> AddFile([FromBody] FILE info) //<== ID IS THE ID FROM THE EXPLANATION TABLE
-        {           
-            Guid guid = Guid.NewGuid();           
-            var uploadFilePath = @"" + ConfigurationManager.AppSettings["FileUploadLocation"];
-            var fileType= Path.GetExtension(info.ORIGINAL_FILE_NAME).ToLower();
-            var uploadFileName = guid + fileType;           
-                              
-            File.Copy(info.ORIGINAL_FILE_NAME, Path.Combine(uploadFilePath,uploadFileName));
-
-            var newFile = await Task.FromResult(FILE.Add(new FILE()
-            {
-                CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
-                CREATEDT = DateTime.Now,
-                LOCATION = Path.Combine(uploadFilePath, uploadFileName),
-                TYPE = fileType,
-                ORIGINAL_FILE_NAME = Path.GetFileName(info.ORIGINAL_FILE_NAME),               
-                PWR_ID = info.PWR_ID,
-                DESCRIPTION=info.DESCRIPTION
-            }));
-                        
-            return Ok(newFile);
-        }
-
-        [HttpPost, Route("adj/deletefile/{id}")] //pwr id
+        [HttpDelete, Route("adj/deletefile/{id}")] //pwr id
         public async Task<IHttpActionResult> DeleteFile(int id) //<== ID IS THE ID FROM THE EXPLANATION TABLE
         {
             Regex rgx = new Regex(@"file:/{1,}");
@@ -253,7 +269,7 @@
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpPost, Route("adj/addexp/{data}")]
-        public async Task<IHttpActionResult> AddExplanation([FromBody] EXPLANATIONS explanation) //SEND ALL VALUES, USE DATABASE/MODEL COLUMN NAMES
+        public async Task<IHttpActionResult> AddExplanation([FromBody] EXPLANATIONS explanation) //Send all form values
         {
             if (!(explanation != null && explanation.PWR_ID != null))
             {
@@ -272,33 +288,25 @@
             return Ok(newExplanation);
         }
 
-        [HttpGet, Route("adj/getpou/{id?}")]
-        public async Task<IHttpActionResult> GetPlaceOfUse(string id = null)
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpDelete, Route("adj/deleteexp/{id}")]
+        public async Task<IHttpActionResult> DeleteExplanation(int id) //<== ID IS THE ID FROM THE EXPLANATION TABLE
         {
-            List<PLACE_OF_USE_VIEW> pou;
-            if (id != null)
+            // EXPLANATIONS exp = await db.EXPLANATIONS.Where(i => i.ID == id).FirstOrDefaultAsync();
+            EXPLANATIONS exp = await Task.FromResult(EXPLANATIONS.Get(p => p.ID == id));
+
+            if (exp == null)
             {
-                var pouForm = await PlaceOfUseForm(id);
-
-                if (pouForm == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(pouForm.ToList());
+                return BadRequest("An invalid id was entered");
             }
 
-            else
-            {               
-                pou=await Task.FromResult(PLACE_OF_USE_VIEW.GetAll()); //return all places of use
-            }
-
-            if (pou == null)
-            {
-                return NotFound();
-            }
-            return Ok(pou);
+            EXPLANATIONS.Delete(exp);
+            return Ok("Explanation deleted");
         }
+    }
+
+    internal class NameValueCollection
+    {
     }
 }
  
