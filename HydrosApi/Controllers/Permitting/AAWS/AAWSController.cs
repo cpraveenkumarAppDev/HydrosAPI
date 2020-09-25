@@ -15,15 +15,15 @@ namespace HydrosApi
     {       
         // GET: AAWS
         //IRR-29-A16011018CBB-01
-        [Route("aws/getgeneralInfo")]
-        [HttpGet]
+        [System.Web.Http.Route("aws/getgeneralInfo")]
+        [System.Web.Http.HttpGet]
         public IHttpActionResult GetGeneralInfo()
         {
             return Ok(V_AWS_GENERAL_INFO.GetAll());
         }
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [Route("aws/getgeneralInfoById/{id}")]
-        [HttpGet]
+        [System.Web.Http.Route("aws/getgeneralInfoById/{id}")]
+        [System.Web.Http.HttpGet]
         public IHttpActionResult GetGeneralInfoById(string id)
         {
             var pcc = id.Replace("~", ".");
@@ -32,8 +32,8 @@ namespace HydrosApi
 
        
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [Route("aws/GetNewApplicationCredentials")]
-        [HttpGet]
+        [System.Web.Http.Route("aws/GetNewAWSRight")]
+        [System.Web.Http.HttpGet]
         public IHttpActionResult GetNewApplicationCredentials()
         {
 

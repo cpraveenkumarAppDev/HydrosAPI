@@ -29,22 +29,26 @@ namespace HydrosApi
 
         [HttpGet]
         [Route("adwr/windowsgroup/{groupId}")]
-        [System.Web.Http.Authorize]
+        [Authorize]
         public IHttpActionResult WindowsGroup(string groupId)
         {
-            // set up domain context - limit to the OU you're interested in
             using (PrincipalContext ctx = new PrincipalContext(ContextType.Domain, "AZWATER0"))
             {
-
+                // find a user
+                UserPrincipal foundUsername = UserPrincipal.FindByIdentity(ctx, User.Identity.Name);
                 var unformattedGroupId = groupId.Replace("~AND~", " & "); //cannot pass & sign through url query
                 GroupPrincipal group = GroupPrincipal.FindByIdentity(ctx, unformattedGroupId);
-
+                GroupPrincipal appDevGroup = GroupPrincipal.FindByIdentity(ctx, "PG-APPDEV");
+                bool foundUserInGroup = foundUsername.IsMemberOf(group);
+                bool foundUserInAppDevGroup = foundUsername.IsMemberOf(appDevGroup);
                 // if found....
-                if (group != null)
+                if (group != null && foundUserInGroup || foundUserInAppDevGroup)
                 {
+
                     var groupList = new List<object>();
                     foreach (UserPrincipal p in group.GetMembers())
                     {
+
                         var user = new WindowsUser
                         {
                             UserName = p.DisplayName,
@@ -56,7 +60,7 @@ namespace HydrosApi
                 }
                 else
                 {
-                    return Ok("No Group");
+                    return BadRequest("Invalid User");
                 }
             }
         }
