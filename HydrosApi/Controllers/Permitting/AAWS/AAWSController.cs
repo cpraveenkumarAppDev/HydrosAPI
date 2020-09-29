@@ -37,7 +37,7 @@ namespace HydrosApi
         public IHttpActionResult GetNewApplicationCredentials()
         {
 
-            return Json(AWSNewAppViewModel.GetNewAppData());
+            return Json(new AWSNewAppViewModel());
         }
     }
 }

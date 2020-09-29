@@ -9,11 +9,9 @@ using System.Web;
     {
         public List<V_CD_AW_APP_FEE_RATES> ApplicationTypes { get; set; }
         public AW_VERIFIED_OAWS ApplicationComplete { get; set; }
-        public static AWSNewAppViewModel GetNewAppData()
+        public AWSNewAppViewModel()
         {
-            AWSNewAppViewModel AWSNewAppViewModel = new AWSNewAppViewModel();
-            AWSNewAppViewModel.ApplicationTypes = V_CD_AW_APP_FEE_RATES.GetAll();
-            return AWSNewAppViewModel;
+            this.ApplicationTypes = V_CD_AW_APP_FEE_RATES.GetAll();
         }
     }
 
