@@ -9,15 +9,17 @@ using System.Web;
     {
         public List<V_CD_AW_APP_FEE_RATES> ApplicationTypes { get; set; }
         public AW_VERIFIED_OAWS ApplicationComplete { get; set; }
+ 
 
         public V_CD_AW_AMA_INA Ama { get; set; }
-        public AWSNewAppViewModel ()
+        public AWSNewAppViewModel()
         {
-            
+
             this.ApplicationTypes = V_CD_AW_APP_FEE_RATES.GetAll();
             this.Ama = V_CD_AW_AMA_INA.GetAll().FirstOrDefault();
-          
+
         }
+       
     }
 
     //internal class NewApplication
