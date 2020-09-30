@@ -4,6 +4,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System;
+    using Data;
 
     [Table("AWS.V_AWS_OAWS")]
     public class V_AWS_OAWS : Repository<V_AWS_OAWS>

@@ -302,14 +302,14 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\Adjudication\AdjudicationController.cs" />
     <Compile Include="Controllers\ADWR\ADWRController.cs" />
-    <Compile Include="Controllers\AssuredWaterSupply\AssuredWaterSupplyController.cs" />
     <Compile Include="Controllers\LayersController.cs" />
     <Compile Include="Controllers\Permitting\AAWS\AAWSController.cs" />
     <Compile Include="Data\AdwrRepository.cs" />
     <Compile Include="Data\HandleForm.cs" />
     <Compile Include="Data\SdeRepository.cs" />
+    <Compile Include="Models\Permitting\AAWS\V_CD_AW_AMA_INA.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_OAWS.cs" />
-    <Compile Include="Models\Repository.cs" />
+    <Compile Include="Data\Repository.cs" />
     <Compile Include="Services\docushareClient\IDSAPIdoc.cs" />
     <Compile Include="Models\Permitting\AAWS\AWS_COMMENTS.cs" />
     <Compile Include="Data\SDEContext.cs" />
@@ -359,6 +359,7 @@
     <Compile Include="Models\WATERSHED_FILE_REPORT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AAWSProgramInfoViewModel.cs" />
+    <Compile Include="ViewModel\Permitting\AAWS\SP_AW_INS.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
@@ -387,6 +388,13 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Production.config">
+      <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>

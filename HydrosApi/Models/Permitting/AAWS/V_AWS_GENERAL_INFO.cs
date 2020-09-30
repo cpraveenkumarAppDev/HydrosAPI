@@ -4,6 +4,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System;
+    using Data;
 
     [Table("AWS.V_AWS_GENERAL_INFO")]
     public class V_AWS_GENERAL_INFO : Repository<V_AWS_GENERAL_INFO>
@@ -32,7 +33,7 @@
         [Column("SECONDARY_PROV_SYS")] //replace once LTFDaysRemaining is added to the view
         public string LTFDaysRemaining { get; set; }
         [Column("APP_STATUS_DESCR")]
-        public string status { get; set; }
+        public string Status { get; set; }
         [Column("APP_STATUS_DT")]
         public DateTime? StatusDate { get; set; }
         [Column("SECONDARY_PROV_NAME")]

@@ -60,7 +60,7 @@ namespace HydrosApi.Controllers
     */
     public class LayersController : ApiController
     {
-        private OracleContext db = new OracleContext();
+        private ADWRContext db = new ADWRContext();
 
         // GET: api/Layers
 
