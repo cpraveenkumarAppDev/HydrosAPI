@@ -40,7 +40,7 @@ namespace HydrosApi
         public IHttpActionResult GetNewApplicationCredentials()
         {
 
-            return Json(AWSNewAppViewModel.GetNewAppData());
+            return Json(new AWSNewAppViewModel());
         }
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
