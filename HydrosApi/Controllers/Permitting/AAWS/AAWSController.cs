@@ -13,11 +13,13 @@ namespace HydrosApi
     using Models;
     using HydrosApi.ViewModel;
     using Oracle.ManagedDataAccess.Client;
+    using WebApi.OutputCache.V2;
 
     public class AAWSController : ApiController
-    {       
+    {
         // GET: AAWS
         //IRR-29-A16011018CBB-01
+        [CacheOutput(ClientTimeSpan = 100, ServerTimeSpan = 100)]
         [Route("aws/getgeneralInfo")]
         [HttpGet]
         public IHttpActionResult GetGeneralInfo()

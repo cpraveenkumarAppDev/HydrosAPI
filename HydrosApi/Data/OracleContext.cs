@@ -46,7 +46,8 @@ namespace HydrosApi.Data
         public virtual DbSet<WELLS_VIEW> WELLS_VIEW { get; set; }
         public virtual DbSet<SW_AIS_VIEW> SW_AIS_VIEW { get; set; }
         public virtual DbSet<SOC_AIS_VIEW> SOC_AIS_VIEW { get; set; }
-
+        public virtual DbSet<V_AWS_GENERAL_INFO> V_AWS_GENERAL_INFO { get; set; }
+        
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
