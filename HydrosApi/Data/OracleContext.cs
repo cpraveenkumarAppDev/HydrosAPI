@@ -2,10 +2,8 @@ namespace HydrosApi.Data
     //*** SHOULD BE REPLACED BY ADWRCONTEXT AND SDECONTEXT WHICH MORE CLOSELY DESCRIBES THEIR SERVER/SCHEMA LOCATIONS    
 {
     using System;
-    using System.Data.Entity;
-     
-    using Models;
-    
+    using System.Data.Entity;     
+    using Models;    
 
     
         public partial class OracleContext : DbContext
@@ -17,16 +15,20 @@ namespace HydrosApi.Data
             base.Configuration.ProxyCreationEnabled = false;
         }
 
-        public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
+        public virtual DbSet<V_CD_AW_AMA_INA> V_CD_AW_AMA_INA { get; set; }
+        public virtual DbSet<V_CD_AW_APP_FEE_RATES> V_CD_AW_APP_FEE_RATES { get; set; }
+
+        public virtual DbSet<V_AWS_GENERAL_INFO> V_AWS_GENERAL_INFO { get; set; }
+        public virtual DbSet<V_AWS_OAWS> V_AWS_OAWS { get; set; }
+       
         public virtual DbSet<FILE> FILES { get; set; }
         public virtual DbSet<PROPOSED_WATER_RIGHT> PROPOSED_WATER_RIGHT { get; set; }
         public virtual DbSet<PWR_POD> PWR_POD { get; set; }
-        public virtual DbSet<V_CD_AW_AMA_INA> V_CD_AW_AMA_INA { get; set; }
-        public virtual DbSet<V_CD_AW_APP_FEE_RATES> V_CD_AW_APP_FEE_RATES { get; set; }
-      
-        public virtual DbSet<WATERSHED_FILE_REPORT> WATERSHED_FILE_REPORT { get; set; }
-       
-        public virtual DbSet<CD_AQUIFER_TYPE> CD_AQUIFER_TYPE { get; set; }
+
+        //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
+        //public virtual DbSet<WATERSHED_FILE_REPORT> WATERSHED_FILE_REPORT { get; set; }
+
+        /*public virtual DbSet<CD_AQUIFER_TYPE> CD_AQUIFER_TYPE { get; set; }
         public virtual DbSet<CD_DRILLERS_LOG> CD_DRILLERS_LOG { get; set; }
         public virtual DbSet<CD_FORMATIONS> CD_FORMATIONS { get; set; }
         public virtual DbSet<CD_GEO_UNITS> CD_GEO_UNITS { get; set; }
@@ -48,9 +50,10 @@ namespace HydrosApi.Data
         public virtual DbSet<SOC_AIS_VIEW> SOC_AIS_VIEW { get; set; }
         public virtual DbSet<V_AWS_GENERAL_INFO> V_AWS_GENERAL_INFO { get; set; }
         
+        public virtual DbSet<SOC_AIS_VIEW> SOC_AIS_VIEW { get; set; }*/
 
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        /*protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EXPLANATIONS>()
                 .Property(e => e.EXP_TYPE)
@@ -112,85 +115,7 @@ namespace HydrosApi.Data
                 .Property(e => e.POU_ID)
                 .IsUnicode(false);
 
-            /* modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.WATER_STRUCTURE_FAC_TYPE)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.WATER_STRUCTURE_FAC_CAP)
-                 .HasPrecision(10, 2);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.WATER_STRUCTURE_FAC_PUR)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.WATER_REUSE_PROGRAM)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.DISCHARGE_OF_WAISTWATER)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.TREATMENT_OF_WAISTWATER)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.PERIODS_OF_INACTIVITY)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.EXPANSION_PLANS)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.EXPANSION_EXPLANATION)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.DRILL_DATE)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.DEPTH)
-                 .HasPrecision(10, 2);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.ADEQ_ID)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.PWS_ID_NO)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.CWS_ID_NO)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.ACC_DOC_NO)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.ACTIVE)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.CTY_DOC_NO)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.OLD_WFR)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.DIVERSION_STATUS)
-                 .IsUnicode(false);
-
-             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
-                 .Property(e => e.STATUS_SOURCE)
-                 .IsUnicode(false);*/
+         
 
             modelBuilder.Entity<PROPOSED_WATER_RIGHT>()
                 .HasMany(e => e.PWR_POD)
@@ -854,6 +779,6 @@ namespace HydrosApi.Data
                 .IsUnicode(false);
         }
 
-        public System.Data.Entity.DbSet<PLACE_OF_USE_VIEW> PLACE_OF_USE_VIEW { get; set; }
+        public System.Data.Entity.DbSet<PLACE_OF_USE_VIEW> PLACE_OF_USE_VIEW { get; set; }*/
     }
 }

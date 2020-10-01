@@ -14,6 +14,9 @@ namespace HydrosApi
     using HydrosApi.ViewModel;
     using Oracle.ManagedDataAccess.Client;
     using WebApi.OutputCache.V2;
+    using System.ComponentModel;
+    using Microsoft.Ajax.Utilities;
+
 
     public class AAWSController : ApiController
     {
@@ -34,7 +37,6 @@ namespace HydrosApi
             var pcc = id.Replace("~", ".");
             return Json(AAWSProgramInfoViewModel.GetData(pcc));
         }
-
        
        
         [Route("aws/GetNewAWSRight")]
@@ -45,39 +47,82 @@ namespace HydrosApi
             return Json(new AWSNewAppViewModel());
         }
 
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpPost, Route("aws/newconv")]
         public async Task<IHttpActionResult> AddNewConveyance([FromBody] SP_AW_INS paramValues) //New conveyance
         {
             var parameter = new List<OracleParameter>();
+            var result = new SP_AW_INS();
 
             parameter.Add(new OracleParameter("p_program_code", paramValues.p_program_code));
             parameter.Add(new OracleParameter("p_ama_code", paramValues.p_ama_code));
-            parameter.Add(new OracleParameter("p_exist_filenum", paramValues.p_exist_filenum));
+            parameter.Add(new OracleParameter("p_exist_filenum)", paramValues.p_exist_filenum));
+
             parameter.Add(new OracleParameter("p_file_reviewer", paramValues.p_file_reviewer.ToLower().Replace("@azwater.gov", "")));
             parameter.Add(new OracleParameter("p_createby", User.Identity.Name.Replace("AZWATER0\\", "")));
 
-            var procedureVals =
-                await Task.FromResult(SP_AW_INS.ExecuteStoredProcedure("BEGIN aws.sp_aw_ins_conv(:p_program_code, :p_ama_code, :p_exist_filenum, :p_file_reviewer, :p_createby); end;", parameter.ToArray()));
+            var newFileNum = new OracleParameter("p_new_filenum", OracleDbType.Varchar2, 20);
+            newFileNum.IsNullable = true;
+            newFileNum.Direction = ParameterDirection.ReturnValue;
+            parameter.Add(newFileNum);
 
-            return Ok(procedureVals);
+            var newWrfId = new OracleParameter("p_new_wrf_id", OracleDbType.Decimal);
+            newWrfId.Direction = ParameterDirection.ReturnValue;
+            newWrfId.IsNullable = true;
+            parameter.Add(newWrfId);
+
+            var newFile = await Task.FromResult(SP_AW_INS.ExecuteStoredProcedure(
+                   "BEGIN aws.sp_aw_ins_file(:p_program_code, :p_ama_code, :p_exist_filenum, :p_file_reviewer, :p_createby, :p_new_filenum, :p_new_wrf_id); end;"
+               , parameter.ToArray()));
+
+            foreach (var p in parameter)
+            {
+                var property = result.GetType().GetProperty(p.ParameterName);
+                var converter = TypeDescriptor.GetConverter(property.PropertyType);
+                var value = converter.ConvertFrom(p.Value.ToString());
+                property.SetValue(result, value);
+
+            }
+            return Ok(result);
         }
-
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+       
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpPost, Route("aws/newapp")]
         public async Task<IHttpActionResult> AddNewApplication([FromBody] SP_AW_INS paramValues) //New file
         {
-            var parameter = new List<OracleParameter>();
 
+            var parameter = new List<OracleParameter>();
+            var result = new SP_AW_INS(); 
+             
             parameter.Add(new OracleParameter("p_program_code", paramValues.p_program_code));
-            parameter.Add(new OracleParameter("p_ama_code", paramValues.p_ama_code));           
-            parameter.Add(new OracleParameter("p_file_reviewer", paramValues.p_file_reviewer.ToLower().Replace("@azwater.gov","")));
+            parameter.Add(new OracleParameter("p_ama_code", paramValues.p_ama_code));  
+            
+            parameter.Add(new OracleParameter("p_file_reviewer", paramValues.p_file_reviewer.ToLower().Replace("@azwater.gov", "")));
             parameter.Add(new OracleParameter("p_createby", User.Identity.Name.Replace("AZWATER0\\", "")));
 
-            var procedureVals = 
-                await Task.FromResult(SP_AW_INS.ExecuteStoredProcedure("BEGIN aws.sp_aw_ins_file(:p_program_code, :p_ama_code, :p_file_reviewer, :p_createby); end;", parameter.ToArray()));
+            var newFileNum= new OracleParameter("p_new_filenum", OracleDbType.Varchar2,20);
+            newFileNum.IsNullable = true;
+            newFileNum.Direction = ParameterDirection.ReturnValue;
+            parameter.Add(newFileNum);
 
-            return Ok(procedureVals);
+            var newWrfId= new OracleParameter("p_new_wrf_id", OracleDbType.Decimal);
+            newWrfId.Direction = ParameterDirection.ReturnValue;
+            newWrfId.IsNullable = true;
+            parameter.Add(newWrfId);
+
+            var newFile = await Task.FromResult(SP_AW_INS.ExecuteStoredProcedure(
+                   "BEGIN aws.sp_aw_ins_file(:p_program_code, :p_ama_code, :p_file_reviewer, :p_createby, :p_new_filenum, :p_new_wrf_id); end;"
+               , parameter.ToArray()));            
+
+            foreach (var p in parameter)
+            {
+                var property = result.GetType().GetProperty(p.ParameterName);
+                var converter = TypeDescriptor.GetConverter(property.PropertyType);                 
+                var value= converter.ConvertFrom(p.Value.ToString());
+                property.SetValue(result, value);
+                    
+            }
+            return Ok(result);
         }
     }
 }

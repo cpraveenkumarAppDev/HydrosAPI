@@ -120,6 +120,7 @@ using System.Data.Entity.Infrastructure;
                 return databaseContext.Database.SqlQuery<T>(sqlStatement, parameters).ToList();
             }
         }
+       
         public static void ExecuteEmptyStoredProcedure(string sqlStatement, params object[] parameters)
         {
             using (var databaseContext = new OracleContext())
