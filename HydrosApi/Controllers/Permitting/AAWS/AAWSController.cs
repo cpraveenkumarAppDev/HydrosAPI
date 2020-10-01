@@ -15,7 +15,7 @@ namespace HydrosApi
     using Oracle.ManagedDataAccess.Client;
     using System.ComponentModel;
     using Microsoft.Ajax.Utilities;
-
+    using System.Runtime.CompilerServices;
 
     public class AAWSController : ApiController
     {       
@@ -69,18 +69,27 @@ namespace HydrosApi
             newWrfId.IsNullable = true;
             parameter.Add(newWrfId);
 
-            var newFile = await Task.FromResult(SP_AW_INS.ExecuteStoredProcedure(
+            try
+            {
+                var newFile = await Task.FromResult(SP_AW_INS.ExecuteStoredProcedure(
                    "BEGIN aws.sp_aw_ins_conv(:p_program_code, :p_ama_code, :p_exist_filenum, :p_file_reviewer, :p_createby, :p_new_filenum, :p_new_wrf_id); end;"
                , parameter.ToArray()));
 
-            foreach (var p in parameter)
-            {
-                var property = result.GetType().GetProperty(p.ParameterName);
-                var converter = TypeDescriptor.GetConverter(property.PropertyType);
-                var value = converter.ConvertFrom(p.Value.ToString());
-                property.SetValue(result, value);
+                foreach (var p in parameter)
+                {
+                    var property = result.GetType().GetProperty(p.ParameterName);
+                    var converter = TypeDescriptor.GetConverter(property.PropertyType);
+                    var value = converter.ConvertFrom(p.Value.ToString());
+                    property.SetValue(result, value);
 
+                }
             }
+            catch(Exception exception)
+            {
+                var wrapExceptionMessage = new { message = exception.Message};
+                return Ok(wrapExceptionMessage);
+            }
+
             return Ok(result);
         }
        
