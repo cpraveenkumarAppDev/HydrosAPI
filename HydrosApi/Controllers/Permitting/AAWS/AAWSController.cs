@@ -54,7 +54,7 @@ namespace HydrosApi
 
             parameter.Add(new OracleParameter("p_program_code", paramValues.p_program_code));
             parameter.Add(new OracleParameter("p_ama_code", paramValues.p_ama_code));
-            parameter.Add(new OracleParameter("p_exist_filenum)", paramValues.p_exist_filenum));
+            parameter.Add(new OracleParameter("p_exist_filenum", paramValues.p_exist_filenum));
 
             parameter.Add(new OracleParameter("p_file_reviewer", paramValues.p_file_reviewer.ToLower().Replace("@azwater.gov", "")));
             parameter.Add(new OracleParameter("p_createby", User.Identity.Name.Replace("AZWATER0\\", "")));
@@ -70,7 +70,7 @@ namespace HydrosApi
             parameter.Add(newWrfId);
 
             var newFile = await Task.FromResult(SP_AW_INS.ExecuteStoredProcedure(
-                   "BEGIN aws.sp_aw_ins_file(:p_program_code, :p_ama_code, :p_exist_filenum, :p_file_reviewer, :p_createby, :p_new_filenum, :p_new_wrf_id); end;"
+                   "BEGIN aws.sp_aw_ins_conv(:p_program_code, :p_ama_code, :p_exist_filenum, :p_file_reviewer, :p_createby, :p_new_filenum, :p_new_wrf_id); end;"
                , parameter.ToArray()));
 
             foreach (var p in parameter)
