@@ -1,6 +1,6 @@
-﻿namespace HydrosApi.Models 
-{    
- 
+﻿namespace HydrosApi.Models
+{
+
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System;
@@ -25,7 +25,8 @@
 
         [Column("SUBDIVISION_NAME")]
         public string Subdivision { get; set; }
-
+        [Column("AMA_DESCR")]
+        public string AMA { get; set; }
         [Column("PROGRAM_CODE")]
         public string ProgramCode { get; set; }
         [Column("FILE_REVIEWER")]
