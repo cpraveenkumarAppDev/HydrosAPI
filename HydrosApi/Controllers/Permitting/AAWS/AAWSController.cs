@@ -49,11 +49,12 @@ namespace HydrosApi.Controllers
 
             if(conveyance==null)
             {
-                return BadRequest("A new conveyance was not created");
+                return Ok(new { message = "A new conveyance was not created" });
+               
             }
             else if(conveyance.Result.ProcessStatus != null)
             {
-                return Ok(conveyance.Result.ProcessStatus);
+                return Ok(new { message = conveyance.Result.ProcessStatus });               
             }
              
             return Ok(conveyance);
@@ -67,11 +68,11 @@ namespace HydrosApi.Controllers
 
             if (application == null)
             {
-                return BadRequest("A new application was not created");
+                return Ok(new { message = "A new application was not created" });
             }
             else if (application.Result.ProcessStatus != null)
             {
-                return Ok(application.Result.ProcessStatus);
+                return Ok(new { message = application.Result.ProcessStatus });
             }
 
             return Ok(application);
