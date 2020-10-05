@@ -35,9 +35,9 @@
         public string filemanagerEmail { set { p_file_reviewer = value; } }
 
         [JsonProperty(PropertyName = "ama")]
-        public string ama { set { p_ama_code = value; } }
+        public string ama { set { p_ama_code = V_CD_AW_AMA_INA.Get(a => a.CODE == value.ToUpper() || a.DESCR == value.ToUpper().Replace(" AMA","")+" AMA").CODE; } }
 
-         public static async Task<V_AWS_GENERAL_INFO> CreateNewFile(SP_AW_INS paramValues, string requestType)
+        public static async Task<V_AWS_GENERAL_INFO> CreateNewFile(SP_AW_INS paramValues, string requestType)
         {
             var parameter = new List<OracleParameter>();
             var result = new SP_AW_INS();
@@ -49,7 +49,6 @@
 
                 parameter.Add(new OracleParameter("p_program_code", paramValues.p_program_code));
                 parameter.Add(new OracleParameter("p_ama_code", paramValues.p_ama_code));
-
                 if(requestType=="conveyance")
                 { 
                     parameter.Add(new OracleParameter("p_exist_filenum", paramValues.p_exist_filenum));

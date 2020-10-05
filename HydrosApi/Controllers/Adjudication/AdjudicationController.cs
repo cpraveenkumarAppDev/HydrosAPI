@@ -75,8 +75,7 @@
 
         [HttpGet, Route("adj/getpou/{id?}")]
         public async Task<IHttpActionResult> GetPlaceOfUse(string id = null)
-        {
-            List<PLACE_OF_USE_VIEW> pouList = new List<PLACE_OF_USE_VIEW>();
+        {             
             if (id != null)
             {
                 var pou = Task.FromResult(PLACE_OF_USE_VIEW.PlaceOfUseView(id));                 
