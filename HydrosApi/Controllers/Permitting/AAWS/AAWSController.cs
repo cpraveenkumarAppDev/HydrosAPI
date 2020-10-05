@@ -44,31 +44,38 @@ namespace HydrosApi.Controllers
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpPost, Route("aws/newconv")]
         public async Task<IHttpActionResult> AddNewConveyance([FromBody] SP_AW_INS paramValues) //New conveyance
-        {
-            try { 
-                var conveyance=Ok(await Task.FromResult(SP_AW_INS.CreateNewFile(paramValues, "conveyance")));
-                return Ok(conveyance);
-            }
-            catch (Exception exception)
+        {                 
+            var conveyance = await Task.FromResult(SP_AW_INS.CreateNewFile(paramValues, "conveyance"));
+
+            if(conveyance==null)
             {
-                var wrapExceptionMessage = new { message = exception.Message };
-                return Ok(wrapExceptionMessage);
+                return BadRequest("A new conveyance was not created");
             }
+            else if(conveyance.Result.ProcessStatus != null)
+            {
+                return Ok(conveyance.Result.ProcessStatus);
+            }
+             
+            return Ok(conveyance);
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpPost, Route("aws/newapp")]
         public async Task<IHttpActionResult> AddNewApplication([FromBody] SP_AW_INS paramValues) //New file
-        {
-            try { 
-                var application=Ok(await Task.FromResult(SP_AW_INS.CreateNewFile(paramValues, "newApplication")));
-                return Ok(application);
-            }
-            catch (Exception exception)
+        {            
+            var application=await Task.FromResult(SP_AW_INS.CreateNewFile(paramValues, "newApplication"));
+
+            if (application == null)
             {
-                var wrapExceptionMessage = new { message = exception.Message };
-                return Ok(wrapExceptionMessage);
+                return BadRequest("A new application was not created");
             }
+            else if (application.Result.ProcessStatus != null)
+            {
+                return Ok(application.Result.ProcessStatus);
+            }
+
+            return Ok(application);
+             
         }
     }
 }

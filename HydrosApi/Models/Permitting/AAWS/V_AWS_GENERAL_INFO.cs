@@ -45,5 +45,8 @@
         public DateTime? Complete_Correct { get; set; }
         [Column("RECEIVEDDT")]
         public DateTime? Date_Accepted { get; set; }
+
+        [NotMapped]
+        public string ProcessStatus { get; set; } //Use this for error messages in stored procedure or api calls
     }
 }
