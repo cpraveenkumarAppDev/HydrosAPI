@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using HydrosApi.Data;
 
 namespace HydrosApi.Models
 { 
@@ -43,13 +44,22 @@ namespace HydrosApi.Models
         [StringLength(4000)]
         public string USE { get; set; }
 
-        [NotMapped]
-         
+        [NotMapped]         
         public List<string> FILE_LINK
         {
-            get; set;
+            get
+            {
+                DocushareService doc = new DocushareService();
+                return doc.getSurfaceWaterDocs(this.ART_PROGRAM + "-" + this.ART_APPLI_NO).Select(f => f.FileUrl).Distinct().ToList();
+            }
+
+            set
+            {
+                this.FILE_LINK = value;
+            }
         }
 
+        //this is no longer necessary and can be removed eventually
         public static List<SW_AIS_VIEW> SurfaceWaterView(string swList) //a comma-delimited list
         {
             

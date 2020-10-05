@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using HydrosApi.Data;
 
-namespace HydrosApi 
+namespace HydrosApi.Models 
 {
     [Table("SOC.SOC_AIS_VIEW")]
-    public partial class SOC_AIS_VIEW 
+    public partial class SOC_AIS_VIEW : AdwrRepository<SOC_AIS_VIEW>
     {
         public decimal? ID { get; set; }
 
@@ -44,10 +45,19 @@ namespace HydrosApi
         [StringLength(4000)]
         public string FILE_LINK
         {
-            get; set;
+            get
+            {
+                DocushareService doc = new DocushareService();
+                return doc.GetSocDocs("39-" + this.FILE_NO).FirstOrDefault().FileUrl;
+            }
 
+            set
+            {
+                this.FILE_LINK = value;
+            }
         }
 
+        //****this is no longer necessary and can be removed eventually
         public static List<SOC_AIS_VIEW> StatementOfClaimView(string socList) //a comma-delimited list
         {
             var db = new ADWRContext();            
@@ -67,8 +77,6 @@ namespace HydrosApi
             }
 
             return soc.Distinct().ToList();
-
         }
-
     }
 }

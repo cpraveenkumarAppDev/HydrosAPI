@@ -1,4 +1,4 @@
-﻿namespace HydrosApi 
+﻿namespace HydrosApi.Data
 { 
     using System.Data.Entity;
      
@@ -43,6 +43,13 @@
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<POINT_OF_DIVERSION>()
+            .Property(p => p.OBJECTID);
+
+            modelBuilder.Entity<PWR_POD>()
+                       .Property(p => p.POD_ID);
+
             modelBuilder.Entity<EXPLANATIONS>()
                 .Property(e => e.EXP_TYPE)
                 .IsUnicode(false);

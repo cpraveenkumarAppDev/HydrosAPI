@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using HydrosApi.Data;
+using HydrosApi.Services.docushareClient;
 
 namespace HydrosApi 
 {
 
     [Table("ADJ_INV.WELLS_VIEW")]
-    public partial class WELLS_VIEW
+    public partial class WELLS_VIEW : AdwrRepository<WELLS_VIEW>
     {
         public decimal? ID { get; set; }
 
@@ -20,6 +22,8 @@ namespace HydrosApi
         [Column(Order = 0)]
         [StringLength(6)]
         public string FILE_NO { get; set; }
+
+        
 
         [StringLength(61)]
         public string OWNER { get; set; }
@@ -45,14 +49,24 @@ namespace HydrosApi
 
         public DateTime? INSTALL_DATE { get; set; }
 
-        [NotMapped]
+      [NotMapped]
         [StringLength(4000)]
         public string FILE_LINK
         {
-            get; set;
-        }
+            get
+            {
+                DocushareService doc = new DocushareService();
+                return doc.getWellDocs(this.REGISTRY_ID).FileUrl;
+            }
 
-        public static List<WELLS_VIEW> WellsView(string wellList)
+            set
+            {
+                this.FILE_LINK = value;
+            }
+         
+        }
+        //this is no longer necessary and can be removed eventually
+        /*public static List<WELLS_VIEW> WellsView(string wellList)
         {
             var db = new ADWRContext();
             var wellMatch = DelimitedColumnHandler.FileInformation(wellList).Where(i=>i.FileType=="55"||i.FileType=="35").Select(i => i.FileNumber).ToList();
@@ -71,6 +85,6 @@ namespace HydrosApi
             }
 
             return well;
-        }
+        }*/
     }
 }

@@ -14,14 +14,19 @@
     using System.Net.Http;
     using System.Web.Http.Description;
     using HydrosApi.Data;
+    using HydrosApi.ViewModel;
     
   
 
-    [Authorize] 
+    //[Authorize] 
     //at minimum, ensure this is an authorized user, granular permissions will be added later
     public class AdjudicationController : ApiController
     {
-        private async Task<PROPOSED_WATER_RIGHT> AddProposedWaterRight(PLACE_OF_USE_VIEW pou)
+
+        //remove this, it was all moved to the place of use model in the process of trying to make  
+        //everything faster. Not sure if I succeeded.
+        /*
+          private async Task<PROPOSED_WATER_RIGHT> AddProposedWaterRight(PLACE_OF_USE_VIEW pou)
         {
             PROPOSED_WATER_RIGHT status = new PROPOSED_WATER_RIGHT();
 
@@ -37,90 +42,7 @@
                 CREATEDT = DateTime.Now,
                 POU_ID = pou.DWR_ID
             })); 
-        }
-
-        //PlaceOfUseForm returns EVERYTHING needed to populate the form
-        public async Task<IEnumerable<PLACE_OF_USE_VIEW>> PlaceOfUseForm(string id)
-        {
-            Regex rgx = new Regex(@"[^0-9]");
-            List<PLACE_OF_USE_VIEW> placeOfUse = new List<PLACE_OF_USE_VIEW>();
-            //var userInRole = RoleCheck.ThisUser("AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications");
-
-            int? newPwr = null;
-
-            //The id should be the DWR_ID, at least make sure it has letters in it
-            if (!rgx.IsMatch(id))
-            {
-                return null;
-            }
-
-            //Get the place of use
-            var pou =  await Task.FromResult(PLACE_OF_USE_VIEW.Get(p=>p.DWR_ID==id));
-
-            if (pou == null)
-            {
-                return null;                
-            }
-
-            //if there is no proposed water right, then create one
-           
-            var pwr = await Task.FromResult(PROPOSED_WATER_RIGHT.ProposedWaterRight(id));
-
-            if (pwr == null) 
-            {
-                newPwr = 1;
-                pwr = await AddProposedWaterRight(pou);
-            }
-
-            //now there should be a proposed water right but check anyway
-            //and populate the pwr.ID in for the place of use, and the ProposedWaterRight List  
-
-            if (pwr != null)
-            {
-                pou.PWR_ID = pwr.ID;
-                pou.ProposedWaterRight = pwr;
-                pou.FileList = await Task.FromResult(FILE.GetList(f => f.PWR_ID == pwr.ID));
-            }
-
-            //if a proposed water right already exists (and wasn't just added) get the associated pods
-            if (newPwr == null && pwr != null)
-            {
-                var pwrToPod = await Task.FromResult(PWR_POD.GetList(p => (p.PWR_ID ?? -1) ==pwr.ID));                  
-
-                if (pwrToPod != null)
-                {                   
-                   //pass the PWR_POD relationship list in.  This will add the PWR_POD's ID 
-                   //to the PointOfDiversion so that it can be passed if the pod is deleted
-                   var pod = await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion(pwrToPod));
-                    if(pod!=null)
-                    {
-                        pou.PointOfDiversion = pod;
-                    }
-                }
-            }
-
-            //Statements of Claim, Wells and Surfacewater
-            //Place of Use table has comma delimited list for these
-            var socField = pou.SOC;
-
-            if (socField != null)
-            {
-                pou.StatementOfClaim = await Task.FromResult(SOC_AIS_VIEW.StatementOfClaimView(socField));               
-            }
-
-            var bocField = pou.BAS_OF_CLM;
-
-            if (bocField != null)
-            {
-                pou.Well = await Task.FromResult(WELLS_VIEW.WellsView(bocField));
-                pou.Surfacewater = await Task.FromResult(SW_AIS_VIEW.SurfaceWaterView(bocField));
-            }
-
-            pou.Explanation = await Task.FromResult(EXPLANATIONS.GetList(i => i.PWR_ID == pwr.ID));
-
-            placeOfUse.Add(pou);
-            return placeOfUse;
-        }
+        }  */      
       
         //--------------------------------------------------------------------------------------------------------
         //---------------------------------- WEB SERVICE REQUESTS ------------------------------------------------
@@ -154,29 +76,16 @@
         [HttpGet, Route("adj/getpou/{id?}")]
         public async Task<IHttpActionResult> GetPlaceOfUse(string id = null)
         {
-            List<PLACE_OF_USE_VIEW> pou;
+            List<PLACE_OF_USE_VIEW> pouList = new List<PLACE_OF_USE_VIEW>();
             if (id != null)
             {
-                var pouForm = await PlaceOfUseForm(id);
-
-                if (pouForm == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(pouForm.ToList());
+                var pou = Task.FromResult(PLACE_OF_USE_VIEW.PlaceOfUseView(id));                 
+                return Ok(pou);
             }
-
             else
             {
-                pou = await Task.FromResult(PLACE_OF_USE_VIEW.GetAll()); //return all places of use
-            }
-
-            if (pou == null)
-            {
-                return NotFound();
-            }
-            return Ok(pou);
+                return Ok(await Task.FromResult(PLACE_OF_USE_VIEW.GetAll())); //return all places of use
+            }         
         }
 
         //--------------------------------------------------------------------------------------------------------
@@ -291,8 +200,7 @@
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpDelete, Route("adj/deleteexp/{id}")]
         public async Task<IHttpActionResult> DeleteExplanation(int id) //<== ID IS THE ID FROM THE EXPLANATION TABLE
-        {
-            // EXPLANATIONS exp = await db.EXPLANATIONS.Where(i => i.ID == id).FirstOrDefaultAsync();
+        {           
             EXPLANATIONS exp = await Task.FromResult(EXPLANATIONS.Get(p => p.ID == id));
 
             if (exp == null)

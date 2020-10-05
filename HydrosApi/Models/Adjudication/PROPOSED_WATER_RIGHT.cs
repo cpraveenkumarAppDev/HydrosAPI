@@ -7,6 +7,7 @@ namespace HydrosApi.Models
     using System.Data.Entity.Spatial;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using HydrosApi.Data;
 
     [Table("ADJ_INV.PROPOSED_WATER_RIGHT")]
     public partial class PROPOSED_WATER_RIGHT:AdwrRepository<PROPOSED_WATER_RIGHT>
@@ -37,9 +38,7 @@ namespace HydrosApi.Models
 
       [StringLength(50)]
         public string POU_ID { get; set; }
-
        
-
         [NotMapped]
         public string StatusMessage { get; set; }
 

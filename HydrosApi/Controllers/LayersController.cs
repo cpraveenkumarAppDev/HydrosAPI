@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using HydrosApi.Models;
+using HydrosApi.Data;
 
 namespace HydrosApi.Controllers
 {

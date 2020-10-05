@@ -1,4 +1,4 @@
-﻿namespace HydrosApi 
+﻿namespace HydrosApi.Data
 {     
     using System.Data.Entity;
     using Models;

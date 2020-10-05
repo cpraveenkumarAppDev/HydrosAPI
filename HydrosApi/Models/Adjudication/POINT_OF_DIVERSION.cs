@@ -13,12 +13,7 @@
     public partial class POINT_OF_DIVERSION : SdeRepository<POINT_OF_DIVERSION>
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-
-        public POINT_OF_DIVERSION()
-        {
-            //LAYERS = new HashSet<LAYER>();
-
-        }
+         
                
         public int OBJECTID { get; set; } //ObjectId
 
@@ -115,6 +110,10 @@
         [NotMapped]
         public int? PWR_POD_ID { get; set; } //This is populated at runtime
 
+      
+
+
+
         [NotMapped]
         private string podTypeDescription;       
      
@@ -175,6 +174,8 @@
             return pod;            
         }
 
+
+        //This is populated at runtime
         ///get the point of diversion with a single Proposed Water Right/and Point of Diversion pair (populates the pwr_pod_id)
         public static POINT_OF_DIVERSION PointOfDiversion(PWR_POD pwrPod) 
         {
@@ -213,6 +214,7 @@
             return POINT_OF_DIVERSION.GetList(p => objectids.Contains(p.OBJECTID));              
         }
 
+       
         /* 
         
 APN	NVARCHAR2(254)

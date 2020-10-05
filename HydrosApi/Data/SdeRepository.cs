@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using HydrosApi.Data;
 
 namespace HydrosApi.Models
 {

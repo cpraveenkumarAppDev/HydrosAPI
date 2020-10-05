@@ -4,6 +4,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using HydrosApi.Data;
 
     [Table("ADJ_INV.EXPLANATION")]
     public partial class EXPLANATIONS : AdwrRepository<EXPLANATIONS>//I called this "EXPLANATIONS" because it also has a column named EXPLANATION
