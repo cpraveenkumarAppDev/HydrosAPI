@@ -1,6 +1,7 @@
 ﻿
 namespace HydrosApi.Controllers
-{   
+{
+    using System;
     using System.Web.Http;    
     using System.Threading.Tasks;
     using Models;
@@ -44,14 +45,30 @@ namespace HydrosApi.Controllers
         [HttpPost, Route("aws/newconv")]
         public async Task<IHttpActionResult> AddNewConveyance([FromBody] SP_AW_INS paramValues) //New conveyance
         {
-            return Ok(await Task.FromResult(SP_AW_INS.CreateNewFile(paramValues, "conveyance")));
+            try { 
+                var conveyance=Ok(await Task.FromResult(SP_AW_INS.CreateNewFile(paramValues, "conveyance")));
+                return Ok(conveyance);
+            }
+            catch (Exception exception)
+            {
+                var wrapExceptionMessage = new { message = exception.Message };
+                return Ok(wrapExceptionMessage);
+            }
         }
-       
+
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpPost, Route("aws/newapp")]
         public async Task<IHttpActionResult> AddNewApplication([FromBody] SP_AW_INS paramValues) //New file
         {
-            return Ok(await Task.FromResult(SP_AW_INS.CreateNewFile(paramValues, "newApplication")));
+            try { 
+                var application=Ok(await Task.FromResult(SP_AW_INS.CreateNewFile(paramValues, "newApplication")));
+                return Ok(application);
+            }
+            catch (Exception exception)
+            {
+                var wrapExceptionMessage = new { message = exception.Message };
+                return Ok(wrapExceptionMessage);
+            }
         }
     }
 }
