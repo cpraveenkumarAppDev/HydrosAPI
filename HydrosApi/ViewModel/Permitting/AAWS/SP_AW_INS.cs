@@ -35,7 +35,19 @@
         public string filemanagerEmail { set { p_file_reviewer = value; } }
 
         [JsonProperty(PropertyName = "ama")]
-        public string ama { set { p_ama_code = V_CD_AW_AMA_INA.Get(a => a.CODE == value.ToUpper() || a.DESCR == value.ToUpper().Replace(" AMA","")+" AMA").CODE ?? "0"; } }
+        public string ama { set
+            {
+                try
+                {
+                    p_ama_code = V_CD_AW_AMA_INA.Get(a => a.CODE == value.ToUpper() || a.DESCR == value.ToUpper().Replace(" AMA", "") + " AMA").CODE;
+
+                }
+                catch
+                {
+                    p_ama_code = "0";
+                }
+            }                
+        }
 
         public static async Task<V_AWS_GENERAL_INFO> CreateNewFile(SP_AW_INS paramValues, string requestType)
         {
