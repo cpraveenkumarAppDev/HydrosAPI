@@ -42,6 +42,17 @@ namespace HydrosApi.Controllers
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        [HttpGet, Route("aws/diagram/{id}")]
+        public IHttpActionResult GetConveyanceDiagram(string id) //New conveyance
+        {
+
+            Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
+            var pcc = regex.Replace(id, "$1-$2.$3");
+            return Ok(SP_AW_CONV_DIAGRAM.ConveyanceDiagram(pcc));
+
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpPost, Route("aws/newconv")]
         public async Task<IHttpActionResult> AddNewConveyance([FromBody] SP_AW_INS paramValues) //New conveyance
         {                 
