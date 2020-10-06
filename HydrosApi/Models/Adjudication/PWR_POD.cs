@@ -14,7 +14,7 @@ namespace HydrosApi.Models
     public partial class PWR_POD : AdwrRepository<PWR_POD>
     {
 
-      
+
         //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
@@ -36,19 +36,32 @@ namespace HydrosApi.Models
         public virtual PROPOSED_WATER_RIGHT PROPOSED_WATER_RIGHT { get; set; }
 
         [NotMapped]
-        public virtual POINT_OF_DIVERSION PointOfDiversion {
+        public virtual POINT_OF_DIVERSION PointOfDiversion
+        {
 
-            get {
-                var pod= POINT_OF_DIVERSION.Get(p => p.OBJECTID == this.POD_ID);
-                pod.PWR_POD_ID = this.ID;
-                return pod;
-            } 
-            
+            get
+            {
+
+                    var pod = POINT_OF_DIVERSION.Get(p => p.OBJECTID == this.POD_ID);
+                if(pod == null)
+                {
+                    return null;
+                }
+                else
+                {
+
+                    pod.PWR_POD_ID = this.ID;
+                    return pod;
+                }
+             
+
+            }
+
             set
             {
                 this.PointOfDiversion = value;
-            } 
-        
+            }
+
         }
 
         /*public static List<PWR_POD> ProposedWaterRightToPoint(int podobjectid, int pwrId) //gets (what should be single) record for the specified pwr/pod
