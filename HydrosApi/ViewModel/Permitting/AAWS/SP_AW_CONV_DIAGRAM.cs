@@ -6,7 +6,7 @@ using HydrosApi.Data;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
 
-namespace HydrosApi.ViewModel
+namespace HydrosApi.ViewModel 
 {
     public class SP_AW_CONV_DIAGRAM : Repository<SP_AW_CONV_DIAGRAM>
     {
@@ -24,8 +24,10 @@ namespace HydrosApi.ViewModel
         public virtual string ORIGINAL_FILE_NO { get; set; }
         public virtual string PRIMARY_PCC { get; set; }
 
+        public virtual string COMMENTS { get; set; }
 
-        
+
+
         public static List<SP_AW_CONV_DIAGRAM> ConveyanceDiagram(string pcc)
         {
             var parameter = new List<OracleParameter>();

@@ -110,9 +110,8 @@
         [NotMapped]
         public int? PWR_POD_ID { get; set; } //This is populated at runtime
 
-      
-
-
+        [NotMapped]
+        public int? PWR_ID { get; set; } //This is populated at runtime
 
         [NotMapped]
         private string podTypeDescription;       

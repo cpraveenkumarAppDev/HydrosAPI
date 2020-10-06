@@ -13,8 +13,6 @@ namespace HydrosApi.Models
 
     public partial class PWR_POD : AdwrRepository<PWR_POD>
     {
-
-
         //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
@@ -41,20 +39,17 @@ namespace HydrosApi.Models
 
             get
             {
-
-                    var pod = POINT_OF_DIVERSION.Get(p => p.OBJECTID == this.POD_ID);
+                var pod = POINT_OF_DIVERSION.Get(p => p.OBJECTID == this.POD_ID);
                 if(pod == null)
                 {
                     return null;
                 }
                 else
                 {
-
                     pod.PWR_POD_ID = this.ID;
+                    pod.PWR_ID = this.PWR_ID;
                     return pod;
-                }
-             
-
+                }            
             }
 
             set

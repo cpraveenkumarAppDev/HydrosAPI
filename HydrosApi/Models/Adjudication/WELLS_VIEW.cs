@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using HydrosApi.Data;
-using HydrosApi.Services.docushareClient;
 
 namespace HydrosApi 
 {
@@ -21,9 +20,7 @@ namespace HydrosApi
         [Key]
         [Column(Order = 0)]
         [StringLength(6)]
-        public string FILE_NO { get; set; }
-
-        
+        public string FILE_NO { get; set; }                
 
         [StringLength(61)]
         public string OWNER { get; set; }
