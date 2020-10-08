@@ -6,8 +6,8 @@
     using System.ComponentModel.DataAnnotations.Schema;    
     using System.Linq;    
     using System.Web.UI.WebControls;
-    using System.Web;
-    
+    using System.Web;    
+   
     [Table("ADJ.PLACE_OF_USE_VIEW")]
     public partial class PLACE_OF_USE_VIEW :SdeRepository<PLACE_OF_USE_VIEW>
     {

@@ -36,7 +36,6 @@ namespace HydrosApi.Models
         [NotMapped]
         public virtual POINT_OF_DIVERSION PointOfDiversion
         {
-
             get
             {
                 var pod = POINT_OF_DIVERSION.Get(p => p.OBJECTID == this.POD_ID);
