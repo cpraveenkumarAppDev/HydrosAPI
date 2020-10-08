@@ -5,12 +5,14 @@
     using System;
     using System.IO;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class AAWSProgramInfoViewModel
     {
         public AWS_OVER_VIEW OverView { get; set; }
         public string ProgramCertificateConveyance { get; set; }
         public string Subdivision { get; set; }
+        public V_CD_AW_APP_FEE_RATES FeeRates { get; set; }
 
         public List<SP_AW_CONV_DIAGRAM> Diagram {get; set; }
         public static AAWSProgramInfoViewModel GetData(string PermitCertificateConveyanceNumber)
@@ -32,6 +34,7 @@
                 AAWSProgramInfoViewModelOverView.Legal_Availability = GeneralInfo.Legal_Availability =="Y" ? true : false;
                 AAWSProgramInfoViewModel.OverView = AAWSProgramInfoViewModelOverView;
                 AAWSProgramInfoViewModel.Diagram= SP_AW_CONV_DIAGRAM.ConveyanceDiagram(PermitCertificateConveyanceNumber);
+                AAWSProgramInfoViewModel.FeeRates = V_CD_AW_APP_FEE_RATES.Get(x => x.PROGRAM_CODE == PermitCertificateConveyanceNumber.Substring(0, 2));
                 return AAWSProgramInfoViewModel;
             }
             catch (FileNotFoundException e)
