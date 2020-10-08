@@ -7,7 +7,7 @@ using Oracle.ManagedDataAccess.Client;
 using System.Data;
 
 namespace HydrosApi.ViewModel 
-{
+{   
     public class SP_AW_CONV_DIAGRAM : Repository<SP_AW_CONV_DIAGRAM>
     {
         public virtual int? CYCLE_LEVEL { get; set; }
@@ -18,14 +18,12 @@ namespace HydrosApi.ViewModel
         public virtual float? ACREFEET { get; set; }
         public virtual DateTime? DTISSUED { get; set; }
 
-
         public virtual string SEARCH_FILE_NO { get; set; }
 
         public virtual string ORIGINAL_FILE_NO { get; set; }
         public virtual string PRIMARY_PCC { get; set; }
 
         public virtual string COMMENTS { get; set; }
-
 
 
         public static List<SP_AW_CONV_DIAGRAM> ConveyanceDiagram(string pcc)

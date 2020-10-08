@@ -37,6 +37,12 @@
         public string Status { get; set; }
         [Column("APP_STATUS_DT")]
         public DateTime? StatusDate { get; set; }
+
+        [Column("HYDROLOGY")]
+        public string Hydrology { get; set; }
+        [Column("LEGAL_AVAILABILITY")]
+        public string Legal_Availability { get; set; }
+
         [Column("SECONDARY_PROV_NAME")]
         public string SecondaryProviderName { get; set; }
         [Column("PRIMARY_PROV_NAME")]

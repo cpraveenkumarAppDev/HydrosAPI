@@ -39,8 +39,16 @@
             {
                 try
                 {
-                    p_ama_code = V_CD_AW_AMA_INA.Get(a => a.CODE == value.ToUpper() || a.DESCR == value.ToUpper().Replace(" AMA", "") + " AMA").CODE;
+                    var amaCode = V_CD_AW_AMA_INA.Get(a => a.CODE == value.ToUpper() || a.DESCR == value.ToUpper().Replace(" AMA", "") + " AMA");
 
+                    if(amaCode==null)
+                    {
+                       p_ama_code="0";
+                    }
+                    else
+                    {
+                        p_ama_code=amaCode.CODE;
+                    }
                 }
                 catch
                 {
@@ -81,11 +89,11 @@
 
                 if(requestType=="conveyance")
                 {
-                    command = "BEGIN aws.sp_aw_ins_conv(:p_program_code, :p_ama_code, :p_exist_filenum, :p_file_reviewer, :p_createby, :p_new_filenum, :p_new_wrf_id); end;";
+                    command = "BEGIN aws.aw_spkg_hydros_insert.ins_conv(:p_program_code, :p_ama_code, :p_exist_filenum, :p_file_reviewer, :p_createby, :p_new_filenum, :p_new_wrf_id); end;";
                 }
                 else if(requestType=="newApplication")
                 {
-                    command = "BEGIN aws.sp_aw_ins_file(:p_program_code, :p_ama_code, :p_file_reviewer, :p_createby, :p_new_filenum, :p_new_wrf_id); end;";
+                    command = "BEGIN aws.aw_spkg_hydros_insert.ins_file(:p_program_code, :p_ama_code, :p_file_reviewer, :p_createby, :p_new_filenum, :p_new_wrf_id); end;";
                 }
                 else
                 {
