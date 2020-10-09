@@ -3,6 +3,7 @@ using System.DirectoryServices.AccountManagement;
 using System.Collections.Generic;
 using System;
 using System.Configuration;
+using HydrosApi.Services;
 
 namespace HydrosApi
 {
@@ -67,7 +68,22 @@ namespace HydrosApi
             }
         }
     }
-}
+
+        [HttpGet, Route("adwr/error")]
+        public IHttpActionResult SubmitError(string content)
+        {
+            try
+            {
+                var sentOkay = EmailService.Message("appdev@azwater.gov", $"{Environment.MachineName} - HydrosAPI", content);
+                return Ok($"Message sent: {sentOkay}");
+            }
+            catch (Exception exception)
+            {
+                return Ok("Failed to send noticiation");
+            }
+
+        }
+    }
 
 public class WindowsUser
 {
