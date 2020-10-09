@@ -31,6 +31,9 @@
                 AAWSProgramInfoViewModelOverView.Date_Accepted = GeneralInfo.Date_Accepted;
                 AAWSProgramInfoViewModelOverView.Complete_Correct = GeneralInfo.Complete_Correct;
                 AAWSProgramInfoViewModelOverView.Hydrology = GeneralInfo.Hydrology == "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.First_Notice = GeneralInfo.First_Notice_Date;
+                AAWSProgramInfoViewModelOverView.Second_Notice = GeneralInfo.Second_Notice_Date;
+                AAWSProgramInfoViewModelOverView.Final_Date = GeneralInfo.Final_Date_for_Public_Comment;
                 AAWSProgramInfoViewModelOverView.Legal_Availability = GeneralInfo.Legal_Availability =="Y" ? true : false;
                 AAWSProgramInfoViewModel.OverView = AAWSProgramInfoViewModelOverView;
                 AAWSProgramInfoViewModel.Diagram= SP_AW_CONV_DIAGRAM.ConveyanceDiagram(PermitCertificateConveyanceNumber);
