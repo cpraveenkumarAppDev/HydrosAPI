@@ -69,13 +69,21 @@ namespace HydrosApi
         }
     }
 
-        [HttpGet, Route("adwr/error")]
-        public IHttpActionResult SubmitError(string content)
+        [HttpPost, Route("adwr/error")]
+        public IHttpActionResult SubmitError()
         {
             try
             {
-                var sentOkay = EmailService.Message("appdev@azwater.gov", $"{Environment.MachineName} - HydrosAPI", content);
-                return Ok($"Message sent: {sentOkay}");
+                string content = Request.Content.ReadAsStringAsync().Result;
+                if(content != null)
+                {
+                    var sentOkay = EmailService.Message("appdev@azwater.gov", $"{Environment.MachineName} - HydrosAPI", content);
+                    return Ok($"Message sent: {sentOkay}");
+                }
+                else
+                {
+                    return BadRequest("no content in the body of the request");
+                }
             }
             catch (Exception exception)
             {
