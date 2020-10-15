@@ -7,6 +7,8 @@ namespace HydrosApi.Controllers
     using Models;
     using HydrosApi.ViewModel;    
     using System.Text.RegularExpressions;
+    using HydrosApi.Data;
+    using System.Linq;
 
     public class AAWSController : ApiController
     {       
@@ -88,6 +90,16 @@ namespace HydrosApi.Controllers
 
             return Ok(application);
              
+        }
+
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpPut, Route("aws/updateapp")]
+        public IHttpActionResult UpdateApp([FromBody] AAWSProgramInfoViewModel paramValues) //New file
+        {
+            var savedApplication = AAWSProgramInfoViewModel.OnUpdate(paramValues);
+           
+
+            return Ok(savedApplication);
         }
     }
 }
