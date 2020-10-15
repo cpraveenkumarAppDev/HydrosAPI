@@ -70,6 +70,7 @@ namespace HydrosApi
     }
 
         [HttpPost, Route("adwr/error")]
+        [Authorize]
         public IHttpActionResult SubmitError()
         {
             try
@@ -77,7 +78,7 @@ namespace HydrosApi
                 string content = Request.Content.ReadAsStringAsync().Result;
                 if(content != null)
                 {
-                    var sentOkay = EmailService.Message("appdev@azwater.gov", $"{Environment.MachineName} - HydrosAPI", content);
+                    var sentOkay = EmailService.Message("appdev@azwater.gov", $"{Environment.MachineName}: {User.Identity.Name} - HydrosAPI", content);
                     return Ok($"Message sent: {sentOkay}");
                 }
                 else
