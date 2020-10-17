@@ -314,6 +314,7 @@
     <Compile Include="Data\AdwrRepository.cs" />
     <Compile Include="Data\HandleForm.cs" />
     <Compile Include="Data\SdeRepository.cs" />
+    <Compile Include="Models\Permitting\AAWS\V_AWS_PROVIDER.cs" />
     <Compile Include="Models\Permitting\AAWS\V_CD_AW_AMA_INA.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_OAWS.cs" />
     <Compile Include="Data\Repository.cs" />
