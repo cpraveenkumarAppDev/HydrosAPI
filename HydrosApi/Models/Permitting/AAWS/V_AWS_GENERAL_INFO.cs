@@ -51,8 +51,13 @@
         public DateTime? Complete_Correct { get; set; }
         [Column("RECEIVEDDT")]
         public DateTime? Date_Accepted { get; set; }
-
-        [NotMapped]
+        [Column("FIRST_NOTICEDT")]
+        public DateTime? First_Notice_Date { get; set; }
+        [Column("SEC_NOTICEDT")]
+        public DateTime? Second_Notice_Date { get; set; }
+        [Column("PUB_COMM_ENDDT")]
+        public DateTime? Final_Date_for_Public_Comment { get; set; }
+        [NotMapped] 
         public string ProcessStatus { get; set; } //Use this for error messages in stored procedure or api calls
     }
 }
