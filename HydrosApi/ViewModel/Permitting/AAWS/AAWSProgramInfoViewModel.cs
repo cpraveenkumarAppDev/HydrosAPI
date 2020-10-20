@@ -62,6 +62,7 @@
             catch(Exception exception)
             {
                 EmailService.Message(exception);
+                return null;
             }
         }
 
