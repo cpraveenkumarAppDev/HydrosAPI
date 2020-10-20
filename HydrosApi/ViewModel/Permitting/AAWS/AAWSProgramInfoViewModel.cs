@@ -8,6 +8,7 @@
     using System.Linq;
     using HydrosApi.Data;
     using Oracle.ManagedDataAccess.Client;
+    using HydrosApi.Services;
 
     public class AAWSProgramInfoViewModel
     {
@@ -32,6 +33,9 @@
                 AAWSProgramInfoViewModelOverView.SecondaryProviderName = GeneralInfo.SecondaryProviderName;
                 AAWSProgramInfoViewModelOverView.Date_Accepted = GeneralInfo.Date_Accepted;
                 AAWSProgramInfoViewModelOverView.Complete_Correct = GeneralInfo.Complete_Correct;
+                AAWSProgramInfoViewModelOverView.Hydrology = GeneralInfo.Hydrology == "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.Legal_Availability = GeneralInfo.Legal_Availability == "Y" ? true : false;
+                AAWSProgramInfoViewModel.FeeRates = V_CD_AW_APP_FEE_RATES.Get(x => x.PROGRAM_CODE == PermitCertificateConveyanceNumber.Substring(0, 2));
                 AAWSProgramInfoViewModel.OverView = AAWSProgramInfoViewModelOverView;
                 AAWSProgramInfoViewModel.Diagram= SP_AW_CONV_DIAGRAM.ConveyanceDiagram(PermitCertificateConveyanceNumber);
                 return AAWSProgramInfoViewModel;
@@ -40,6 +44,10 @@
             {
                 // FileNotFoundExceptions are handled here.
                 return AAWSProgramInfoViewModel;
+            }
+            catch(Exception exception)
+            {
+                EmailService.Message(exception);
             }
         }
 

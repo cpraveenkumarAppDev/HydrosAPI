@@ -65,12 +65,10 @@ namespace HydrosApi.Services
                 return false;
             }
         }
-        public static bool Message(Exception program_exception, string userName)
+        public static bool Message(Exception program_exception, string userName = "")
         {
             try
             {
-                string multipleTo = to.Aggregate((index, current) => index + "," + current);
-
                 SmtpClient smtp = new SmtpClient
                 {
                     EnableSsl = false
