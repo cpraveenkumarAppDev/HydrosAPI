@@ -8,6 +8,7 @@
     using System.Linq;
     using HydrosApi.Data;
     using Oracle.ManagedDataAccess.Client;
+    using HydrosApi.Services;
 
     public class AAWSProgramInfoViewModel
     {
@@ -42,9 +43,6 @@
                 AAWSProgramInfoViewModelOverView.Date_Accepted = GeneralInfo.Date_Accepted;
                 AAWSProgramInfoViewModelOverView.Complete_Correct = GeneralInfo.Complete_Correct;
                 AAWSProgramInfoViewModelOverView.Hydrology = GeneralInfo.Hydrology == "Y" ? true : false;
-                AAWSProgramInfoViewModelOverView.First_Notice = GeneralInfo.First_Notice_Date;
-                AAWSProgramInfoViewModelOverView.Second_Notice = GeneralInfo.Second_Notice_Date;
-                AAWSProgramInfoViewModelOverView.Final_Date = GeneralInfo.Final_Date_for_Public_Comment;
                 AAWSProgramInfoViewModelOverView.Legal_Availability = GeneralInfo.Legal_Availability == "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.ProvidersList = lists;
                 AAWSProgramInfoViewModelOverView.SubbasinCode = Hydrology.SUBBASIN_CODE;
@@ -60,6 +58,10 @@
             {
                 // FileNotFoundExceptions are handled here.
                 return AAWSProgramInfoViewModel;
+            }
+            catch(Exception exception)
+            {
+                EmailService.Message(exception);
             }
         }
 

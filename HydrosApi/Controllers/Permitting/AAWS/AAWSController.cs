@@ -20,7 +20,7 @@ namespace HydrosApi.Controllers
         {
             return Ok(V_AWS_GENERAL_INFO.GetAll());
         }
-        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [Route("aws/getgeneralInfoById/{id}")]
         [HttpGet]
         public IHttpActionResult GetGeneralInfoById(string id)
