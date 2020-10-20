@@ -45,6 +45,8 @@
 
         [Column("SECONDARY_PROV_NAME")]
         public string SecondaryProviderName { get; set; }
+        [Column("USER_NAME")]
+        public string UserName { get; set; }
         [Column("PRIMARY_PROV_WRFID")]
         public int? PrimaryProviderWrfId { get; set; }
         [Column("PRIMARY_PROV_NAME")]

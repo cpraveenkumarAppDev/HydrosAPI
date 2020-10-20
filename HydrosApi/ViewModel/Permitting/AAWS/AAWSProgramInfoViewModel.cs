@@ -69,7 +69,7 @@
             }
         }
 
-        public static AAWSProgramInfoViewModel OnUpdate(AAWSProgramInfoViewModel paramValues)
+        public static AAWSProgramInfoViewModel OnUpdate(AAWSProgramInfoViewModel paramValues, string user)
         {
             AAWSProgramInfoViewModel AAWSProgramInfoViewModel = new AAWSProgramInfoViewModel();
             using (var ctx = new OracleContext())
@@ -78,7 +78,7 @@
                 application.Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N";
                 application.Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N";
                 application.PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId;
-
+                application.UserName = user;
                 //Hydrology data
                 var Hydrology = ctx.V_AWS_HYDRO.Where(p => p.PCC == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_HYDRO>();
                 Hydrology.SUBBASIN_CODE = paramValues.OverView.SubbasinCode;
