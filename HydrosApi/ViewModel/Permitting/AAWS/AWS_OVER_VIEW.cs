@@ -28,7 +28,7 @@
         public DateTime? Date_Reviewed { get; set; }
         public DateTime? Date_Issued { get; set; }
         public string PWS_ID_Number { get; set; }
-        public string Subbasin { get; set; }
+        public string SubbasinCode { get; set; }
         public DateTime? Date_Accepted { get; set; }
         public string AMA { get; set; }
         public DateTime? Date_Declared_Complete { get; set; }
@@ -36,6 +36,7 @@
         public DateTime? First_Notice { get; set; }
         public DateTime? Second_Notice { get; set; }
         public DateTime? Final_Date { get; set; }
+        public List<V_AWS_SUBBAS> SubbasinList { get; set; }
         public List<V_AWS_PROVIDER> ProvidersList { get; set; }
     }
 }

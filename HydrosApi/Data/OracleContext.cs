@@ -25,6 +25,8 @@ namespace HydrosApi.Data
         public virtual DbSet<PROPOSED_WATER_RIGHT> PROPOSED_WATER_RIGHT { get; set; }
         public virtual DbSet<PWR_POD> PWR_POD { get; set; }
         public virtual DbSet<V_AWS_PROVIDER> V_AWS_PROVIDER { get; set; }
+        public virtual DbSet<V_AWS_SUBBAS> V_AWS_SUBBAS { get; set; }
+        public virtual DbSet<V_AWS_HYDRO> V_AWS_HYDRO { get; set; }
 
 
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
