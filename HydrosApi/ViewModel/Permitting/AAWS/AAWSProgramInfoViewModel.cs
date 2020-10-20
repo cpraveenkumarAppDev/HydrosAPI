@@ -38,7 +38,7 @@
                 AAWSProgramInfoViewModel.SubbasinList = SubbasinList;
                 //OverView data
                 AAWSProgramInfoViewModelOverView.PrimaryProviderName = GeneralInfo.PrimaryProviderName;
-                AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId = (int)GeneralInfo.PrimaryProviderWrfId;
+                AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId = GeneralInfo.PrimaryProviderWrfId != null ? (int)GeneralInfo.PrimaryProviderWrfId : 0;
                 AAWSProgramInfoViewModelOverView.SecondaryProviderName = GeneralInfo.SecondaryProviderName;
                 AAWSProgramInfoViewModelOverView.Date_Accepted = GeneralInfo.Date_Accepted;
                 AAWSProgramInfoViewModelOverView.Complete_Correct = GeneralInfo.Complete_Correct;
@@ -61,8 +61,11 @@
             }
             catch(Exception exception)
             {
+#if DEBUG
+#else
                 EmailService.Message(exception);
-                return null;
+#endif
+                return AAWSProgramInfoViewModel;
             }
         }
 
