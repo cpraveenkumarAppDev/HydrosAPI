@@ -65,5 +65,23 @@ namespace HydrosApi.Services
                 return false;
             }
         }
+        public static bool Message(Exception program_exception, string userName = "")
+        {
+            try
+            {
+                SmtpClient smtp = new SmtpClient
+                {
+                    EnableSsl = false
+                };
+                var message = new MailMessage("NoReply@azwater.gov", "appdev@azwater.gov", $"HydrosAPI error {Environment.MachineName}: {userName}", $"{program_exception.Message}\n${program_exception.StackTrace}");
+                smtp.Send(message);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                //log error
+                return false;
+            }
+        }
     }
 }

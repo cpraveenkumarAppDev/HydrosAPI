@@ -92,11 +92,12 @@ namespace HydrosApi.Controllers
              
         }
 
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpPut, Route("aws/updateapp")]
         public IHttpActionResult UpdateApp([FromBody] AAWSProgramInfoViewModel paramValues) //New file
         {
-            var savedApplication = AAWSProgramInfoViewModel.OnUpdate(paramValues);
+            var user = User.Identity.Name;
+            var savedApplication = AAWSProgramInfoViewModel.OnUpdate(paramValues, user.Replace("AZWATER0\\", ""));
            
 
             return Ok(savedApplication);
