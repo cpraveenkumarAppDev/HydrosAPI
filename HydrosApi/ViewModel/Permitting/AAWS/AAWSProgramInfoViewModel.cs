@@ -46,15 +46,22 @@
         public static AAWSProgramInfoViewModel OnUpdate(AAWSProgramInfoViewModel paramValues)
         {
             AAWSProgramInfoViewModel AAWSProgramInfoViewModel = new AAWSProgramInfoViewModel();
-            using (var ctx = new OracleContext())
+            /*using (var ctx = new OracleContext())
             {
                 var application = ctx.V_AWS_GENERAL_INFO.Where(p => p.ProgramCertificateConveyance == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_GENERAL_INFO>();
                 application.Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N";
                 application.Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N";
-                ctx.SaveChanges();
+                ctx.SaveChanges();                
+            }*/                       
 
-                return AAWSProgramInfoViewModel;
+            var application = V_AWS_GENERAL_INFO.UpdateSome(new V_AWS_GENERAL_INFO()
+            {
+                Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N",
+                Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N"
             }
+            , p => p.ProgramCertificateConveyance == paramValues.ProgramCertificateConveyance);           
+
+            return AAWSProgramInfoViewModel;
         }
     }
 }
