@@ -23,7 +23,7 @@
         {
             AAWSProgramInfoViewModel AAWSProgramInfoViewModel = new AAWSProgramInfoViewModel();
             AWS_OVER_VIEW AAWSProgramInfoViewModelOverView = new AWS_OVER_VIEW();
-            V_AWS_HYDRO Hydrology = V_AWS_HYDRO.Get(p=> p.PCC == PermitCertificateConveyanceNumber);
+            V_AWS_HYDRO Hydrology = V_AWS_HYDRO.Get(p => p.PCC == PermitCertificateConveyanceNumber);
             List<V_AWS_PROVIDER> lists = V_AWS_PROVIDER.GetAll();
             List<V_AWS_SUBBAS> SubbasinList = V_AWS_SUBBAS.GetAll();
 
@@ -38,7 +38,7 @@
                 AAWSProgramInfoViewModel.SubbasinList = SubbasinList;
                 //OverView data
                 AAWSProgramInfoViewModelOverView.PrimaryProviderName = GeneralInfo.PrimaryProviderName;
-                AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId = (int)GeneralInfo.PrimaryProviderWrfId;
+                AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId = GeneralInfo.PrimaryProviderWrfId != null ? (int)GeneralInfo.PrimaryProviderWrfId : 0;
                 AAWSProgramInfoViewModelOverView.SecondaryProviderName = GeneralInfo.SecondaryProviderName;
                 AAWSProgramInfoViewModelOverView.Date_Accepted = GeneralInfo.Date_Accepted;
                 AAWSProgramInfoViewModelOverView.Complete_Correct = GeneralInfo.Complete_Correct;
@@ -59,17 +59,21 @@
                 // FileNotFoundExceptions are handled here.
                 return AAWSProgramInfoViewModel;
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
+#if DEBUG
+#else
                 EmailService.Message(exception);
                 return null;
+#endif
+                return AAWSProgramInfoViewModel;
             }
         }
 
-        public static AAWSProgramInfoViewModel OnUpdate(AAWSProgramInfoViewModel paramValues)
+        public static AAWSProgramInfoViewModel OnUpdate(AAWSProgramInfoViewModel paramValues, string user)
         {
             AAWSProgramInfoViewModel AAWSProgramInfoViewModel = new AAWSProgramInfoViewModel();
-            /*using (var ctx = new OracleContext())
+            using (var ctx = new OracleContext())
             {
                 var application = ctx.V_AWS_GENERAL_INFO.Where(p => p.ProgramCertificateConveyance == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_GENERAL_INFO>();
                 application.Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N";
@@ -83,23 +87,23 @@
                 ctx.SaveChanges();
 
                 return AAWSProgramInfoViewModel;
-            }*/
+            }
 
-            var application = V_AWS_GENERAL_INFO.UpdateSome(new V_AWS_GENERAL_INFO()
-            {
-                Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N",
-                Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N",
-                PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId,
-                UserName = user
+            //var application = V_AWS_GENERAL_INFO.UpdateSome(new V_AWS_GENERAL_INFO()
+            //{
+            //    Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N",
+            //    Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N",
+            //    PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId,
+            //    UserName = user
 
-            }, p => p.ProgramCertificateConveyance == paramValues.ProgramCertificateConveyance);
+            //}, p => p.ProgramCertificateConveyance == paramValues.ProgramCertificateConveyance);
 
-            var Hydrology = V_AWS_HYDRO.UpdateSome(new V_AWS_HYDRO()
-            {
-                SUBBASIN_CODE = paramValues.OverView.SubbasinCode
-            }, p => p.PCC == paramValues.ProgramCertificateConveyance);
+            //var Hydrology = V_AWS_HYDRO.UpdateSome(new V_AWS_HYDRO()
+            //{
+            //    SUBBASIN_CODE = paramValues.OverView.SubbasinCode
+            //}, p => p.PCC == paramValues.ProgramCertificateConveyance);
 
-            return AAWSProgramInfoViewModel;
+            //return AAWSProgramInfoViewModel;
         }
     }
 }

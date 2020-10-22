@@ -11,14 +11,21 @@ namespace HydrosApi.Controllers
     using System.Linq;
 
     public class AAWSController : ApiController
-    {       
+    {
         // GET: AAWS
         //IRR-29-A16011018CBB-01
-        [Route("aws/getgeneralInfo")]
+        [Route("aws/getgeneralInfo/")]
         [HttpGet]
         public IHttpActionResult GetGeneralInfo()
         {
             return Ok(V_AWS_GENERAL_INFO.GetAll());
+        }
+
+        [Route("aws/getgeneralInfo/{name}")]
+        [HttpGet]
+        public IHttpActionResult GetGeneralInfo(string name = null)
+        {
+            return Ok(V_AWS_GENERAL_INFO.Get(p => p.FileReviewer == name));
         }
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [Route("aws/getgeneralInfoById/{id}")]
@@ -92,11 +99,12 @@ namespace HydrosApi.Controllers
              
         }
 
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpPut, Route("aws/updateapp")]
         public IHttpActionResult UpdateApp([FromBody] AAWSProgramInfoViewModel paramValues) //New file
         {
-            var savedApplication = AAWSProgramInfoViewModel.OnUpdate(paramValues);
+            var user = User.Identity.Name;
+            var savedApplication = AAWSProgramInfoViewModel.OnUpdate(paramValues, user.Replace("AZWATER0\\", ""));
            
 
             return Ok(savedApplication);

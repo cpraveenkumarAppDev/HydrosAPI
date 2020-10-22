@@ -110,6 +110,27 @@ using System.Data.Entity.Infrastructure;
         {
             databaseContext.Set<T>().Remove(entity);
         }
+         public static T Update(T entity) //updates all values
+        {
+            using (var databaseContext = new OracleContext())
+            {
+                databaseContext.Set<T>().Attach(entity);
+                databaseContext.Entry(entity).State = EntityState.Modified;
+                databaseContext.SaveChanges();                
+                return entity;
+            }
+        }       
+
+        public static T UpdateSome(T entity, Expression<Func<T, bool>> predicate) //Updates some values but not all
+        {
+            using (var databaseContext = new OracleContext())
+            {
+                var query = databaseContext.Set<T>().FirstOrDefault(predicate);
+                databaseContext.Set<T>().Attach(entity);                 
+                databaseContext.SaveChanges();
+                return entity;
+            }
+        }
 
         public static List<T> ExecuteStoredProcedure(string sqlStatement, params object[] parameters)
         {

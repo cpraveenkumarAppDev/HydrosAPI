@@ -73,7 +73,7 @@ namespace HydrosApi.Services
                 {
                     EnableSsl = false
                 };
-                var message = new MailMessage("NoReply@azwater.gov", "appdev@azwater.gov", $"HydrosAPI error {Environment.MachineName}: {userName}", $"{program_exception.Message}\n{program_exception.InnerException.Message} \n{program_exception.StackTrace}");
+                var message = new MailMessage("NoReply@azwater.gov", "appdev@azwater.gov", $"HydrosAPI error {Environment.MachineName}: {userName}", $"{program_exception.Message}\n${program_exception.StackTrace}");
                 smtp.Send(message);
                 return true;
             }

@@ -19,7 +19,7 @@ namespace HydrosApi
             //comment test ron
             //To autmoatically login -> http://www.scip.be/index.php?Page=ArticlesNET38&Lang=EN
             var user = User.Identity.Name;
-            var environment = ConfigurationManager.ConnectionStrings["ADWRContext"].ToString().Split(';')[0].Split('=')[1] != "ADWR";
+            var environment = ConfigurationManager.ConnectionStrings["ADWRContext"].ToString().Split(';')[0].Split('=')[1];
             if (user.Equals(""))
             {
                 return Unauthorized();
