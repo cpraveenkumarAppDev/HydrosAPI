@@ -88,7 +88,7 @@
                 application.Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N";
                 application.PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId;
                 application.UserName = user;
-                application.AMA = paramValues.OverView.AMA;
+                application.Cama_code = CD_AMA_INA.GetAll().Where(x => x.DESCR == paramValues.OverView.AMA).FirstOrDefault().CODE;
                 //Hydrology data
                 var Hydrology = ctx.V_AWS_HYDRO.Where(p => p.PCC == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_HYDRO>();
                 Hydrology.SUBBASIN_CODE = paramValues.OverView.SubbasinCode;
