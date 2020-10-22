@@ -27,6 +27,8 @@
         public string Subdivision { get; set; }
         [Column("AMA_DESCR")]
         public string AMA { get; set; }
+        [Column("CAMA_CODE")]
+        public string Cama_code { get; set; }
         [Column("PROGRAM_CODE")]
         public string ProgramCode { get; set; }
         [Column("FILE_REVIEWER")]

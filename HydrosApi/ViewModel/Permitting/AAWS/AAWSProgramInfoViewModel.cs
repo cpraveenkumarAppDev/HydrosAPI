@@ -21,6 +21,8 @@
         public List<V_AWS_SUBBAS> SubbasinList { get; set; }
         public List<SP_AW_CONV_DIAGRAM> Diagram { get; set; }
         public V_AWS_HYDRO Hydrology { get; set; }
+        public List<string> AmaList { get; set; }
+        public List<string> InaList { get; set; }
         public static AAWSProgramInfoViewModel GetData(string PermitCertificateConveyanceNumber)
         {
             AAWSProgramInfoViewModel AAWSProgramInfoViewModel = new AAWSProgramInfoViewModel();
@@ -41,6 +43,7 @@
                 AAWSProgramInfoViewModel.FeeRates = V_CD_AW_APP_FEE_RATES.Get(x => x.PROGRAM_CODE == PermitCertificateConveyanceNumber.Substring(0, 2));
                 //OverView data
                 AAWSProgramInfoViewModelOverView.PrimaryProviderName = GeneralInfo.PrimaryProviderName;
+                AAWSProgramInfoViewModelOverView.AMA = GeneralInfo.AMA;
                 AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId = GeneralInfo.PrimaryProviderWrfId != null ? (int)GeneralInfo.PrimaryProviderWrfId : 0;
                 AAWSProgramInfoViewModelOverView.SecondaryProviderName = GeneralInfo.SecondaryProviderName;
                 AAWSProgramInfoViewModelOverView.Date_Accepted = GeneralInfo.Date_Accepted;
@@ -53,6 +56,11 @@
                 AAWSProgramInfoViewModel.OverView = AAWSProgramInfoViewModelOverView;
                 //Hydrology data
                 AAWSProgramInfoViewModel.Hydrology = Hydrology;
+
+                var ama_ina_codes = CD_AMA_INA.GetAll();
+
+                AAWSProgramInfoViewModel.AmaList = ama_ina_codes.Where(x => x.AMA_INA_TYPE == "AMA").Select(x => x.DESCR).OrderBy(x => x).ToList();
+                AAWSProgramInfoViewModel.InaList = ama_ina_codes.Where(x => x.AMA_INA_TYPE == "INA").Select(x => x.DESCR).OrderBy(x => x).ToList();
 
 
                 return AAWSProgramInfoViewModel;
@@ -91,6 +99,7 @@
                 application.Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N";
                 application.PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId;
                 application.UserName = user;
+                application.Cama_code = CD_AMA_INA.GetAll().Where(x => x.DESCR == paramValues.OverView.AMA).FirstOrDefault().CODE;
                 //Hydrology data
                 var Hydrology = ctx.V_AWS_HYDRO.Where(p => p.PCC == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_HYDRO>();
                 Hydrology.SUBBASIN_CODE = paramValues.OverView.SubbasinCode;
@@ -101,7 +110,7 @@
             }
 
             //var application = V_AWS_GENERAL_INFO.UpdateSome(new V_AWS_GENERAL_INFO()
-            //{
+            //{                
             //    Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N",
             //    Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N",
             //    PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId,
@@ -112,7 +121,7 @@
             //var Hydrology = V_AWS_HYDRO.UpdateSome(new V_AWS_HYDRO()
             //{
             //    SUBBASIN_CODE = paramValues.OverView.SubbasinCode
-            //}, p => p.PCC == paramValues.ProgramCertificateConveyance);
+            //}, p => p.PCC == paramValues.ProgramCertificateConveyance);         
 
             //return AAWSProgramInfoViewModel;
         }
