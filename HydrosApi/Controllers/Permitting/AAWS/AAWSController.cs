@@ -103,8 +103,9 @@ namespace HydrosApi.Controllers
         [HttpPut, Route("aws/updateapp")]
         public IHttpActionResult UpdateApp([FromBody] AAWSProgramInfoViewModel paramValues) //New file
         {
+
             var user = User.Identity.Name;
-            var savedApplication = AAWSProgramInfoViewModel.OnUpdate(paramValues, user.Replace("AZWATER0\\", ""));
+            var savedApplication = AAWSProgramInfoViewModel.OnUpdate(paramValues, user.Replace("AZWATER0\\",""));
            
 
             return Ok(savedApplication);

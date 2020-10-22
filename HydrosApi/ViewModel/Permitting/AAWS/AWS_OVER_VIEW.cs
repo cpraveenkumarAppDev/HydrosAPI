@@ -15,10 +15,10 @@
         public bool Application_Signed { get; set; }
         public bool Physical_Availability { get; set; }
         public bool Hydrology { get; set; }
-        public bool Continous_Availability { get; set; }
+        public bool Continuous_Availability { get; set; }
         public bool Legal_Availability { get; set; }
-        public bool Consistency_with_Management_Plan { get; set; }
-        public bool Consistency_with_Management_Goal { get; set; }
+        public bool Consistency_With_Mgmt_Plan { get; set; }
+        public bool Consistency_With_Mgmt_Goal { get; set; }
         public bool Water_Quality { get; set; }
         public bool Financial_Capability { get; set; }
         public bool Ownership_Documents { get; set; }
