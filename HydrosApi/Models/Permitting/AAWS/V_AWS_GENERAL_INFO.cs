@@ -61,6 +61,28 @@
         public DateTime? Second_Notice_Date { get; set; }
         [Column("PUB_COMM_ENDDT")]
         public DateTime? Final_Date_for_Public_Comment { get; set; }
+
+        [Column("PHYSICAL_AVAILABILITY")]
+        public string Physical_Availability { get; set; }
+        [Column("CONTINUOUS_AVAILABILITY")]
+        public string Continuous_Availability { get; set; }
+        [Column("CONSISTENCY_WITH_MGMT_PLAN")]
+        public string Consistency_With_Mgmt_Plan { get; set; }
+        [Column("CONSISTENCY_WITH_MGMT_GOAL")]
+        public string Consistency_With_Mgmt_Goal { get; set; }
+        [Column("FINANCIAL_CAPABILITY")]
+        public string Financial_Capability { get; set; }
+        [Column("OWNERSHIP_DOCUMENTS")]
+        public string Ownership_Documents { get; set; }
+        [Column("DEMAND_CALCULATOR")]
+        public string Demand_Calculator { get; set; }
+        [Column("OTHER")]
+        public string Other { get; set; }
+        [Column("WATER_QUALITY")]
+        public string Water_Quality { get; set; }
+        [Column("DESIGNATION_TERM")]
+        public string Designation_Term { get; set; }
+
         [NotMapped] 
         public string ProcessStatus { get; set; } //Use this for error messages in stored procedure or api calls
     }
