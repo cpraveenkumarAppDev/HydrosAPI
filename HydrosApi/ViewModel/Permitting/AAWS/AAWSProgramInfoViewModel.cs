@@ -40,6 +40,7 @@
                 AAWSProgramInfoViewModel.SubbasinList = SubbasinList;
                 //OverView data
                 AAWSProgramInfoViewModelOverView.PrimaryProviderName = GeneralInfo.PrimaryProviderName;
+                AAWSProgramInfoViewModelOverView.AMA = GeneralInfo.AMA;
                 AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId = GeneralInfo.PrimaryProviderWrfId != null ? (int)GeneralInfo.PrimaryProviderWrfId : 0;
                 AAWSProgramInfoViewModelOverView.SecondaryProviderName = GeneralInfo.SecondaryProviderName;
                 AAWSProgramInfoViewModelOverView.Date_Accepted = GeneralInfo.Date_Accepted;
@@ -80,13 +81,14 @@
         public static AAWSProgramInfoViewModel OnUpdate(AAWSProgramInfoViewModel paramValues, string user)
         {
             AAWSProgramInfoViewModel AAWSProgramInfoViewModel = new AAWSProgramInfoViewModel();
-            /*using (var ctx = new OracleContext())
+            using (var ctx = new OracleContext())
             {
                 var application = ctx.V_AWS_GENERAL_INFO.Where(p => p.ProgramCertificateConveyance == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_GENERAL_INFO>();
                 application.Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N";
                 application.Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N";
                 application.PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId;
                 application.UserName = user;
+                application.AMA = paramValues.OverView.AMA;
                 //Hydrology data
                 var Hydrology = ctx.V_AWS_HYDRO.Where(p => p.PCC == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_HYDRO>();
                 Hydrology.SUBBASIN_CODE = paramValues.OverView.SubbasinCode;
@@ -94,23 +96,23 @@
                 ctx.SaveChanges();
 
                 return AAWSProgramInfoViewModel;
-            }*/
+            }
 
-            var application = V_AWS_GENERAL_INFO.UpdateSome(new V_AWS_GENERAL_INFO()
-            {                
-                Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N",
-                Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N",
-                PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId,
-                UserName = user
+            //var application = V_AWS_GENERAL_INFO.UpdateSome(new V_AWS_GENERAL_INFO()
+            //{                
+            //    Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N",
+            //    Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N",
+            //    PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId,
+            //    UserName = user
 
-            }, p => p.ProgramCertificateConveyance == paramValues.ProgramCertificateConveyance);
+            //}, p => p.ProgramCertificateConveyance == paramValues.ProgramCertificateConveyance);
 
-            var Hydrology = V_AWS_HYDRO.UpdateSome(new V_AWS_HYDRO()
-            {
-                SUBBASIN_CODE = paramValues.OverView.SubbasinCode
-            }, p => p.PCC == paramValues.ProgramCertificateConveyance);         
+            //var Hydrology = V_AWS_HYDRO.UpdateSome(new V_AWS_HYDRO()
+            //{
+            //    SUBBASIN_CODE = paramValues.OverView.SubbasinCode
+            //}, p => p.PCC == paramValues.ProgramCertificateConveyance);         
 
-            return AAWSProgramInfoViewModel;
+            //return AAWSProgramInfoViewModel;
         }
     }
 }
