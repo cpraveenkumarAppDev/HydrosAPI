@@ -30,10 +30,10 @@ namespace HydrosApi.Controllers
             //I'm sorry to change it
             
             Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
-            var pcc = regex.Replace(id, "$1-$2.$3"); 
-           // var pcc = regex.Replace("~", ".");
-
-            return Json(AAWSProgramInfoViewModel.GetData(pcc));
+            var pcc = regex.Replace(id, "$1-$2.$3");
+            // var pcc = regex.Replace("~", ".");
+            var found = AAWSProgramInfoViewModel.GetData(pcc);
+            return Json(found);
         }       
        
         [Route("aws/GetNewAWSRight")]

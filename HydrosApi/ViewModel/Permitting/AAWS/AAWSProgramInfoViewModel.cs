@@ -19,6 +19,8 @@
         public List<V_AWS_SUBBAS> SubbasinList { get; set; }
         public List<SP_AW_CONV_DIAGRAM> Diagram { get; set; }
         public V_AWS_HYDRO Hydrology { get; set; }
+        public List<string> AmaList { get; set; }
+        public List<string> InaList { get; set; }
         public static AAWSProgramInfoViewModel GetData(string PermitCertificateConveyanceNumber)
         {
             AAWSProgramInfoViewModel AAWSProgramInfoViewModel = new AAWSProgramInfoViewModel();
@@ -50,6 +52,11 @@
                 AAWSProgramInfoViewModel.OverView = AAWSProgramInfoViewModelOverView;
                 //Hydrology data
                 AAWSProgramInfoViewModel.Hydrology = Hydrology;
+
+                var ama_ina_codes = CD_AMA_INA.GetAll();
+
+                AAWSProgramInfoViewModel.AmaList = ama_ina_codes.Where(x => x.AMA_INA_TYPE == "AMA").Select(x => x.DESCR).OrderBy(x => x).ToList();
+                AAWSProgramInfoViewModel.InaList = ama_ina_codes.Where(x => x.AMA_INA_TYPE == "INA").Select(x => x.DESCR).OrderBy(x => x).ToList();
 
 
                 return AAWSProgramInfoViewModel;

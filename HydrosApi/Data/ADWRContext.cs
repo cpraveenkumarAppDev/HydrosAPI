@@ -41,6 +41,7 @@
         public virtual DbSet<V_AWS_PROVIDER> V_AWS_PROVIDER { get; set; }
         public virtual DbSet<V_AWS_SUBBAS> V_AWS_SUBBAS { get; set; }
         public virtual DbSet<V_AWS_HYDRO> V_AWS_HYDRO { get; set; }
+        public virtual DbSet<CD_AMA_INA> CD_AMA_INA { get; set; }
 
 
 
