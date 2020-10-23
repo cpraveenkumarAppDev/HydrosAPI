@@ -88,7 +88,7 @@
             {
                 var application = ctx.V_AWS_GENERAL_INFO.Where(p => p.ProgramCertificateConveyance == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_GENERAL_INFO>();
                 application.Physical_Availability = paramValues.OverView.Physical_Availability == true ? "Y" : "N";
-                //application.Continuous_Availability = paramValues.OverView.Continuous_Availability == true ? "Y" : "N";
+                application.Continuous_Availability = paramValues.OverView.Continuous_Availability == true ? "Y" : "N";
                 application.Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N";
                 application.Water_Quality = paramValues.OverView.Water_Quality == true ? "Y" : "N";
                 application.Ownership_Documents = paramValues.OverView.Ownership_Documents == true ? "Y" : "N";
