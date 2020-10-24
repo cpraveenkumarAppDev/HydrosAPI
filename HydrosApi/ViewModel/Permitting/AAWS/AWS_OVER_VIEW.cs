@@ -10,6 +10,7 @@
         public int PrimaryProviderWrfId { get; set; }
         public string Subdivision { get; set; }
         public string SecondaryProviderName { get; set; }
+        public int? SecondaryProviderWrfId { get; set; }
         public bool Application_Form_Complete { get; set; }
         public bool Correct_Fees_Received { get; set; }
         public bool Application_Signed { get; set; }
@@ -23,6 +24,7 @@
         public bool Financial_Capability { get; set; }
         public bool Ownership_Documents { get; set; }
         public bool Demand_Calculator { get; set; }
+        public int? Designation_Term { get; set; }
         public bool Other { get; set; }
         public string Water_Provider_Name { get; set; }
         public DateTime? Date_Reviewed { get; set; }
