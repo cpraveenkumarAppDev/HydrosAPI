@@ -318,6 +318,7 @@
     <Compile Include="Models\Permitting\AAWS\V_AWS_HYDRO.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_PROVIDER.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_SUBBAS.cs" />
+    <Compile Include="Models\Permitting\AAWS\V_AWS_WQ.cs" />
     <Compile Include="Models\Permitting\AAWS\V_CD_AW_AMA_INA.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_OAWS.cs" />
     <Compile Include="Data\Repository.cs" />

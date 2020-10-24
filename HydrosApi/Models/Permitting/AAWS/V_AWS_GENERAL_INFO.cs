@@ -14,7 +14,7 @@
         {
 
         }
-
+       
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("WRFID")]
@@ -37,11 +37,15 @@
         public string LTFDaysRemaining { get; set; }
         [Column("APP_STATUS_DESCR")]
         public string Status { get; set; }
+
         [Column("APP_STATUS_DT")]
         public DateTime? StatusDate { get; set; }
 
+        //public DateTime? APP_STATUS_DT { get; set; }
+
         [Column("HYDROLOGY")]
         public string Hydrology { get; set; }
+
         [Column("LEGAL_AVAILABILITY")]
         public string Legal_Availability { get; set; }
 
@@ -83,9 +87,25 @@
         [Column("WATER_QUALITY")]
         public string Water_Quality { get; set; }
         [Column("DESIGNATION_TERM")]
-        public string Designation_Term { get; set; }
+        public int? Designation_Term { get; set; }
 
-        [NotMapped] 
+        [NotMapped]
         public string ProcessStatus { get; set; } //Use this for error messages in stored procedure or api calls
+     
+    
+
+       /* [NotMapped]
+        public string StatusDate {
+            get {                  
+                return APP_STATUS_DT.ToString();
+            }
+
+            set {
+                this.StatusDate = value;
+
+                APP_STATUS_DT=DateTime.Parse(value);
+                
+            }            
+         }*/
     }
 }
