@@ -51,6 +51,8 @@
 
         [Column("SECONDARY_PROV_NAME")]
         public string SecondaryProviderName { get; set; }
+        [Column("SECONDARY_PROV_WRFID")]
+        public int? SecondaryProviderWrfId { get; set; }
         [Column("USER_NAME")]
         public string UserName { get; set; }
         [Column("PRIMARY_PROV_WRFID")]
@@ -67,7 +69,8 @@
         public DateTime? Second_Notice_Date { get; set; }
         [Column("PUB_COMM_ENDDT")]
         public DateTime? Final_Date_for_Public_Comment { get; set; }
-
+        //[Column("DEC_COMPLETE_DT")]
+        //public DateTime? Final_Date_for_Public_Comment { get; set; }
         [Column("PHYSICAL_AVAILABILITY")]
         public string Physical_Availability { get; set; }
         [Column("CONTINUOUS_AVAILABILITY")]
