@@ -53,8 +53,19 @@
                 AAWSProgramInfoViewModelOverView.Date_Accepted = GeneralInfo.Date_Accepted;
                 AAWSProgramInfoViewModelOverView.Date_Received = GeneralInfo.Date_Received;
                 AAWSProgramInfoViewModelOverView.Complete_Correct = GeneralInfo.Complete_Correct;
+
+                AAWSProgramInfoViewModelOverView.Physical_Availability = GeneralInfo.Physical_Availability== "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.Hydrology = GeneralInfo.Hydrology == "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.Continuous_Availability = GeneralInfo.Continuous_Availability == "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.Legal_Availability = GeneralInfo.Legal_Availability == "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.Consistency_With_Mgmt_Plan = GeneralInfo.Consistency_With_Mgmt_Plan == "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.Consistency_With_Mgmt_Goal = GeneralInfo.Consistency_With_Mgmt_Goal == "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.Water_Quality = GeneralInfo.Water_Quality == "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.Financial_Capability = GeneralInfo.Financial_Capability == "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.Ownership_Documents = GeneralInfo.Ownership_Documents== "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.Demand_Calculator = GeneralInfo.Demand_Calculator== "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.Other = GeneralInfo.Other == "Y" ? true : false;
+
                 AAWSProgramInfoViewModelOverView.Designation_Term = GeneralInfo.Designation_Term;
                 AAWSProgramInfoViewModelOverView.First_Notice = GeneralInfo.First_Notice_Date;
                 AAWSProgramInfoViewModelOverView.Second_Notice = GeneralInfo.Second_Notice_Date;
@@ -98,17 +109,20 @@
             using (var ctx = new OracleContext())
             {
                 var application = ctx.V_AWS_GENERAL_INFO.Where(p => p.ProgramCertificateConveyance == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_GENERAL_INFO>();
+                
                 application.Physical_Availability = paramValues.OverView.Physical_Availability == true ? "Y" : "N";
+                application.Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N";
                 application.Continuous_Availability = paramValues.OverView.Continuous_Availability == true ? "Y" : "N";
                 application.Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N";
+                application.Consistency_With_Mgmt_Plan=paramValues.OverView.Consistency_With_Mgmt_Plan == true ? "Y" : "N";
+                application.Consistency_With_Mgmt_Goal = paramValues.OverView.Consistency_With_Mgmt_Goal == true ? "Y" : "N";
                 application.Water_Quality = paramValues.OverView.Water_Quality == true ? "Y" : "N";
-                application.Ownership_Documents = paramValues.OverView.Ownership_Documents == true ? "Y" : "N";
                 application.Financial_Capability = paramValues.OverView.Financial_Capability == true ? "Y" : "N";
-                application.Designation_Term = paramValues.OverView.Designation_Term;
-                application.Other = paramValues.OverView.Other == true ? "Y" : "N";
+                application.Ownership_Documents = paramValues.OverView.Ownership_Documents == true ? "Y" : "N";
                 application.Demand_Calculator = paramValues.OverView.Demand_Calculator == true ? "Y" : "N";
-                application.Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N";
-                application.Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N";
+                application.Other = paramValues.OverView.Other == true ? "Y" : "N";
+
+                application.Designation_Term = paramValues.OverView.Designation_Term;                
                 application.PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId;
                 application.SecondaryProviderWrfId = paramValues.OverView.SecondaryProviderWrfId;
                 application.First_Notice_Date = paramValues.OverView.First_Notice;

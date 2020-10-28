@@ -14,6 +14,7 @@ namespace HydrosApi.Data
 
             base.Configuration.ProxyCreationEnabled = false;
         }
+        public virtual DbSet<V_AWS_WQ> V_AWS_WQ { get; set; }
 
         public virtual DbSet<V_CD_AW_AMA_INA> V_CD_AW_AMA_INA { get; set; }
         public virtual DbSet<V_CD_AW_APP_FEE_RATES> V_CD_AW_APP_FEE_RATES { get; set; }
