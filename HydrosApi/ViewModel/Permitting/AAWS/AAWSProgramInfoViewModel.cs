@@ -52,6 +52,7 @@
 
                 AAWSProgramInfoViewModelOverView.Physical_Availability = GeneralInfo.Physical_Availability== "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.Hydrology = GeneralInfo.Hydrology == "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.Continuous_Availability = GeneralInfo.Continuous_Availability == "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.Legal_Availability = GeneralInfo.Legal_Availability == "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.Consistency_With_Mgmt_Plan = GeneralInfo.Consistency_With_Mgmt_Plan == "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.Consistency_With_Mgmt_Goal = GeneralInfo.Consistency_With_Mgmt_Goal == "Y" ? true : false;
