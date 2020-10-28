@@ -20,5 +20,7 @@
         public string PROVIDER_NAME { get; set; }
         [Column("PROVIDER_PCC")]
         public string PROVIDER_PCC { get; set; }
+        [Column("PROVIDER_AMA_CODE")]
+        public string PROVIDER_AMA_CODE { get; set; }
     }
 }

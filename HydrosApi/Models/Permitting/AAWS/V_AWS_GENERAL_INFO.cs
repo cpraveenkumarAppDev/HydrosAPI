@@ -57,8 +57,12 @@
         public string PrimaryProviderName { get; set; }
         [Column("COMPLETE_CORRECT_DT")]
         public DateTime? Complete_Correct { get; set; }
-        [Column("RECEIVEDDT")]
+        [Column("DATEACCEPTED")]
         public DateTime? Date_Accepted { get; set; }
+        [Column("DEC_COMPLETE_DT")] 
+        public DateTime? Date_Declared_Complete { get; set; }
+        [Column("RECEIVEDDT")]
+        public DateTime? Date_Received { get; set; }
         [Column("FIRST_NOTICEDT")]
         public DateTime? First_Notice_Date { get; set; }
         [Column("SEC_NOTICEDT")]
