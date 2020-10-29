@@ -17,6 +17,7 @@
         public string ProgramCertificateConveyance { get; set; }
         public string Subdivision { get; set; }
         public string ProgramCode { get; set; }
+        public string Cama_code { get; set; }
         public int? WaterRightFacilityId { get; set; }
          
         public V_CD_AW_APP_FEE_RATES FeeRates { get; set; }
@@ -45,17 +46,18 @@
                 AAWSProgramInfoViewModel.Subdivision = GeneralInfo.Subdivision;
                 AAWSProgramInfoViewModel.Diagram = SP_AW_CONV_DIAGRAM.ConveyanceDiagram(PermitCertificateConveyanceNumber);
                 AAWSProgramInfoViewModel.FeeRates = V_CD_AW_APP_FEE_RATES.Get(x => x.PROGRAM_CODE == PermitCertificateConveyanceNumber.Substring(0, 2));
+                AAWSProgramInfoViewModel.Cama_code = GeneralInfo.Cama_code;
                 //OverView data
                 AAWSProgramInfoViewModelOverView.PrimaryProviderName = GeneralInfo.PrimaryProviderName;
                 AAWSProgramInfoViewModelOverView.AMA = GeneralInfo.AMA;
-                AAWSProgramInfoViewModelOverView.Cama_code = GeneralInfo.Cama_code;
                 AAWSProgramInfoViewModelOverView.Physical_Availability = GeneralInfo.Physical_Availability == "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.SecondaryProviderWrfId = GeneralInfo.SecondaryProviderWrfId;
-                AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId = GeneralInfo.PrimaryProviderWrfId != null ? (int)GeneralInfo.PrimaryProviderWrfId : 0;
+                AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId = GeneralInfo.PrimaryProviderWrfId;
 
                 if (lists != null)
                 {
-                    AAWSProgramInfoViewModelOverView.PWS_ID_Number = lists.Where(p => p.PROVIDER_WRF_ID == AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId).FirstOrDefault().PWS_ID_Number;
+                    var stuff = lists.Where(p => p.PROVIDER_WRF_ID == AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId).FirstOrDefault();
+                    AAWSProgramInfoViewModelOverView.PWS_ID_Number = stuff != null ? stuff.PWS_ID_Number : "";
                 }
 
                 AAWSProgramInfoViewModelOverView.SecondaryProviderName = GeneralInfo.SecondaryProviderName;
@@ -119,11 +121,11 @@
             {
                 var application = ctx.V_AWS_GENERAL_INFO.Where(p => p.ProgramCertificateConveyance == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_GENERAL_INFO>();
                 
-                application.Physical_Availability = paramValues.OverView.Physical_Availability == true ? "Y" : "N";
+                application.Physical_Availability = application.Physical_Availability == null && paramValues.OverView.Physical_Availability == false ? null: paramValues.OverView.Physical_Availability == true ? "Y" : "N";
                 application.Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N";
                 application.Continuous_Availability = paramValues.OverView.Continuous_Availability == true ? "Y" : "N";
                 application.Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N";
-                application.Consistency_With_Mgmt_Plan=paramValues.OverView.Consistency_With_Mgmt_Plan == true ? "Y" : "N";
+                application.Consistency_With_Mgmt_Plan = paramValues.OverView.Consistency_With_Mgmt_Plan == true ? "Y" : "N";
                 application.Consistency_With_Mgmt_Goal = paramValues.OverView.Consistency_With_Mgmt_Goal == true ? "Y" : "N";
                 application.Water_Quality = paramValues.OverView.Water_Quality == true ? "Y" : "N";
                 application.Financial_Capability = paramValues.OverView.Financial_Capability == true ? "Y" : "N";
@@ -143,7 +145,7 @@
                 application.Complete_Correct = paramValues.OverView.Complete_Correct;
                 application.UserName = user;
                 application.Subdivision = paramValues.Subdivision;
-                application.Cama_code = paramValues.OverView.Cama_code;
+                application.Cama_code = paramValues.Cama_code;
                 //Hydrology data
                 var Hydrology = ctx.V_AWS_HYDRO.Where(p => p.PCC == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_HYDRO>();
                 Hydrology.SUBBASIN_CODE = paramValues.OverView.SubbasinCode;
