@@ -9,6 +9,7 @@
     using HydrosApi.Data;
     using Oracle.ManagedDataAccess.Client;
     using HydrosApi.Services;
+    using WebApi.OutputCache.Core.Time;
 
     public class AAWSProgramInfoViewModel
     {
@@ -17,6 +18,7 @@
         public string Subdivision { get; set; }
         public string ProgramCode { get; set; }
         public int? WaterRightFacilityId { get; set; }
+         
         public V_CD_AW_APP_FEE_RATES FeeRates { get; set; }
         public List<V_AWS_SUBBAS> SubbasinList { get; set; }
         public List<SP_AW_CONV_DIAGRAM> Diagram { get; set; }
@@ -30,11 +32,12 @@
             V_AWS_HYDRO Hydrology = V_AWS_HYDRO.Get(p => p.PCC == PermitCertificateConveyanceNumber);
             List<V_AWS_PROVIDER> lists = V_AWS_PROVIDER.GetAll();
             List<V_AWS_SUBBAS> SubbasinList = V_AWS_SUBBAS.GetAll();
+            
 
             try
             {
                 var GeneralInfo = V_AWS_GENERAL_INFO.Get(p => p.ProgramCertificateConveyance == PermitCertificateConveyanceNumber);
-
+                
                 AAWSProgramInfoViewModel.ProgramCertificateConveyance = PermitCertificateConveyanceNumber;
                 AAWSProgramInfoViewModel.WaterRightFacilityId = GeneralInfo.WaterRightFacilityId;
                 AAWSProgramInfoViewModel.ProgramCode = GeneralInfo.ProgramCode;
@@ -46,6 +49,12 @@
                 AAWSProgramInfoViewModelOverView.AMA = GeneralInfo.AMA;
                 AAWSProgramInfoViewModelOverView.SecondaryProviderWrfId = GeneralInfo.SecondaryProviderWrfId;
                 AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId = GeneralInfo.PrimaryProviderWrfId != null ? (int)GeneralInfo.PrimaryProviderWrfId : 0;
+
+                if (lists != null)
+                {
+                    AAWSProgramInfoViewModelOverView.PWS_ID_Number = lists.Where(p => p.PROVIDER_WRF_ID == AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId).FirstOrDefault().PWS_ID_Number;
+                }
+
                 AAWSProgramInfoViewModelOverView.SecondaryProviderName = GeneralInfo.SecondaryProviderName;
                 AAWSProgramInfoViewModelOverView.Date_Accepted = GeneralInfo.Date_Accepted;
                 AAWSProgramInfoViewModelOverView.Complete_Correct = GeneralInfo.Complete_Correct;
