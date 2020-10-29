@@ -51,11 +51,12 @@
                 AAWSProgramInfoViewModelOverView.Cama_code = GeneralInfo.Cama_code;
                 AAWSProgramInfoViewModelOverView.Physical_Availability = GeneralInfo.Physical_Availability == "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.SecondaryProviderWrfId = GeneralInfo.SecondaryProviderWrfId;
-                AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId = GeneralInfo.PrimaryProviderWrfId != null ? (int)GeneralInfo.PrimaryProviderWrfId : 0;
+                AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId = GeneralInfo.PrimaryProviderWrfId;
 
                 if (lists != null)
                 {
-                    AAWSProgramInfoViewModelOverView.PWS_ID_Number = lists.Where(p => p.PROVIDER_WRF_ID == AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId).FirstOrDefault().PWS_ID_Number;
+                    var stuff = lists.Where(p => p.PROVIDER_WRF_ID == AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId).FirstOrDefault();
+                    AAWSProgramInfoViewModelOverView.PWS_ID_Number = stuff != null ? stuff.PWS_ID_Number : "";
                 }
 
                 AAWSProgramInfoViewModelOverView.SecondaryProviderName = GeneralInfo.SecondaryProviderName;
