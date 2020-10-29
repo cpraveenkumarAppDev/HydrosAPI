@@ -23,8 +23,9 @@
         public List<V_AWS_SUBBAS> SubbasinList { get; set; }
         public List<SP_AW_CONV_DIAGRAM> Diagram { get; set; }
         public V_AWS_HYDRO Hydrology { get; set; }
-        public List<string> AmaList { get; set; }
-        public List<string> InaList { get; set; }
+        public List<CD_AMA_INA> AmaIna { get; set; }
+        public List<CD_AMA_INA> AmaList { get; set; }
+        public List<CD_AMA_INA> InaList { get; set; }
         public static AAWSProgramInfoViewModel GetData(string PermitCertificateConveyanceNumber)
         {
             AAWSProgramInfoViewModel AAWSProgramInfoViewModel = new AAWSProgramInfoViewModel();
@@ -47,6 +48,8 @@
                 //OverView data
                 AAWSProgramInfoViewModelOverView.PrimaryProviderName = GeneralInfo.PrimaryProviderName;
                 AAWSProgramInfoViewModelOverView.AMA = GeneralInfo.AMA;
+                AAWSProgramInfoViewModelOverView.Cama_code = GeneralInfo.Cama_code;
+                AAWSProgramInfoViewModelOverView.Physical_Availability = GeneralInfo.Physical_Availability == "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.SecondaryProviderWrfId = GeneralInfo.SecondaryProviderWrfId;
                 AAWSProgramInfoViewModelOverView.PrimaryProviderWrfId = GeneralInfo.PrimaryProviderWrfId != null ? (int)GeneralInfo.PrimaryProviderWrfId : 0;
 
@@ -57,6 +60,7 @@
 
                 AAWSProgramInfoViewModelOverView.SecondaryProviderName = GeneralInfo.SecondaryProviderName;
                 AAWSProgramInfoViewModelOverView.Date_Accepted = GeneralInfo.Date_Accepted;
+                AAWSProgramInfoViewModelOverView.Date_Received = GeneralInfo.Date_Received;
                 AAWSProgramInfoViewModelOverView.Complete_Correct = GeneralInfo.Complete_Correct;
 
                 AAWSProgramInfoViewModelOverView.Physical_Availability = GeneralInfo.Physical_Availability== "Y" ? true : false;
@@ -74,6 +78,7 @@
                 AAWSProgramInfoViewModelOverView.Designation_Term = GeneralInfo.Designation_Term;
                 AAWSProgramInfoViewModelOverView.First_Notice = GeneralInfo.First_Notice_Date;
                 AAWSProgramInfoViewModelOverView.Second_Notice = GeneralInfo.Second_Notice_Date;
+                AAWSProgramInfoViewModelOverView.Date_Declared_Complete = GeneralInfo.Date_Declared_Complete;
                 AAWSProgramInfoViewModelOverView.Final_Date = GeneralInfo.Final_Date_for_Public_Comment;
                 AAWSProgramInfoViewModelOverView.ProvidersList = lists;
                 AAWSProgramInfoViewModelOverView.SubbasinCode = Hydrology.SUBBASIN_CODE;
@@ -84,8 +89,9 @@
 
                 var ama_ina_codes = CD_AMA_INA.GetAll();
 
-                AAWSProgramInfoViewModel.AmaList = ama_ina_codes.Where(x => x.AMA_INA_TYPE == "AMA").Select(x => x.DESCR).OrderBy(x => x).ToList();
-                AAWSProgramInfoViewModel.InaList = ama_ina_codes.Where(x => x.AMA_INA_TYPE == "INA").Select(x => x.DESCR).OrderBy(x => x).ToList();
+                AAWSProgramInfoViewModel.AmaIna = ama_ina_codes;
+                AAWSProgramInfoViewModel.AmaList = ama_ina_codes.Where(x => x.AMA_INA_TYPE == "AMA").ToList();
+                AAWSProgramInfoViewModel.InaList = ama_ina_codes.Where(x => x.AMA_INA_TYPE == "INA").ToList();
 
 
                 return AAWSProgramInfoViewModel;
@@ -128,9 +134,16 @@
                 application.Designation_Term = paramValues.OverView.Designation_Term;                
                 application.PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId;
                 application.SecondaryProviderWrfId = paramValues.OverView.SecondaryProviderWrfId;
+                application.First_Notice_Date = paramValues.OverView.First_Notice;
+                application.Date_Received = paramValues.OverView.Date_Received;
+                application.Date_Accepted = paramValues.OverView.Date_Accepted;
+                application.Second_Notice_Date = paramValues.OverView.Second_Notice;
+                application.Final_Date_for_Public_Comment = paramValues.OverView.Final_Date;
+                application.Date_Declared_Complete = paramValues.OverView.Date_Declared_Complete;
+                application.Complete_Correct = paramValues.OverView.Complete_Correct;
                 application.UserName = user;
                 application.Subdivision = paramValues.Subdivision;
-                application.Cama_code = CD_AMA_INA.GetAll().Where(x => x.DESCR == paramValues.OverView.AMA).FirstOrDefault().CODE;
+                application.Cama_code = paramValues.OverView.Cama_code;
                 //Hydrology data
                 var Hydrology = ctx.V_AWS_HYDRO.Where(p => p.PCC == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_HYDRO>();
                 Hydrology.SUBBASIN_CODE = paramValues.OverView.SubbasinCode;
