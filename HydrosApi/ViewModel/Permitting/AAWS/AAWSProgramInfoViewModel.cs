@@ -122,16 +122,16 @@
                 var application = ctx.V_AWS_GENERAL_INFO.Where(p => p.ProgramCertificateConveyance == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_GENERAL_INFO>();
                 
                 application.Physical_Availability = application.Physical_Availability == null && paramValues.OverView.Physical_Availability == false ? null: paramValues.OverView.Physical_Availability == true ? "Y" : "N";
-                application.Hydrology = paramValues.OverView.Hydrology == true ? "Y" : "N";
-                application.Continuous_Availability = paramValues.OverView.Continuous_Availability == true ? "Y" : "N";
-                application.Legal_Availability = paramValues.OverView.Legal_Availability == true ? "Y" : "N";
-                application.Consistency_With_Mgmt_Plan = paramValues.OverView.Consistency_With_Mgmt_Plan == true ? "Y" : "N";
-                application.Consistency_With_Mgmt_Goal = paramValues.OverView.Consistency_With_Mgmt_Goal == true ? "Y" : "N";
-                application.Water_Quality = paramValues.OverView.Water_Quality == true ? "Y" : "N";
-                application.Financial_Capability = paramValues.OverView.Financial_Capability == true ? "Y" : "N";
-                application.Ownership_Documents = paramValues.OverView.Ownership_Documents == true ? "Y" : "N";
-                application.Demand_Calculator = paramValues.OverView.Demand_Calculator == true ? "Y" : "N";
-                application.Other = paramValues.OverView.Other == true ? "Y" : "N";
+                application.Hydrology = application.Hydrology == null && paramValues.OverView.Hydrology == false ? null : paramValues.OverView.Hydrology == true ? "Y" : "N";
+                application.Continuous_Availability = application.Continuous_Availability == null && paramValues.OverView.Continuous_Availability == false ? null : paramValues.OverView.Continuous_Availability == true ? "Y" : "N";
+                application.Legal_Availability = application.Legal_Availability == null && paramValues.OverView.Legal_Availability == false ? null : paramValues.OverView.Legal_Availability == true ? "Y" : "N";
+                application.Consistency_With_Mgmt_Plan = application.Consistency_With_Mgmt_Plan == null && paramValues.OverView.Consistency_With_Mgmt_Plan == false ? null : paramValues.OverView.Consistency_With_Mgmt_Plan == true ? "Y" : "N";
+                application.Consistency_With_Mgmt_Goal = application.Consistency_With_Mgmt_Goal == null && paramValues.OverView.Consistency_With_Mgmt_Goal == false ? null : paramValues.OverView.Consistency_With_Mgmt_Goal == true ? "Y" : "N";
+                application.Water_Quality = application.Water_Quality == null && paramValues.OverView.Water_Quality == false ? null : paramValues.OverView.Water_Quality == true ? "Y" : "N";
+                application.Financial_Capability = application.Financial_Capability == null && paramValues.OverView.Financial_Capability == false ? null : paramValues.OverView.Financial_Capability == true ? "Y" : "N";
+                application.Ownership_Documents = application.Ownership_Documents == null && paramValues.OverView.Ownership_Documents == false ? null : paramValues.OverView.Ownership_Documents == true ? "Y" : "N";
+                application.Demand_Calculator = application.Demand_Calculator == null && paramValues.OverView.Demand_Calculator == false ? null : paramValues.OverView.Demand_Calculator == true ? "Y" : "N";
+                application.Other = application.Other == null && paramValues.OverView.Other == false ? null : paramValues.OverView.Other == true ? "Y" : "N";
 
                 application.Designation_Term = paramValues.OverView.Designation_Term;                
                 application.PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId;
