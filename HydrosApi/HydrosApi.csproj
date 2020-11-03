@@ -369,7 +369,7 @@
     <Compile Include="Models\Adjudication\SOC_AIS_VIEW.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_GENERAL_INFO.cs" />
     <Compile Include="Models\Adjudication\SW_AIS_VIEW.cs" />
-    <Compile Include="Models\WATERSHED_FILE_REPORT.cs" />
+    <Compile Include="Models\Adjudication\WATERSHED_FILE_REPORT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AAWSProgramInfoViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\SP_AW_CONV_DIAGRAM.cs" />

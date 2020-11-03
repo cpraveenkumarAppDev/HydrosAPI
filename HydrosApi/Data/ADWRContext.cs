@@ -207,7 +207,7 @@
                 .Property(e => e.UPDATEBY)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<WATERSHED_FILE_REPORT>()
+          /*modelBuilder.Entity<WATERSHED_FILE_REPORT>()
                 .Property(e => e.COMMENTS)
                 .IsUnicode(false);
 
@@ -217,7 +217,7 @@
 
             modelBuilder.Entity<WATERSHED_FILE_REPORT>()
                 .Property(e => e.UPDATEBY)
-                .IsUnicode(false);
+                .IsUnicode(false);*/
 
             modelBuilder.Entity<CD_AQUIFER_TYPE>()
                 .Property(e => e.CODE)
