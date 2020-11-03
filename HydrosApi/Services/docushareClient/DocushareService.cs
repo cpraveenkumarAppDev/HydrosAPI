@@ -56,7 +56,7 @@ namespace HydrosApi.Services.docushareClient
 
                 if (content.Contains("No records found"))
                 {
-                    swDoc.FirstOrDefault().Status= $"No records found for " + pcc;
+                    //swDoc.FirstOrDefault().Status= $"No records found for " + pcc;
                     return swDoc;
                 }
                 

@@ -7,7 +7,7 @@
     public class AWS_OVER_VIEW
     {
         public string PrimaryProviderName { get; set; }
-        public int PrimaryProviderWrfId { get; set; }
+        public int? PrimaryProviderWrfId { get; set; }
         public string Subdivision { get; set; }
         public string SecondaryProviderName { get; set; }
         public int? SecondaryProviderWrfId { get; set; }
@@ -27,12 +27,13 @@
         public int? Designation_Term { get; set; }
         public bool Other { get; set; }
         public string Water_Provider_Name { get; set; }
-        public DateTime? Date_Reviewed { get; set; }
         public DateTime? Date_Issued { get; set; }
         public string PWS_ID_Number { get; set; }
         public string SubbasinCode { get; set; }
         public DateTime? Date_Accepted { get; set; }
+        public DateTime? Date_Received { get; set; }
         public string AMA { get; set; }
+        public string Cama_code { get; set; }
         public DateTime? Date_Declared_Complete { get; set; }
         public DateTime? Complete_Correct { get; set; }
         public DateTime? First_Notice { get; set; }
