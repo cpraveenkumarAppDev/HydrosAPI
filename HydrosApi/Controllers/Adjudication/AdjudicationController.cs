@@ -87,6 +87,15 @@
             }         
         }
 
+        [HttpGet, Route("adj/getwfr/{id?}")]
+        public IHttpActionResult GetWfr(int id)
+        {
+   
+                var wfr = Task.FromResult(WATERSHED_FILE_REPORT.WatershedFileReport(id));
+                return Ok(wfr);
+          
+        }
+
         //--------------------------------------------------------------------------------------------------------
         //---------------------------------- ADD/ DELETE/U PDATE ------------------------------------------------
         //--------------------------------------------------------------------------------------------------------       
@@ -176,10 +185,10 @@
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        [HttpPost, Route("adj/addexp/{data}")]
+        [HttpPost, Route("adj/addexp/")]
         public async Task<IHttpActionResult> AddExplanation([FromBody] EXPLANATIONS explanation) //Send all form values
         {
-            if (!(explanation != null && explanation.PWR_ID != null))
+            if (!(explanation != null && (explanation.PWR_ID != null || explanation.WFR_ID != null)))
             {
                 return BadRequest("An invalid proposed water right ID was entered.");
             }
@@ -188,7 +197,8 @@
             {
                 CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
                 CREATEDT = DateTime.Now,
-                PWR_ID = explanation.PWR_ID,
+                PWR_ID = explanation.PWR_ID != null ? explanation.PWR_ID:null,
+                WFR_ID = explanation.WFR_ID != null ? explanation.WFR_ID : null,
                 EXP_TYPE = explanation.EXP_TYPE,
                 EXPLANATION = explanation.EXPLANATION
             }));            

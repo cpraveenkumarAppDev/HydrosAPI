@@ -2,7 +2,8 @@ namespace HydrosApi.Data
     //*** SHOULD BE REPLACED BY ADWRCONTEXT AND SDECONTEXT WHICH MORE CLOSELY DESCRIBES THEIR SERVER/SCHEMA LOCATIONS    
 {
     using System;
-    using System.Data.Entity;     
+    using System.Data.Entity;
+    using HydrosApi.Models.Permitting.AAWS;
     using Models;    
 
     
@@ -28,6 +29,7 @@ namespace HydrosApi.Data
         public virtual DbSet<V_AWS_PROVIDER> V_AWS_PROVIDER { get; set; }
         public virtual DbSet<V_AWS_SUBBAS> V_AWS_SUBBAS { get; set; }
         public virtual DbSet<V_AWS_HYDRO> V_AWS_HYDRO { get; set; }
+        public virtual DbSet<V_AWS_COUNTY_BASIN> V_AWS_COUNTY_BASIN { get; set; }
 
 
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }

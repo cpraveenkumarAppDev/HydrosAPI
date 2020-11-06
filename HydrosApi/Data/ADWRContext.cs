@@ -1,7 +1,7 @@
 ﻿namespace HydrosApi.Data
 { 
     using System.Data.Entity;
-     
+    using HydrosApi.Models.Permitting.AAWS;
     using Models;
 
     public partial class ADWRContext : DbContext
@@ -42,7 +42,8 @@
         public virtual DbSet<V_AWS_SUBBAS> V_AWS_SUBBAS { get; set; }
         public virtual DbSet<V_AWS_HYDRO> V_AWS_HYDRO { get; set; }
         public virtual DbSet<CD_AMA_INA> CD_AMA_INA { get; set; }
-
+        public virtual DbSet<V_AWS_COUNTY_BASIN> V_AWS_COUNTY_BASIN { get; set; }
+        
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

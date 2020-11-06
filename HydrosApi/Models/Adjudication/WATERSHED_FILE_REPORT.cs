@@ -16,6 +16,19 @@ namespace HydrosApi.Models
         public int? OBJECTID { get; set; }
 
         [StringLength(100)]
-        public string WFR_NUM { get; set; }        
+        public string WFR_NUM { get; set; }    
+        
+        [NotMapped]
+        public List<EXPLANATIONS> Explanations { get; set; }
+        [NotMapped]
+        public List<FILE> FileList { get; set; }
+
+        public static WATERSHED_FILE_REPORT WatershedFileReport(int id)
+        {
+            var wfr = WATERSHED_FILE_REPORT.Get(p => p.ID == id);
+            wfr.Explanations = EXPLANATIONS.GetList(p => p.WFR_ID == id);
+            wfr.FileList = FILE.GetList(p => p.WFR_ID == id);
+            return wfr;
+        }
     }
 }

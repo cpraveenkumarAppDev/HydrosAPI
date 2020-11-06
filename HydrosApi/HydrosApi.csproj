@@ -315,6 +315,7 @@
     <Compile Include="Data\HandleForm.cs" />
     <Compile Include="Data\SdeRepository.cs" />
     <Compile Include="Models\CD_AMA_INA.cs" />
+    <Compile Include="Models\Permitting\AAWS\V_AWS_COUNTY_BASIN.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_HYDRO.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_PROVIDER.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_SUBBAS.cs" />
