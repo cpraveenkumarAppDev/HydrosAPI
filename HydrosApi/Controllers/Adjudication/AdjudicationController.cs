@@ -91,7 +91,7 @@
         public IHttpActionResult GetWfr(int id)
         {
    
-                var wfr = Task.FromResult(WATERSHED_FILE_REPORT.WatershedFileReport(id));
+                var wfr = Task.FromResult(WATERSHED_FILE_REPORT.WatershedFileReportByObjectId(id));
                 return Ok(wfr);
           
         }

@@ -58,10 +58,17 @@
         [StringLength(300)]
         public string SOC { get; set; }
 
+
         ///get the WFR using its objectid
         public static WATERSHED_FILE_REPORT_SDE WatershedFileReportSDE(int objectid)
         {
             return WATERSHED_FILE_REPORT_SDE.Get(p => p.OBJECTID == objectid);
+        }
+
+        ///get the WFR using its WFR_NUM
+        public static WATERSHED_FILE_REPORT_SDE WatershedFileReportSDE(string wfr_num)
+        {
+            return WATERSHED_FILE_REPORT_SDE.Get(p => p.WFR_NUMBER == wfr_num);
         }
 
         ///get all WFRS
