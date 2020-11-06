@@ -17,6 +17,7 @@
 
         public virtual DbSet<POINT_OF_DIVERSION> POINT_OF_DIVERSION { get; set; }
 
+        public virtual DbSet<WATERSHED_FILE_REPORT_SDE> WATERSHED_FILE_REPORT_SDE { get; set; }
 
     }
 
