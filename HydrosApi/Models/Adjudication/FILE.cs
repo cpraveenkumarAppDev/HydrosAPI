@@ -87,10 +87,10 @@ namespace HydrosApi.Models
             //--end eventually move this into a class or function so it can be used anywhere
             //-------------------------------------------------------------------------------
 
-            if (fileInfo.PWR_ID==null || provider.Files.Count() == 0) 
+            if (fileInfo.PWR_ID==null && fileInfo.WFR_ID == null || provider.Files.Count() == 0) 
             {
                 fileInfo = new FILE();
-                fileInfo.STATUS = fileInfo.PWR_ID==null ? "An ID for Proposed Water Right was not provided." : "Please select a valid file.";
+                fileInfo.STATUS = fileInfo.PWR_ID==null || fileInfo.WFR_ID == null ? "An ID for Proposed Water Right or Water Facility Right was not provided." : "Please select a valid file.";
                 return fileInfo;
             }
 

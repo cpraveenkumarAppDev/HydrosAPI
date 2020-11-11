@@ -9,7 +9,7 @@ namespace HydrosApi.Models
     using HydrosApi.Data;
 
     [Table("ADJ_INV.WATERSHED_FILE_REPORT")]
-    public partial class WATERSHED_FILE_REPORT: AdwrRepository<WATERSHED_FILE_REPORT>
+    public partial class WATERSHED_FILE_REPORT : AdwrRepository<WATERSHED_FILE_REPORT>
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
@@ -34,13 +34,16 @@ namespace HydrosApi.Models
         [NotMapped]
         public List<FILE> FileList { get; set; }
 
+        [NotMapped]
+        public List<PROPOSED_WATER_RIGHT> ProposedWaterRights { get; set; }
+
         public static WATERSHED_FILE_REPORT WatershedFileReportByObjectId(int id)
         {
             var wfr = WATERSHED_FILE_REPORT.Get(p => p.OBJECTID == id);
             var wfrSde = WATERSHED_FILE_REPORT_SDE.WatershedFileReportSDE(id);
             wfr.Explanations = EXPLANATIONS.GetList(p => p.WFR_ID == wfr.ID);
-            wfr.FileList = FILE.GetList(p => p.WFR_ID == id);
-            wfr.SOC = wfrSde.SOC == null ? null:
+            wfr.FileList = FILE.GetList(p => p.WFR_ID == wfr.ID);
+            wfr.SOC = wfrSde.SOC == null ? null :
                  (from s in wfrSde.SOC.Split(',')
                   select new
                   {
@@ -67,9 +70,9 @@ namespace HydrosApi.Models
 
                 wfr.Well = wellList == null ? null :
                     wellList.Select(f => WELLS_VIEW.Get(s => s.FILE_NO == f.file_no && s.PROGRAM == f.program)).ToList();
-
                 wfr.Surfacewater = swList == null ? null : swList.Select(f => SW_AIS_VIEW.Get(s => s.ART_APPLI_NO == f.numeric_file_no)).ToList();
             };
+            wfr.ProposedWaterRights = PROPOSED_WATER_RIGHT.GetList(p => p.WFR_ID == wfr.ID);
             return wfr;
         }
     }
