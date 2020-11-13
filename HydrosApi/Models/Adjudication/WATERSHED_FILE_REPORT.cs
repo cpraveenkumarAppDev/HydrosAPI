@@ -43,16 +43,17 @@ namespace HydrosApi.Models
             var wfrSde = WATERSHED_FILE_REPORT_SDE.WatershedFileReportSDE(id);
             wfr.Explanations = EXPLANATIONS.GetList(p => p.WFR_ID == wfr.ID);
             wfr.FileList = FILE.GetList(p => p.WFR_ID == wfr.ID);
+            char[] delimiters = new[] { ',', ';'};
             wfr.SOC = wfrSde.SOC == null ? null :
-                 (from s in wfrSde.SOC.Split(',')
+                 (from s in wfrSde.SOC.Split(delimiters)
                   select new
                   {
                       program = s.IndexOf("-") > -1 ? s.Split('-')[0].Replace(" ", "") : "",
                       file_no = int.Parse((s.IndexOf("-") > -1 ? s.Split('-')[1].Replace(" ", "") : s).Replace(" ", ""))
-                  }).Select(f => SOC_AIS_VIEW.Get(s => s.FILE_NO == f.file_no)).Distinct().ToList();
+                  }).Select(f => SOC_AIS_VIEW.Get(s => s.FILE_NO == f.file_no)).Where(c => c != null).Distinct().ToList();
             if (wfrSde.BOC != null)
             {
-                var bocList = (from p in (from s in wfrSde.BOC.Split(',')
+                var bocList = (from p in (from s in wfrSde.BOC.Split(delimiters)
                                           select new
                                           {
                                               program = s.IndexOf("-") > -1 ? s.Split('-')[0].Replace(" ", "") : "",
@@ -69,8 +70,8 @@ namespace HydrosApi.Models
                 var swList = bocList.Where(p => p.program != "55" && p.program != "35");
 
                 wfr.Well = wellList == null ? null :
-                    wellList.Select(f => WELLS_VIEW.Get(s => s.FILE_NO == f.file_no && s.PROGRAM == f.program)).ToList();
-                wfr.Surfacewater = swList == null ? null : swList.Select(f => SW_AIS_VIEW.Get(s => s.ART_APPLI_NO == f.numeric_file_no)).ToList();
+                    wellList.Select(f => WELLS_VIEW.Get(s => s.FILE_NO == f.file_no && s.PROGRAM == f.program)).Where(c => c != null).ToList();
+                wfr.Surfacewater = swList == null ? null : swList.Select(f => SW_AIS_VIEW.Get(s => s.ART_APPLI_NO == f.numeric_file_no)).Where(c => c != null).ToList();
             };
             wfr.ProposedWaterRights = PROPOSED_WATER_RIGHT.GetList(p => p.WFR_ID == wfr.ID);
             return wfr;
