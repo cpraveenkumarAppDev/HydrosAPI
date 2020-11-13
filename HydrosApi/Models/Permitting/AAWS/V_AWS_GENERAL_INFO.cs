@@ -89,8 +89,6 @@
         public string Ownership_Documents { get; set; }
         [Column("DEMAND_CALCULATOR")]
         public string Demand_Calculator { get; set; }
-        [Column("OTHER")]
-        public string Other { get; set; }
         [Column("WATER_QUALITY")]
         public string Water_Quality { get; set; }
         [Column("DESIGNATION_TERM")]

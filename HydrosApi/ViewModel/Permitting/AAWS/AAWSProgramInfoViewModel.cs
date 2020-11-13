@@ -75,7 +75,6 @@
                 AAWSProgramInfoViewModelOverView.Financial_Capability = GeneralInfo.Financial_Capability == "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.Ownership_Documents = GeneralInfo.Ownership_Documents== "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.Demand_Calculator = GeneralInfo.Demand_Calculator== "Y" ? true : false;
-                AAWSProgramInfoViewModelOverView.Other = GeneralInfo.Other == "Y" ? true : false;
 
                 AAWSProgramInfoViewModelOverView.Designation_Term = GeneralInfo.Designation_Term;
                 AAWSProgramInfoViewModelOverView.First_Notice = GeneralInfo.First_Notice_Date;
@@ -131,7 +130,6 @@
                 application.Financial_Capability = application.Financial_Capability == null && paramValues.OverView.Financial_Capability == false ? null : paramValues.OverView.Financial_Capability == true ? "Y" : "N";
                 application.Ownership_Documents = application.Ownership_Documents == null && paramValues.OverView.Ownership_Documents == false ? null : paramValues.OverView.Ownership_Documents == true ? "Y" : "N";
                 application.Demand_Calculator = application.Demand_Calculator == null && paramValues.OverView.Demand_Calculator == false ? null : paramValues.OverView.Demand_Calculator == true ? "Y" : "N";
-                application.Other = application.Other == null && paramValues.OverView.Other == false ? null : paramValues.OverView.Other == true ? "Y" : "N";
 
                 application.Designation_Term = paramValues.OverView.Designation_Term;                
                 application.PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId;
