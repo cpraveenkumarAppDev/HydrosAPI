@@ -25,7 +25,6 @@
         public bool Ownership_Documents { get; set; }
         public bool Demand_Calculator { get; set; }
         public int? Designation_Term { get; set; }
-        public bool Other { get; set; }
         public string Water_Provider_Name { get; set; }
         public DateTime? Date_Issued { get; set; }
         public string PWS_ID_Number { get; set; }
