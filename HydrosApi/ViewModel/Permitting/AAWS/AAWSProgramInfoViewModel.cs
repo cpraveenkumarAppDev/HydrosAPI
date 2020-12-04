@@ -10,6 +10,8 @@
     using Oracle.ManagedDataAccess.Client;
     using HydrosApi.Services;
     using WebApi.OutputCache.Core.Time;
+    using HydrosApi.Models.Permitting.AAWS;
+    using HydrosApi.Models.ADWR;
 
     public class AAWSProgramInfoViewModel
     {
@@ -27,13 +29,15 @@
         public List<CD_AMA_INA> AmaIna { get; set; }
         public List<CD_AMA_INA> AmaList { get; set; }
         public List<CD_AMA_INA> InaList { get; set; }
+        public List<V_AWS_COUNTY_BASIN> CountyBasinList { get; set; }
         public static AAWSProgramInfoViewModel GetData(string PermitCertificateConveyanceNumber)
         {
             AAWSProgramInfoViewModel AAWSProgramInfoViewModel = new AAWSProgramInfoViewModel();
             AWS_OVER_VIEW AAWSProgramInfoViewModelOverView = new AWS_OVER_VIEW();
             V_AWS_HYDRO Hydrology = V_AWS_HYDRO.Get(p => p.PCC == PermitCertificateConveyanceNumber);
             List<V_AWS_PROVIDER> lists = V_AWS_PROVIDER.GetAll();
-            List<V_AWS_SUBBAS> SubbasinList = V_AWS_SUBBAS.GetAll();
+            AAWSProgramInfoViewModelOverView.SubbasinList = V_AWS_SUBBAS.GetAll();
+            AAWSProgramInfoViewModel.CountyBasinList= V_AWS_COUNTY_BASIN.GetAll();
             
 
             try
@@ -83,7 +87,6 @@
                 AAWSProgramInfoViewModelOverView.Final_Date = GeneralInfo.Final_Date_for_Public_Comment;
                 AAWSProgramInfoViewModelOverView.ProvidersList = lists;
                 AAWSProgramInfoViewModelOverView.SubbasinCode = Hydrology.SUBBASIN_CODE;
-                AAWSProgramInfoViewModelOverView.SubbasinList = SubbasinList;
                 AAWSProgramInfoViewModel.OverView = AAWSProgramInfoViewModelOverView;
                 //Hydrology data
                 AAWSProgramInfoViewModel.Hydrology = Hydrology;
@@ -93,9 +96,10 @@
                 AAWSProgramInfoViewModel.AmaIna = ama_ina_codes;
                 AAWSProgramInfoViewModel.AmaList = ama_ina_codes.Where(x => x.AMA_INA_TYPE == "AMA").ToList();
                 AAWSProgramInfoViewModel.InaList = ama_ina_codes.Where(x => x.AMA_INA_TYPE == "INA").ToList();
+                AAWSProgramInfoViewModelOverView.County = GeneralInfo.County_Descr;
 
 
-                return AAWSProgramInfoViewModel;
+               return AAWSProgramInfoViewModel;
             }
             catch (FileNotFoundException e)
             {
@@ -144,6 +148,7 @@
                 application.UserName = user;
                 application.Subdivision = paramValues.Subdivision;
                 application.Cama_code = paramValues.Cama_code;
+                application.County_Code = CD_AW_COUNTY.GetAll().Where(x => x.DESCR.ToUpper() == paramValues.OverView.County.ToUpper()).Select(x => x.CODE).FirstOrDefault();
                 //Hydrology data
                 var Hydrology = ctx.V_AWS_HYDRO.Where(p => p.PCC == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_HYDRO>();
                 Hydrology.SUBBASIN_CODE = paramValues.OverView.SubbasinCode;
