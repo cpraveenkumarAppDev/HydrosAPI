@@ -10,7 +10,7 @@ namespace HydrosApi.Models.Permitting.AAWS
     using System.Linq;
     using System.Web;
 
-
+    [Table("AWS.V_AWS_COUNTY_BASIN")]
     public class V_AWS_COUNTY_BASIN : Repository<V_AWS_COUNTY_BASIN>
     {
         [Key]

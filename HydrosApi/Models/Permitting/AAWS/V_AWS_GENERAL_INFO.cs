@@ -93,6 +93,10 @@
         public string Water_Quality { get; set; }
         [Column("DESIGNATION_TERM")]
         public int? Designation_Term { get; set; }
+        [Column("COUNTY_CODE")]
+        public string County_Code { get; set; }
+        [Column("COUNTY_DESCR")]
+        public string County_Descr { get; set; }
 
         [NotMapped]
         public string ProcessStatus { get; set; } //Use this for error messages in stored procedure or api calls
