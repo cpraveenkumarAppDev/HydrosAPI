@@ -19,6 +19,7 @@ namespace HydrosApi.Data
 
         public virtual DbSet<V_CD_AW_AMA_INA> V_CD_AW_AMA_INA { get; set; }
         public virtual DbSet<V_CD_AW_APP_FEE_RATES> V_CD_AW_APP_FEE_RATES { get; set; }
+        public virtual DbSet<CD_AW_COMMENT_TYPE> CD_AW_COMMENT_TYPE { get; set; }
 
         public virtual DbSet<V_AWS_GENERAL_INFO> V_AWS_GENERAL_INFO { get; set; }
         public virtual DbSet<V_AWS_OAWS> V_AWS_OAWS { get; set; }

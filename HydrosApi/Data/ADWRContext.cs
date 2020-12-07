@@ -43,7 +43,9 @@
         public virtual DbSet<V_AWS_HYDRO> V_AWS_HYDRO { get; set; }
         public virtual DbSet<CD_AMA_INA> CD_AMA_INA { get; set; }
         public virtual DbSet<V_AWS_COUNTY_BASIN> V_AWS_COUNTY_BASIN { get; set; }
-        
+        public virtual DbSet<CD_AW_COMMENT_TYPE> CD_AW_COMMENT_TYPE { get; set; }
+
+
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

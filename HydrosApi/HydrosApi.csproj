@@ -315,7 +315,9 @@
     <Compile Include="Data\HandleForm.cs" />
     <Compile Include="Data\SdeRepository.cs" />
     <Compile Include="Models\Adjudication\WATERSHED_FILE_REPORT_SDE.cs" />
+    <Compile Include="Models\Adjudication\WFR_POD.cs" />
     <Compile Include="Models\CD_AMA_INA.cs" />
+    <Compile Include="Models\Permitting\AAWS\CD_AW_COMMENT_TYPE.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_COUNTY_BASIN.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_HYDRO.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_PROVIDER.cs" />
