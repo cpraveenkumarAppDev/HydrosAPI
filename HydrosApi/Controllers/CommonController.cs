@@ -11,14 +11,18 @@ namespace HydrosApi.Controllers
     [Authorize]
     public class CommonController:ApiController
     {       
-        [HttpGet, Route("common/user")]
-        public async Task<IHttpActionResult> GetUserInformation()
+        [HttpGet, Route("common/user/{id?}")]
+        public async Task<IHttpActionResult> GetUserInformation(string id = null)
         {
-            var user = User.Identity.Name.Replace("AZWATER0\\", "").ToLower();
+            var user = id != null ? id.ToLower() : User.Identity.Name.Replace("AZWATER0\\", "").ToLower();
             var userInfo = await Task.FromResult(AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov","") == user));
             
             if(userInfo==null)
             {
+                if(user != null)
+                {
+                    return BadRequest("Unable to get user information for "+user);
+                }
                 return BadRequest("Unable to get user information");
             }
 
