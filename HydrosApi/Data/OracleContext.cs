@@ -33,6 +33,7 @@ namespace HydrosApi.Data
         public virtual DbSet<V_AWS_HYDRO> V_AWS_HYDRO { get; set; }
         public virtual DbSet<V_AWS_COUNTY_BASIN> V_AWS_COUNTY_BASIN { get; set; }
         public virtual DbSet<CD_AW_COUNTY> CD_AW_COUNTY { get; set; }
+        public virtual DbSet<AW_USERS> AW_USERS { get; set; }
 
 
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
