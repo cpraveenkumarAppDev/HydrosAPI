@@ -15,7 +15,7 @@ namespace HydrosApi.Controllers
         public async Task<IHttpActionResult> GetUserInformation(string id = null)
         {
             var user = id != null ? id.ToLower() : User.Identity.Name.Replace("AZWATER0\\", "").ToLower();
-            var userInfo = await Task.FromResult(AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov","") == user));
+            var userInfo = await Task.FromResult(AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov","") == user && u.ACTIVE=="Y"));
             
             if(userInfo==null)
             {

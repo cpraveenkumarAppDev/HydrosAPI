@@ -20,6 +20,8 @@ namespace HydrosApi.Models.ADWR
         public string LAST_NAME { get; set; }
 
         public string FIRST_NAME { get; set; }
+         
+        public string ACTIVE { get; set; } = "Y";
 
         [NotMapped]
         public string ADUser { get; set; } //the active directory user
