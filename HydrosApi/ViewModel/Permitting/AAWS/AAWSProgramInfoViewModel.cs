@@ -148,7 +148,10 @@
                 application.UserName = user;
                 application.Subdivision = paramValues.Subdivision;
                 application.Cama_code = paramValues.Cama_code;
+                if(paramValues.OverView.County != null)
+                {
                 application.County_Code = CD_AW_COUNTY.GetAll().Where(x => x.DESCR.ToUpper() == paramValues.OverView.County.ToUpper()).Select(x => x.CODE).FirstOrDefault();
+                }
                 //Hydrology data
                 var Hydrology = ctx.V_AWS_HYDRO.Where(p => p.PCC == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_HYDRO>();
                 Hydrology.SUBBASIN_CODE = paramValues.OverView.SubbasinCode;
