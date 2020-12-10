@@ -36,7 +36,7 @@
             AWS_OVER_VIEW AAWSProgramInfoViewModelOverView = new AWS_OVER_VIEW();
             V_AWS_HYDRO Hydrology = V_AWS_HYDRO.Get(p => p.PCC == PermitCertificateConveyanceNumber);
             List<V_AWS_PROVIDER> lists = V_AWS_PROVIDER.GetAll();
-            AAWSProgramInfoViewModelOverView.SubbasinList = V_AWS_SUBBAS.GetAll();
+            AAWSProgramInfoViewModelOverView.SubbasinList = V_AWS_SUBBAS.GetAll().OrderBy(x => x.BasinDescription).ToList();
             AAWSProgramInfoViewModel.CountyBasinList= V_AWS_COUNTY_BASIN.GetAll().OrderBy(x => x.COUNTY_NAME).ToList();
             
 
