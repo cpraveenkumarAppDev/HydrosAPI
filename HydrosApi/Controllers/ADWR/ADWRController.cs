@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using System;
 using System.Configuration;
 using HydrosApi.Services;
+using HydrosApi.Data;
+using HydrosApi.Models.ADWR;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace HydrosApi
 {
@@ -91,6 +95,44 @@ namespace HydrosApi
                 return Ok("Failed to send noticiation");
             }
 
+        }
+
+        [HttpGet, Route("adwr/pcc/{wrf}")]
+        public IHttpActionResult GetPcc(int wrf)
+        {
+            WTR_RIGHT_FACILITY found;
+            try
+            {
+            found = WTR_RIGHT_FACILITY.Get(x => x.ID == wrf);
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError();
+            }
+            return Ok(found.PCC);
+        }
+
+        [HttpGet, Route("adwr/wrf/{pcc}")]
+        public IHttpActionResult GetPcc(string pcc)
+        {
+            WTR_RIGHT_FACILITY found;
+            Regex regex = new Regex(@"(\d{2})\s|\-(\d{6})\s|\.(\d{4})");
+            var stuff = regex.Match(pcc);
+            try
+            {
+                pcc = pcc.Replace(".", "").Replace("-", "");
+                string program = pcc.Substring(0, 2);
+                string cert = pcc.Substring(2, 6);
+                string conv = pcc.Substring(8);
+                found = WTR_RIGHT_FACILITY.Get(x => x.Program == program && x.Certificate == cert && x.Conveyance == conv);
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError();
+            }
+            return Ok(found.PCC);
         }
     }
 

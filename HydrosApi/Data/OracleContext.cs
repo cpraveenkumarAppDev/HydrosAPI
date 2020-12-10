@@ -24,7 +24,11 @@ namespace HydrosApi.Data
 
         public virtual DbSet<V_AWS_GENERAL_INFO> V_AWS_GENERAL_INFO { get; set; }
         public virtual DbSet<V_AWS_OAWS> V_AWS_OAWS { get; set; }
-       
+
+        public virtual DbSet<AW_APP_ACTIVITY_TRK> AW_APP_ACTIVITY_TRK { get; set; }
+        public virtual DbSet<CD_AW_APP_ACTIVITY> CD_AW_APP_ACTIVITY { get; set; }
+
+
         public virtual DbSet<FILE> FILES { get; set; }
         public virtual DbSet<PROPOSED_WATER_RIGHT> PROPOSED_WATER_RIGHT { get; set; }
         public virtual DbSet<PWR_POD> PWR_POD { get; set; }
@@ -35,7 +39,7 @@ namespace HydrosApi.Data
         public virtual DbSet<CD_AW_COUNTY> CD_AW_COUNTY { get; set; }
         public virtual DbSet<AW_USERS> AW_USERS { get; set; }
 
-
+        public virtual DbSet<WTR_RIGHT_FACILITY> WTR_RIGHT_FACILITY { get; set; }
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
         //public virtual DbSet<WATERSHED_FILE_REPORT> WATERSHED_FILE_REPORT { get; set; }
 
