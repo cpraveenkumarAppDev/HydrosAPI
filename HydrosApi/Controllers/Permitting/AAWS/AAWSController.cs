@@ -114,7 +114,7 @@ namespace HydrosApi.Controllers
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
-        [HttpGet, Route("aws/activity/{pcc}/{activity}")]
+        [HttpGet, Route("aws/activity/{wrf}/{activity}")]
         public IHttpActionResult GetActivity(int wrf, string activity)
         {
             List<AW_APP_ACTIVITY_TRK> activities = new List<AW_APP_ACTIVITY_TRK>();
@@ -128,6 +128,23 @@ namespace HydrosApi.Controllers
                 return InternalServerError();
             }
             return Ok(activities);
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpGet, Route("aws/activity/issued/{wrf}")]
+        public IHttpActionResult GetActivity(int wrf)
+        {
+            List<AW_APP_ACTIVITY_TRK> activities = new List<AW_APP_ACTIVITY_TRK>();
+            try
+            {
+                activities = AW_APP_ACTIVITY_TRK.GetList(x => x.WRF_ID == wrf && new List<string>{"ISSD", "IADQ", "IIAD"}.Contains(x.ActivityCode)).OrderByDescending(x => x.CREATEDT).ToList();
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError();
+            }
+            return Ok(activities.FirstOrDefault());
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]

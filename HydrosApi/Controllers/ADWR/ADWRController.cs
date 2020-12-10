@@ -113,17 +113,14 @@ namespace HydrosApi
             return Ok(found.PCC);
         }
 
-        [HttpGet, Route("adwr/wrf/{pcc}")]
-        public IHttpActionResult GetPcc(string pcc)
+        [HttpGet, Route("adwr/wrf/{inputPcc}")]
+        public IHttpActionResult GetPcc(string inputPcc)
         {
             WTR_RIGHT_FACILITY found;
             try
             {
-                pcc = pcc.Replace(".", "").Replace("-", "");
-                string program = pcc.Substring(0, 2);
-                string cert = pcc.Substring(2, 6);
-                string conv = pcc.Substring(8);
-                found = WTR_RIGHT_FACILITY.Get(x => x.Program == program && x.Certificate == cert && x.Conveyance == conv);
+                PCC validPCC = new PCC(inputPcc);
+                found = WTR_RIGHT_FACILITY.Get(x => x.Program == validPCC.Program && x.Certificate == validPCC.Certificate && x.Conveyance == validPCC.Conveyance);
             }
             catch (Exception exception)
             {
