@@ -115,12 +115,12 @@ namespace HydrosApi.Controllers
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpGet, Route("aws/activity/{pcc}/{activity}")]
-        public IHttpActionResult GetActivity(string pcc, string activity)
+        public IHttpActionResult GetActivity(int wrf, string activity)
         {
             List<AW_APP_ACTIVITY_TRK> activities = new List<AW_APP_ACTIVITY_TRK>();
             try
             {
-                activities = AW_APP_ACTIVITY_TRK.GetList(x => x.WRF_ID.ToString() == pcc && x.ActivityCode == activity);
+                activities = AW_APP_ACTIVITY_TRK.GetList(x => x.WRF_ID == wrf && x.ActivityCode == activity);
             }
             catch (Exception exception)
             {

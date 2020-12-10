@@ -117,8 +117,6 @@ namespace HydrosApi
         public IHttpActionResult GetPcc(string pcc)
         {
             WTR_RIGHT_FACILITY found;
-            Regex regex = new Regex(@"(\d{2})\s|\-(\d{6})\s|\.(\d{4})");
-            var stuff = regex.Match(pcc);
             try
             {
                 pcc = pcc.Replace(".", "").Replace("-", "");
