@@ -136,7 +136,7 @@
             return Ok("Point of Diversion Deleted");
         }
 
-        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpPost, Route("adj/addfileblob/")] //PWR_ID or an error message is returned       
         public async Task<IHttpActionResult> AddFileBlob() //<== ID IS THE ID FROM THE EXPLANATION TABLE
         {
