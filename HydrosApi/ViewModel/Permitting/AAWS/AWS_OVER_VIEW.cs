@@ -1,6 +1,7 @@
 ﻿namespace HydrosApi
 {
     using HydrosApi.Models;
+    using HydrosApi.Models.Permitting.AAWS;
     using System;
     using System.Collections.Generic;
 
@@ -40,5 +41,7 @@
         public DateTime? Final_Date { get; set; }
         public List<V_AWS_SUBBAS> SubbasinList { get; set; }
         public List<V_AWS_PROVIDER> ProvidersList { get; set; }
+        public List<V_AWS_COUNTY_BASIN> CountyBasinList { get; set; }
+        public string County { get; set; }
     }
 }

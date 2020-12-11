@@ -134,7 +134,27 @@
             }
             PWR_POD.Delete(pod);
             return Ok("Point of Diversion Deleted");
-        }      
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpPost, Route("adj/addfileblob/")] //PWR_ID or an error message is returned       
+        public async Task<IHttpActionResult> AddFileBlob() //<== ID IS THE ID FROM THE EXPLANATION TABLE
+        {
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            var provider = await Request.Content.ReadAsMultipartAsync<HandleForm>(new HandleForm());
+            var fileList = await Task.FromResult(TEST_FILE_UPLOAD.UploadFile(provider));
+
+            if (fileList != null )
+            {
+                return Ok(fileList);
+            }
+
+            return BadRequest("Error Uploading File");
+        }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpPost, Route("adj/addfile/")] //PWR_ID or an error message is returned       

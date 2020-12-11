@@ -21,7 +21,8 @@
         
         public string p_exist_filenum { get; set; } //not used for SP_AW_INS_FILE
        
-        public string p_file_reviewer { get; set; }       
+        public string p_file_reviewer { get; set; }  
+        public string p_fileName { get; set; } //need to change name to accomodate DB changes
         
         public string p_createby { get; set; }
          
@@ -33,6 +34,8 @@
 
         [JsonProperty(PropertyName = "filemanagerEmail")]
         public string filemanagerEmail { set { p_file_reviewer = value; } }
+        [JsonProperty(PropertyName = "fileName")]
+        public string fileName { set { p_fileName = value; } }
 
         [JsonProperty(PropertyName = "ama")]
         public string ama { set
@@ -69,13 +72,15 @@
 
                 parameter.Add(new OracleParameter("p_program_code", paramValues.p_program_code));
                 parameter.Add(new OracleParameter("p_ama_code", paramValues.p_ama_code));
-                if(requestType=="conveyance")
+                
+                if (requestType=="conveyance")
                 { 
                     parameter.Add(new OracleParameter("p_exist_filenum", paramValues.p_exist_filenum));
                 }
 
                 parameter.Add(new OracleParameter("p_file_reviewer", paramValues.p_file_reviewer.ToLower().Replace("@azwater.gov", "")));
                 parameter.Add(new OracleParameter("p_createby", user.Replace("AZWATER0\\", "")));
+                parameter.Add(new OracleParameter("p_fileName", paramValues.p_fileName));
 
                 var newFileNum = new OracleParameter("p_new_filenum", OracleDbType.Varchar2, 20);
                 newFileNum.IsNullable = true;
@@ -93,7 +98,7 @@
                 }
                 else if(requestType=="newApplication")
                 {
-                    command = "BEGIN aws.aw_spkg_hydros_insert.ins_file(:p_program_code, :p_ama_code, :p_file_reviewer, :p_createby, :p_new_filenum, :p_new_wrf_id); end;";
+                    command = "BEGIN aws.aw_spkg_hydros_insert.ins_file(:p_program_code, :p_ama_code, :p_file_reviewer, :p_createby, :p_filename, :p_new_filenum, :p_new_wrf_id); end;";
                 }
                 else
                 {

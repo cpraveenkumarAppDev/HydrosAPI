@@ -9,6 +9,8 @@ namespace HydrosApi.Controllers
     using System.Text.RegularExpressions;
     using HydrosApi.Data;
     using System.Linq;
+    using HydrosApi.Models.Permitting.AAWS;
+    using System.Collections.Generic;
 
     public class AAWSController : ApiController
     {
@@ -109,6 +111,84 @@ namespace HydrosApi.Controllers
            
 
             return Ok(savedApplication);
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpGet, Route("aws/activity/{wrf}/{activity}")]
+        public IHttpActionResult GetActivity(int wrf, string activity)
+        {
+            List<AW_APP_ACTIVITY_TRK> activities = new List<AW_APP_ACTIVITY_TRK>();
+            try
+            {
+                activities = AW_APP_ACTIVITY_TRK.GetList(x => x.WRF_ID == wrf && x.ActivityCode == activity);
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError();
+            }
+            return Ok(activities);
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpGet, Route("aws/activity/issued/{wrf}")]
+        public IHttpActionResult GetActivity(int wrf)
+        {
+            List<AW_APP_ACTIVITY_TRK> activities = new List<AW_APP_ACTIVITY_TRK>();
+            try
+            {
+                activities = AW_APP_ACTIVITY_TRK.GetList(x => x.WRF_ID == wrf && new List<string>{"ISSD", "IADQ", "IIAD"}.Contains(x.ActivityCode)).OrderByDescending(x => x.CREATEDT).ToList();
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError();
+            }
+            return Ok(activities.FirstOrDefault());
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpGet, Route("aws/activity/{pcc}")]
+        public IHttpActionResult GetAllActivity(int pcc)
+        {
+            List<AW_APP_ACTIVITY_TRK> activities = null;
+            var context = new OracleContext();
+            object activitiesDescribed;
+            try
+            {
+                activities = AW_APP_ACTIVITY_TRK.GetList(x => x.WRF_ID == pcc);
+                activitiesDescribed = activities.Join(context.CD_AW_APP_ACTIVITY,
+                    act => act.ActivityCode,
+                    code => code.CODE,
+                    (act, code) => new
+                    {
+                        Activity = code.DESCR,
+                        Date = act.CREATEDT
+                    });
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError();
+            }
+            return Ok(activitiesDescribed);
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpGet, Route("aws/activity/codes")]
+        public IHttpActionResult GetActivityCodes()
+        {
+            List<CD_AW_APP_ACTIVITY> codes;
+            try
+            {
+                codes = CD_AW_APP_ACTIVITY.GetAll();
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError();
+            }
+            return Ok(codes);
         }
     }
 }

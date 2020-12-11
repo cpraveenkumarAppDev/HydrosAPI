@@ -3,6 +3,7 @@ namespace HydrosApi.Data
 {
     using System;
     using System.Data.Entity;
+    using HydrosApi.Models.ADWR;
     using HydrosApi.Models.Permitting.AAWS;
     using Models;    
 
@@ -19,10 +20,15 @@ namespace HydrosApi.Data
 
         public virtual DbSet<V_CD_AW_AMA_INA> V_CD_AW_AMA_INA { get; set; }
         public virtual DbSet<V_CD_AW_APP_FEE_RATES> V_CD_AW_APP_FEE_RATES { get; set; }
+        public virtual DbSet<CD_AW_COMMENT_TYPE> CD_AW_COMMENT_TYPE { get; set; }
 
         public virtual DbSet<V_AWS_GENERAL_INFO> V_AWS_GENERAL_INFO { get; set; }
         public virtual DbSet<V_AWS_OAWS> V_AWS_OAWS { get; set; }
-       
+
+        public virtual DbSet<AW_APP_ACTIVITY_TRK> AW_APP_ACTIVITY_TRK { get; set; }
+        public virtual DbSet<CD_AW_APP_ACTIVITY> CD_AW_APP_ACTIVITY { get; set; }
+
+
         public virtual DbSet<FILE> FILES { get; set; }
         public virtual DbSet<PROPOSED_WATER_RIGHT> PROPOSED_WATER_RIGHT { get; set; }
         public virtual DbSet<PWR_POD> PWR_POD { get; set; }
@@ -30,8 +36,10 @@ namespace HydrosApi.Data
         public virtual DbSet<V_AWS_SUBBAS> V_AWS_SUBBAS { get; set; }
         public virtual DbSet<V_AWS_HYDRO> V_AWS_HYDRO { get; set; }
         public virtual DbSet<V_AWS_COUNTY_BASIN> V_AWS_COUNTY_BASIN { get; set; }
+        public virtual DbSet<CD_AW_COUNTY> CD_AW_COUNTY { get; set; }
+        public virtual DbSet<AW_USERS> AW_USERS { get; set; }
 
-
+        public virtual DbSet<WTR_RIGHT_FACILITY> WTR_RIGHT_FACILITY { get; set; }
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
         //public virtual DbSet<WATERSHED_FILE_REPORT> WATERSHED_FILE_REPORT { get; set; }
 

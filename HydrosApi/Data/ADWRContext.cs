@@ -16,6 +16,7 @@
         public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
         public virtual DbSet<FILE> FILES { get; set; }
         public virtual DbSet<PROPOSED_WATER_RIGHT> PROPOSED_WATER_RIGHT { get; set; }
+        public virtual DbSet<TEST_FILE_UPLOAD> TEST_FILE_UPLOAD { get; set; }
         public virtual DbSet<PWR_POD> PWR_POD { get; set; }
         public virtual DbSet<WATERSHED_FILE_REPORT> WATERSHED_FILE_REPORT { get; set; }
         public virtual DbSet<CD_AQUIFER_TYPE> CD_AQUIFER_TYPE { get; set; }
@@ -43,7 +44,9 @@
         public virtual DbSet<V_AWS_HYDRO> V_AWS_HYDRO { get; set; }
         public virtual DbSet<CD_AMA_INA> CD_AMA_INA { get; set; }
         public virtual DbSet<V_AWS_COUNTY_BASIN> V_AWS_COUNTY_BASIN { get; set; }
-        
+        public virtual DbSet<CD_AW_COMMENT_TYPE> CD_AW_COMMENT_TYPE { get; set; }
+
+
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
