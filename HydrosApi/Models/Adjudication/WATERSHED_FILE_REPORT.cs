@@ -37,7 +37,7 @@ namespace HydrosApi.Models
         [NotMapped]
         public List<PROPOSED_WATER_RIGHT> ProposedWaterRights { get; set; }
 
-        public static WATERSHED_FILE_REPORT WatershedFileReportByObjectId(int id)
+        public static WATERSHED_FILE_REPORT WatershedFileReportByObjectId(int ? id)
         {
             var wfr = WATERSHED_FILE_REPORT.Get(p => p.OBJECTID == id);
             var wfrSde = WATERSHED_FILE_REPORT_SDE.WatershedFileReportSDE(id);

@@ -33,8 +33,15 @@
                     DESCR = "Testing File Upload",
                     FILE_BLOB = fileBlob
                 };
-
-                return fileUpload;
+                try
+                {
+                    TEST_FILE_UPLOAD.Add(fileUpload);
+                }
+                catch (Exception exception)
+                {
+                    return fileUpload;
+                }
+                    return fileUpload;
             }
 
             return null;
