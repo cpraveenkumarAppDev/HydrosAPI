@@ -155,10 +155,16 @@
 
             if (fileList != null)
             {
-                return Ok(fileList);
+                return Ok(TEST_FILE_UPLOAD.FindFile(fileList.ID));
             }
 
             return BadRequest("Error Uploading File");
+        }
+
+        [HttpGet, Route("adj/addfileblob/{id}")] //PWR_ID or an error message is returned       
+        public async Task<IHttpActionResult> FindFileBlob(int? id) //<== ID IS THE ID FROM THE EXPLANATION TABLE
+        {
+            return Ok(TEST_FILE_UPLOAD.FindFile(id));
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]

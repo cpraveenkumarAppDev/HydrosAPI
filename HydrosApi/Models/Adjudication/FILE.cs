@@ -44,7 +44,7 @@ namespace HydrosApi.Models
 
         [NotMapped]
         public string STATUS { get; set; }
-
+    
 
         public static FILE UploadFile(HandleForm provider, string User)
         {
