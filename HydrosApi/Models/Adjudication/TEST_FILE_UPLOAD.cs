@@ -9,6 +9,7 @@
     using System.IO;
     using System.Configuration;
     using System.ComponentModel;
+ 
 
     [Table("ADJ_INV.TEST_FILE_UPLOAD")]
     public partial class TEST_FILE_UPLOAD : AdwrRepository<TEST_FILE_UPLOAD>
@@ -21,27 +22,38 @@
 
         public byte[] FILE_BLOB { get; set; }
 
+        [StringLength(50)]
+        public string TYPE { get; set; }
+
+        [StringLength(50)]
+        public string MIME_TYPE { get; set; }
+
+        public DateTime? CREATEDT { get; set; }
 
         public static TEST_FILE_UPLOAD UploadFile(HandleForm provider)
         {
+            if (provider.Files != null)
+            {
+                var file = provider.Files[0];
+                
+                var mimeType = file.Headers.ContentType.MediaType;
+                var isImage = mimeType.ToLower().IndexOf("image/") == 0 ? true : false;
+                                 
+                byte[] fileBlob = file.ReadAsByteArrayAsync().Result;
+                var form = provider.FormData;
 
-            if(provider.Files != null)
-            { 
-                byte[] fileBlob=provider.Files[0].ReadAsByteArrayAsync().Result; 
-
-                var fileUpload = new TEST_FILE_UPLOAD() {
-                    DESCR = "Testing File Upload",
-                    FILE_BLOB = fileBlob
+                var fileUpload = new TEST_FILE_UPLOAD()
+                {
+                    DESCR = file.Headers.ContentDisposition.FileName.Trim('\"'),
+                    FILE_BLOB = fileBlob,
+                    TYPE = Path.GetExtension(file.Headers.ContentDisposition.FileName.Trim('\"').ToLower()),
+                    MIME_TYPE = mimeType,
+                    CREATEDT =  DateTime.Now
                 };
-                try
-                {
-                    TEST_FILE_UPLOAD.Add(fileUpload);
-                }
-                catch (Exception exception)
-                {
-                    return fileUpload;
-                }
-                    return fileUpload;
+
+                TEST_FILE_UPLOAD.Add(fileUpload);
+
+                return fileUpload;
             }
 
             return null;
