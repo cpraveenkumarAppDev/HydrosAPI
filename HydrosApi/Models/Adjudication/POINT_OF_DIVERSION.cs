@@ -1,5 +1,6 @@
 ﻿namespace HydrosApi.Models
 {
+    using HydrosApi.Models.Adjudication;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -31,7 +32,10 @@
 
         [StringLength(50)]
         [Column("BOC")]
-        public string PCC { get; set; } //Well
+        public string BOC { get; set; } //Well
+        [StringLength(50)]
+        [Column("SOC")]
+        public string SOC { get; set; } //SOC
 
         [StringLength(300)]
         public string CLAIMANT{ get; set; }
@@ -213,7 +217,56 @@
             return POINT_OF_DIVERSION.GetList(p => objectids.Contains(p.OBJECTID));              
         }
 
-       
+        public static POINT_OF_DIVERSION PointOfDiversionByObjectId(int id)
+        {
+
+            try
+            {
+
+                var pod = POINT_OF_DIVERSION_VIEW.Get(p => p.OBJECTID == id);
+                var podSde = POINT_OF_DIVERSION.Get(p => p.OBJECTID == id);
+                pod.Explanations = EXPLANATIONS.GetList(p => p.POD_ID == pod.ID);
+                pod.FileList = FILE.GetList(p => p.POD_ID == pod.ID);
+                char[] delimiters = new[] { ',', ';' };
+                return podSde;
+            }
+            catch (Exception exception)
+            {
+                // FileNotFoundExceptions are handled here.
+                return POINT_OF_DIVERSION.Get(p => p.OBJECTID == id);
+            }
+
+            //wfr.SOC = wfrSde.SOC == null ? null :
+            //     (from s in wfrSde.SOC.Split(delimiters)
+            //      select new
+            //      {
+            //          program = s.IndexOf("-") > -1 ? s.Split('-')[0].Replace(" ", "") : "",
+            //          file_no = int.Parse((s.IndexOf("-") > -1 ? s.Split('-')[1].Replace(" ", "") : s).Replace(" ", ""))
+            //      }).Select(f => SOC_AIS_VIEW.Get(s => s.FILE_NO == f.file_no)).Where(c => c != null).Distinct().ToList();
+            //if (wfrSde.BOC != null)
+            //{
+            //    var bocList = (from p in (from s in wfrSde.BOC.Split(delimiters)
+            //                              select new
+            //                              {
+            //                                  program = s.IndexOf("-") > -1 ? s.Split('-')[0].Replace(" ", "") : "",
+            //                                  file_no = (s.IndexOf("-") > -1 ? s.Split('-')[1].Replace(" ", "") : s).Replace(" ", "")
+            //                              })
+            //                   select new
+            //                   {
+            //                       p.program,
+            //                       p.file_no,
+            //                       numeric_file_no = int.Parse(p.file_no == null ? "0" : p.file_no.ToString()),
+            //                       registry_id = p.program + "-" + p.file_no
+            //                   }).Distinct();
+            //    var wellList = bocList.Where(p => p.program == "55" || p.program == "35");
+            //    var swList = bocList.Where(p => p.program != "55" && p.program != "35");
+
+            //    wfr.Well = wellList == null ? null :
+            //        wellList.Select(f => WELLS_VIEW.Get(s => s.FILE_NO == f.file_no && s.PROGRAM == f.program)).Where(c => c != null).ToList();
+            //    wfr.Surfacewater = swList == null ? null : swList.Select(f => SW_AIS_VIEW.Get(s => s.ART_APPLI_NO == f.numeric_file_no)).Where(c => c != null).ToList();
+            //};
+            //wfr.ProposedWaterRights = PROPOSED_WATER_RIGHT.GetList(p => p.WFR_ID == wfr.ID);
+        }
         /* 
         
 APN	NVARCHAR2(254)

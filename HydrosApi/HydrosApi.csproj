@@ -315,6 +315,7 @@
     <Compile Include="Data\AdwrRepository.cs" />
     <Compile Include="Data\HandleForm.cs" />
     <Compile Include="Data\SdeRepository.cs" />
+    <Compile Include="Models\Adjudication\POINT_OF_DIVERSION_VIEW.cs" />
     <Compile Include="Models\Adjudication\TEST_FILE_UPLOAD.cs" />
     <Compile Include="Models\Adjudication\WATERSHED_FILE_REPORT_SDE.cs" />
     <Compile Include="Models\ADWR\AW_USERS.cs" />

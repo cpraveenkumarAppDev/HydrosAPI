@@ -3,6 +3,7 @@ namespace HydrosApi.Data
 {
     using System;
     using System.Data.Entity;
+    using HydrosApi.Models.Adjudication;
     using HydrosApi.Models.ADWR;
     using HydrosApi.Models.Permitting.AAWS;
     using Models;    
@@ -38,6 +39,7 @@ namespace HydrosApi.Data
         public virtual DbSet<V_AWS_COUNTY_BASIN> V_AWS_COUNTY_BASIN { get; set; }
         public virtual DbSet<CD_AW_COUNTY> CD_AW_COUNTY { get; set; }
         public virtual DbSet<AW_USERS> AW_USERS { get; set; }
+        public virtual DbSet<POINT_OF_DIVERSION_VIEW> POINT_OF_DIVERSION_VIEW { get; set; }
 
         public virtual DbSet<WTR_RIGHT_FACILITY> WTR_RIGHT_FACILITY { get; set; }
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }

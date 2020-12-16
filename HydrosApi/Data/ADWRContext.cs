@@ -1,6 +1,7 @@
 ﻿namespace HydrosApi.Data
 { 
     using System.Data.Entity;
+    using HydrosApi.Models.Adjudication;
     using HydrosApi.Models.Permitting.AAWS;
     using Models;
 
@@ -45,6 +46,7 @@
         public virtual DbSet<CD_AMA_INA> CD_AMA_INA { get; set; }
         public virtual DbSet<V_AWS_COUNTY_BASIN> V_AWS_COUNTY_BASIN { get; set; }
         public virtual DbSet<CD_AW_COMMENT_TYPE> CD_AW_COMMENT_TYPE { get; set; }
+        public virtual DbSet<POINT_OF_DIVERSION_VIEW> POINT_OF_DIVERSION_VIEW { get; set; }
 
 
 
