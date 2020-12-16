@@ -17,6 +17,7 @@ namespace HydrosApi.Models
         public int? ID { get; set; }
 
         public int? WFR_ID { get; set; }
+        public int? POD_ID { get; set; }
 
         public int? PWR_ID { get; set; }
 
@@ -33,7 +34,7 @@ namespace HydrosApi.Models
 
         [StringLength(20)]
         public string UPDATEBY { get; set; }
-
+        public byte[] FILE_DATA { get; set; }
         public DateTime? UPDATEDT { get; set; }
 
         [StringLength(100)]
@@ -42,10 +43,39 @@ namespace HydrosApi.Models
         [StringLength(100)]
         public string DESCRIPTION { get; set; }
 
+        [StringLength(50)]
+        public string MIME_TYPE { get; set; }
         [NotMapped]
         public string STATUS { get; set; }
-    
 
+        public static FILE NewUploadFile(HandleForm provider, string User)
+        {
+            if (provider.Files != null)
+            {
+                var file = provider.Files[0];
+
+                var mimeType = file.Headers.ContentType.MediaType;
+                var isImage = mimeType.ToLower().IndexOf("image/") == 0 ? true : false;
+
+                byte[] fileBlob = file.ReadAsByteArrayAsync().Result;
+                var form = provider.FormData;
+                var fileUpload = new FILE()
+                {
+                    DESCRIPTION = file.Headers.ContentDisposition.FileName.Trim('\"'),
+                    FILE_DATA = fileBlob,
+                    TYPE = Path.GetExtension(file.Headers.ContentDisposition.FileName.Trim('\"').ToLower()),
+                    MIME_TYPE = mimeType,
+                    CREATEDT = DateTime.Now,
+                    CREATEBY = User
+                };
+
+                FILE.Add(fileUpload);
+                FILE fileInfo = FILE.Get(p => p.ID == fileUpload.ID);
+                return fileInfo;
+            }
+
+            return null;
+        }
         public static FILE UploadFile(HandleForm provider, string User)
         {
 
@@ -53,8 +83,10 @@ namespace HydrosApi.Models
                          
             var fileInfo = new FILE();            
             string fieldName;
-            string newFileName="";            
-
+            string newFileName="";
+            var providerFile = provider.Files[0];
+            byte[] fileBlob = providerFile.ReadAsByteArrayAsync().Result;
+            var mimeType = providerFile.Headers.ContentType.MediaType;
             var form = provider.FormData;
 
             //get all the form data (ie not the file stream yet)
@@ -87,13 +119,14 @@ namespace HydrosApi.Models
             //--end eventually move this into a class or function so it can be used anywhere
             //-------------------------------------------------------------------------------
 
-            if (fileInfo.PWR_ID==null && fileInfo.WFR_ID == null || provider.Files.Count() == 0) 
+            if (fileInfo.PWR_ID==null && fileInfo.WFR_ID == null &&  fileInfo.POD_ID == null || provider.Files.Count() == 0) 
             {
                 fileInfo = new FILE();
-                fileInfo.STATUS = fileInfo.PWR_ID==null || fileInfo.WFR_ID == null ? "An ID for Proposed Water Right or Water Facility Right was not provided." : "Please select a valid file.";
+                fileInfo.STATUS = fileInfo.PWR_ID==null || fileInfo.WFR_ID == null || fileInfo.POD_ID == null ? "An ID for Proposed Water Right or Water Facility Right was not provided." : "Please select a valid file.";
                 return fileInfo;
             }
-
+            fileInfo.FILE_DATA = fileBlob;
+            fileInfo.MIME_TYPE = mimeType;
             fileInfo.CREATEBY = User;
             fileInfo.CREATEDT = DateTime.Now;
             
@@ -101,37 +134,38 @@ namespace HydrosApi.Models
             //by inserting the record and adding -FILE-{ID} at the end
             FILE.Add(fileInfo);
 
-            foreach (var file in provider.Files)
-            {
-                var fileInput = file.ReadAsStreamAsync().Result;
+            //foreach (var file in provider.Files)
+            //{
+            //    var fileInput = file.ReadAsStreamAsync().Result;
                 
-                fieldName = file.Headers.ContentDisposition.Name.Trim('\"');
-                var fileName = file.Headers.ContentDisposition.FileName.Trim('\"');
+            //    fieldName = file.Headers.ContentDisposition.Name.Trim('\"');
+            //    var fileName = file.Headers.ContentDisposition.FileName.Trim('\"');
 
-                var field = fileInfo.GetType().GetProperty(fieldName);
+            //    var field = fileInfo.GetType().GetProperty(fieldName);
 
-                if (field != null)
-                {
-                    newFileName = Guid.NewGuid().ToString();
+            //    if (field != null)
+            //    {
+            //        newFileName = Guid.NewGuid().ToString();
 
-                    //Make the GUID a little bit smaller to accommodate the -FILE-{ID} value appended 
-                    newFileName = newFileName.Substring(0,newFileName.LastIndexOf('-'))+"-FILE-"+fileInfo.ID.ToString(); 
-                    var fieldType = field.PropertyType.Name;                    
-                    field.SetValue(fileInfo, fileName);   
+            //        //Make the GUID a little bit smaller to accommodate the -FILE-{ID} value appended 
+            //        newFileName = newFileName.Substring(0,newFileName.LastIndexOf('-'))+"-FILE-"+fileInfo.ID.ToString(); 
+            //        var fieldType = field.PropertyType.Name;                    
+            //        field.SetValue(fileInfo, fileName);   
 
-                    //field.SetValue(oneFile, fileInput);
-                    fileInfo.TYPE = Path.GetExtension(fileName).ToLower();
-                    fileInfo.LOCATION = Path.Combine(uploadFilePath, newFileName+fileInfo.TYPE);
-                    using (Stream stream = File.OpenWrite(fileInfo.LOCATION))
-                    {
-                        fileInput.CopyTo(stream);
-                        //close file  
-                        stream.Close();
-                    }
-                    FILE.Update(fileInfo);
-                }
-            }         
-            return fileInfo;                        
+            //        //field.SetValue(oneFile, fileInput);
+            //        fileInfo.TYPE = Path.GetExtension(fileName).ToLower();
+            //        //fileInfo.LOCATION = Path.Combine(uploadFilePath, newFileName+fileInfo.TYPE);
+            //        using (Stream stream = File.OpenWrite(fileInfo.LOCATION))
+            //        {
+            //            fileInput.CopyTo(stream);
+            //            //close file  
+            //            stream.Close();
+            //        }
+            //        FILE.Update(fileInfo);
+            //    }
+            //}
+            FILE savedFile = FILE.Get(p => p.ID == fileInfo.ID);
+            return savedFile;                       
         }
     }
 }
