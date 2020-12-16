@@ -5,6 +5,9 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System;
     using Data;
+    using ViewModel;
+    using System.Collections.Generic;
+    using System.Linq;
 
     [Table("AWS.V_AWS_GENERAL_INFO")]
     public class V_AWS_GENERAL_INFO : Repository<V_AWS_GENERAL_INFO>
@@ -99,22 +102,154 @@
         public string County_Descr { get; set; }
 
         [NotMapped]
-        public string ProcessStatus { get; set; } //Use this for error messages in stored procedure or api calls
-     
-    
+        public Dictionary<string,bool> Criteria { get; set; } //add or remove 
 
-       /* [NotMapped]
-        public string StatusDate {
-            get {                  
-                return APP_STATUS_DT.ToString();
+        [NotMapped]
+        public List<V_AWS_HYDRO> HydrologyInfo { get; set; } //add or remove 
+
+        [NotMapped]
+        public string PWS_ID_Number { get; set; }
+
+        [NotMapped]
+        public List<SP_AW_CONV_DIAGRAM> Diagram { get; set; }
+
+        [NotMapped]
+        public string ProcessStatus { get; set; } //Use this for error messages in stored procedure or api calls 
+
+
+        //from dictionary with field dictionary key names that correspond to the column or column alias names
+        public static void SetGeneralInfoCriteriaFromBool(Dictionary<string, bool> criteriaValues, V_AWS_GENERAL_INFO generalInfo)
+        {
+            foreach(var criteriaValue in criteriaValues)
+            {
+                var property = generalInfo.GetType().GetProperty(criteriaValue.Key);
+
+                if (property != null)
+                {
+                    property.SetValue(generalInfo, criteriaValue.Value == true ? "Y" : "N");
+                }
+            }
+        }
+
+        public static void PopulateGeneralInfo(V_AWS_GENERAL_INFO generalInfo)
+        {
+
+            Dictionary<string, bool> setCriteria = new Dictionary<string, bool>();
+
+            generalInfo.Diagram = SP_AW_CONV_DIAGRAM.ConveyanceDiagram(generalInfo.ProgramCertificateConveyance);
+
+            setCriteria.Add("Physical_Availability", generalInfo.Physical_Availability == "Y" ? true : false);
+            setCriteria.Add("Hydrology", generalInfo.Hydrology == "Y" ? true : false);
+            setCriteria.Add("Continuous_Availability",generalInfo.Continuous_Availability == "Y" ? true : false);
+            setCriteria.Add("Legal_Availability", generalInfo.Legal_Availability == "Y" ? true : false);
+            setCriteria.Add("Consistency_With_Mgmt_Plan", generalInfo.Consistency_With_Mgmt_Plan == "Y" ? true : false);
+            setCriteria.Add("Consistency_With_Mgmt_Goal", generalInfo.Consistency_With_Mgmt_Goal == "Y" ? true : false);
+            setCriteria.Add("Water_Quality", generalInfo.Water_Quality == "Y" ? true : false);
+            setCriteria.Add("Financial_Capability", generalInfo.Financial_Capability == "Y" ? true : false);
+            setCriteria.Add("Demand_Calculator", generalInfo.Demand_Calculator == "Y" ? true : false);
+
+            generalInfo.Criteria = setCriteria;
+
+            generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? V_AWS_PROVIDER.Get(p => p.PROVIDER_WRF_ID == generalInfo.PrimaryProviderWrfId).PWS_ID_Number : null;
+            generalInfo.HydrologyInfo = V_AWS_HYDRO.GetList(h => h.WRFID == generalInfo.WaterRightFacilityId);
+
+
+            var overView = new AWS_OVER_VIEW();
+            var overViewProperties = overView.GetType().GetProperties();
+            var generalInfoProperties = generalInfo.GetType().GetProperties();
+
+            foreach(var prop in generalInfoProperties)
+            {
+                var gValue = prop.GetValue(generalInfo);
+                var gType = prop.PropertyType.Name;
+                var gName = prop.Name;
+
+                var oProp = overView.GetType().GetProperty(gName);
+                if(oProp !=null && oProp.PropertyType.Name==gType)
+                {
+                    oProp.SetValue(overView, gValue);
+                }
             }
 
-            set {
-                this.StatusDate = value;
+            foreach(var s in setCriteria)
+            {
+                var oCriteria = overView.GetType().GetProperty(s.Key);
+                if(oCriteria != null)
+                {
+                    oCriteria.SetValue(overView, s.Value);
+                }
 
-                APP_STATUS_DT=DateTime.Parse(value);
-                
-            }            
-         }*/
+            }
+        }
+
+        public static V_AWS_GENERAL_INFO PopulateGeneralInfoSummary(V_AWS_GENERAL_INFO generalInfo)
+        {
+            if(generalInfo==null)
+            {
+                return generalInfo;
+            }
+           
+            return new V_AWS_GENERAL_INFO()
+            {
+                ProgramCertificateConveyance = generalInfo.ProgramCertificateConveyance,
+                WaterRightFacilityId = generalInfo.WaterRightFacilityId,
+                Subdivision=generalInfo.Subdivision,
+                ProgramCode=generalInfo.ProgramCode,
+                Cama_code=generalInfo.Cama_code
+
+            };
+        }
+
+        //get only a few fields populated with data
+        public static V_AWS_GENERAL_INFO GetGeneralInformationSummary(int wrfId)
+        {
+            return PopulateGeneralInfoSummary(V_AWS_GENERAL_INFO.Get(g => g.WaterRightFacilityId == wrfId));
+        }
+
+        public static V_AWS_GENERAL_INFO GetGeneralInformationSummary(string pcc)
+        {
+            return PopulateGeneralInfoSummary(V_AWS_GENERAL_INFO.Get(g => g.ProgramCertificateConveyance == pcc));
+        }
+
+
+        //get general information values
+        public static V_AWS_GENERAL_INFO GetGeneralInformation(string pcc)
+        {
+            var generalInfo=V_AWS_GENERAL_INFO.Get(g => g.ProgramCertificateConveyance == pcc);
+
+            if(generalInfo != null)
+            {
+                PopulateGeneralInfo(generalInfo);
+            }
+
+            return generalInfo;
+        }
+
+        public static V_AWS_GENERAL_INFO GetGeneralInformation(int wrfId)
+        {
+            var generalInfo = V_AWS_GENERAL_INFO.Get(g => g.WaterRightFacilityId == wrfId);            
+
+            if (generalInfo != null)
+            {
+                PopulateGeneralInfo(generalInfo);
+            }
+            return generalInfo;
+        }
+
+       
+
+        /* [NotMapped]
+         public string StatusDate {
+             get {                  
+                 return APP_STATUS_DT.ToString();
+             }
+
+             set {
+                 this.StatusDate = value;
+
+                 APP_STATUS_DT=DateTime.Parse(value);
+
+             }            
+          }*/
     }
 }

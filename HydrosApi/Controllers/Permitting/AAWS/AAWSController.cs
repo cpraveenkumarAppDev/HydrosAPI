@@ -41,8 +41,24 @@ namespace HydrosApi.Controllers
             // var pcc = regex.Replace("~", ".");
             var found = AAWSProgramInfoViewModel.GetData(pcc);
             return Json(found);
-        }       
-       
+        }
+
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        [Route("aws/getgeneralInfoByPcc/{id}")]
+        [HttpGet]
+        public IHttpActionResult GetGeneralInfoByPcc(string id)
+        {
+            //this will format any pcc as long as the pattern is two numbers, six numbers, four numbers in it
+            //so it can be all numbers or have characters as long as the character are in the correct locations
+            //I'm sorry to change it
+
+            Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
+            var pcc = regex.Replace(id, "$1-$2.$3");
+            // var pcc = regex.Replace("~", ".");
+            var found = V_AWS_GENERAL_INFO.GetGeneralInformation(pcc);
+            return Ok(found);
+        }
+
         [Route("aws/GetNewAWSRight")]
         [HttpGet]
         public IHttpActionResult GetNewApplicationCredentials()
