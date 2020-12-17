@@ -345,6 +345,7 @@
     <Compile Include="Models\Permitting\AAWS\V_CD_AW_APP_FEE_RATES.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\PCC.cs" />
+    <Compile Include="ViewModel\ADWR\GeoBoundaryViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWSNewApp.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWS_OVER_VIEW.cs" />
     <Compile Include="Data\ADWRContext.cs" />
