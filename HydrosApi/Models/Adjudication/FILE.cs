@@ -42,6 +42,11 @@ namespace HydrosApi.Models
         [StringLength(100)]
         public string DESCRIPTION { get; set; }
 
+        [StringLength(100)]
+        public string MIME_TYPE { get; set; }
+
+        public byte[] FILE_DATA { get; set; }
+
         [NotMapped]
         public string STATUS { get; set; }
 
@@ -95,42 +100,59 @@ namespace HydrosApi.Models
             }
 
             fileInfo.CREATEBY = User;
-            fileInfo.CREATEDT = DateTime.Now;
+            fileInfo.CREATEDT = DateTime.Now;            
             
-            //Create a descriptive filename to make removing orphans easier
-            //by inserting the record and adding -FILE-{ID} at the end
             FILE.Add(fileInfo);
 
-            foreach (var file in provider.Files)
-            {
-                var fileInput = file.ReadAsStreamAsync().Result;
-                
-                fieldName = file.Headers.ContentDisposition.Name.Trim('\"');
-                var fileName = file.Headers.ContentDisposition.FileName.Trim('\"');
+            foreach (var file in provider.Files)            { 
 
-                var field = fileInfo.GetType().GetProperty(fieldName);
+                var mimeType = file.Headers.ContentType.MediaType;
+                var originalFileName = file.Headers.ContentDisposition.FileName.Trim('\"');
 
-                if (field != null)
-                {
-                    newFileName = Guid.NewGuid().ToString();
+                byte[] fileData= file.ReadAsByteArrayAsync().Result;
 
-                    //Make the GUID a little bit smaller to accommodate the -FILE-{ID} value appended 
-                    newFileName = newFileName.Substring(0,newFileName.LastIndexOf('-'))+"-FILE-"+fileInfo.ID.ToString(); 
-                    var fieldType = field.PropertyType.Name;                    
-                    field.SetValue(fileInfo, fileName);   
+                fileInfo.ORIGINAL_FILE_NAME = originalFileName;
+                fileInfo.FILE_DATA = fileData;
+                fileInfo.TYPE = Path.GetExtension(originalFileName.ToLower());
+                fileInfo.MIME_TYPE = mimeType;
 
-                    //field.SetValue(oneFile, fileInput);
-                    fileInfo.TYPE = Path.GetExtension(fileName).ToLower();
-                    fileInfo.LOCATION = Path.Combine(uploadFilePath, newFileName+fileInfo.TYPE);
-                    using (Stream stream = File.OpenWrite(fileInfo.LOCATION))
-                    {
-                        fileInput.CopyTo(stream);
-                        //close file  
-                        stream.Close();
-                    }
-                    FILE.Update(fileInfo);
-                }
-            }         
+                FILE.Update(fileInfo);
+            }
+
+            //Create a descriptive filename to make removing orphans easier
+            //by inserting the record and adding -FILE-{ID} at the end
+            /* foreach (var file in provider.Files)
+             {
+                 var fileInput = file.ReadAsStreamAsync().Result;
+
+                 fieldName = file.Headers.ContentDisposition.Name.Trim('\"');
+                 var fileName = file.Headers.ContentDisposition.FileName.Trim('\"');
+
+                 var mimeType = file.Headers.ContentType.MediaType;
+
+                 var field = fileInfo.GetType().GetProperty(fieldName);
+
+                 if (field != null)
+                 {
+                     newFileName = Guid.NewGuid().ToString();
+
+                     //Make the GUID a little bit smaller to accommodate the -FILE-{ID} value appended 
+                     newFileName = newFileName.Substring(0,newFileName.LastIndexOf('-'))+"-FILE-"+fileInfo.ID.ToString(); 
+                     var fieldType = field.PropertyType.Name;                    
+                     field.SetValue(fileInfo, fileName);   
+
+                     //field.SetValue(oneFile, fileInput);
+                     fileInfo.TYPE = Path.GetExtension(fileName).ToLower();
+                     fileInfo.LOCATION = Path.Combine(uploadFilePath, newFileName+fileInfo.TYPE);
+                     using (Stream stream = File.OpenWrite(fileInfo.LOCATION))
+                     {
+                         fileInput.CopyTo(stream);
+                         //close file  
+                         stream.Close();
+                     }
+                     FILE.Update(fileInfo);
+                 }
+             }   */
             return fileInfo;                        
         }
     }

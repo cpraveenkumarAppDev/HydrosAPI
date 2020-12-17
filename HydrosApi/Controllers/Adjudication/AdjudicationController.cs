@@ -136,7 +136,7 @@
             return Ok("Point of Diversion Deleted");
         }
 
-        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpPost, Route("adj/addfileblob/")] //PWR_ID or an error message is returned       
         public async Task<IHttpActionResult> AddFileBlob() //<== ID IS THE ID FROM THE EXPLANATION TABLE
         {
@@ -154,6 +154,20 @@
             }
 
             return BadRequest("Error Uploading File");
+        }
+
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpGet, Route("adj/getfileblob/{id}")] //the id of the file record for now
+        public async Task<IHttpActionResult> GetFileBlob(int id) 
+        {           
+            var file = await Task.FromResult(TEST_FILE_UPLOAD.Get(f=>f.ID==id));                      
+
+            if (file == null)
+            {
+                return BadRequest("Error Uploading File");
+            }
+            
+            return Ok(file);
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
