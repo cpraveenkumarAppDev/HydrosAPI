@@ -8,6 +8,7 @@ using HydrosApi.Data;
 using HydrosApi.Models.ADWR;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HydrosApi.ViewModel.ADWR;
 
 namespace HydrosApi
 {
@@ -128,6 +129,24 @@ namespace HydrosApi
                 return InternalServerError();
             }
             return Ok(found.PCC);
+        }
+        /// <summary>
+        /// Returns object for Counties, AMA & INA, and Basins
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("adwr/geoBoundaries")]
+        public IHttpActionResult GetCountyBasinAmaInfo()
+        {
+            try
+            {
+                var info = new GeoBoundaryViewModel();
+                return Ok(info);
+            }
+            catch(Exception exception)
+            {
+                //log error
+                return InternalServerError();
+            }
         }
     }
 

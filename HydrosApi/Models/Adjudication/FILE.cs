@@ -17,6 +17,7 @@ namespace HydrosApi.Models
         public int? ID { get; set; }
 
         public int? WFR_ID { get; set; }
+        public int? POD_ID { get; set; }
 
         public int? PWR_ID { get; set; }
 
@@ -92,10 +93,10 @@ namespace HydrosApi.Models
             //--end eventually move this into a class or function so it can be used anywhere
             //-------------------------------------------------------------------------------
 
-            if (fileInfo.PWR_ID==null && fileInfo.WFR_ID == null || provider.Files.Count() == 0) 
+            if (fileInfo.PWR_ID==null && fileInfo.WFR_ID == null &&  fileInfo.POD_ID == null || provider.Files.Count() == 0) 
             {
                 fileInfo = new FILE();
-                fileInfo.STATUS = fileInfo.PWR_ID==null || fileInfo.WFR_ID == null ? "An ID for Proposed Water Right or Water Facility Right was not provided." : "Please select a valid file.";
+                fileInfo.STATUS = fileInfo.PWR_ID==null || fileInfo.WFR_ID == null || fileInfo.POD_ID == null ? "An ID for Proposed Water Right or Water Facility Right was not provided." : "Please select a valid file.";
                 return fileInfo;
             }
 

@@ -44,7 +44,7 @@
         public string WFR_PARCELS { get; set; }
 
         [StringLength(100)]
-        public string WFR_WATERSHED { get; set; }
+        public string DWR_ID { get; set; }
 
         [StringLength(100)]
         public string WFR_REGION { get; set; }
@@ -60,7 +60,7 @@
 
 
         ///get the WFR using its objectid
-        public static WATERSHED_FILE_REPORT_SDE WatershedFileReportSDE(int objectid)
+        public static WATERSHED_FILE_REPORT_SDE WatershedFileReportSDE(int ? objectid)
         {
             return WATERSHED_FILE_REPORT_SDE.Get(p => p.OBJECTID == objectid);
         }

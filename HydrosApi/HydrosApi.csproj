@@ -315,6 +315,7 @@
     <Compile Include="Data\AdwrRepository.cs" />
     <Compile Include="Data\HandleForm.cs" />
     <Compile Include="Data\SdeRepository.cs" />
+    <Compile Include="Models\Adjudication\POINT_OF_DIVERSION_VIEW.cs" />
     <Compile Include="Models\Adjudication\TEST_FILE_UPLOAD.cs" />
     <Compile Include="Models\Adjudication\WATERSHED_FILE_REPORT_SDE.cs" />
     <Compile Include="Models\ADWR\AW_USERS.cs" />
@@ -344,6 +345,7 @@
     <Compile Include="Models\Permitting\AAWS\V_CD_AW_APP_FEE_RATES.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\PCC.cs" />
+    <Compile Include="ViewModel\ADWR\GeoBoundaryViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWSNewApp.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWS_OVER_VIEW.cs" />
     <Compile Include="Data\ADWRContext.cs" />

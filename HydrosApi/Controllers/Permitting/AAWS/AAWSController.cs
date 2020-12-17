@@ -147,10 +147,10 @@ namespace HydrosApi.Controllers
         [HttpGet, Route("aws/activity/{wrf}/{activity}")]
         public IHttpActionResult GetActivity(int wrf, string activity)
         {
-            List<AW_APP_ACTIVITY_TRK> activities = new List<AW_APP_ACTIVITY_TRK>();
+            var activities = new AW_APP_ACTIVITY_TRK();
             try
             {
-                activities = AW_APP_ACTIVITY_TRK.GetList(x => x.WRF_ID == wrf && x.ActivityCode == activity);
+                activities = AW_APP_ACTIVITY_TRK.GetList(x => x.WRF_ID == wrf && x.ActivityCode == activity).FirstOrDefault();
             }
             catch (Exception exception)
             {

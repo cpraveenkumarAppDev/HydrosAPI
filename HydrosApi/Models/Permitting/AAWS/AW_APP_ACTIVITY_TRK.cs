@@ -14,7 +14,7 @@ namespace HydrosApi.Models.Permitting.AAWS
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-
+        [Column("WRF_ID")]
         public int WRF_ID { get; set; }
         [Column("CAAA_CODE")]
         public string ActivityCode { get; set; }

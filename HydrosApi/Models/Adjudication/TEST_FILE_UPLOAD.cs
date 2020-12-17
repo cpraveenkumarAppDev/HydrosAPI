@@ -29,6 +29,11 @@
         public string MIME_TYPE { get; set; }
 
         public DateTime? CREATEDT { get; set; }
+        public static TEST_FILE_UPLOAD FindFile(int? ID)
+        {
+            TEST_FILE_UPLOAD fileInfo = TEST_FILE_UPLOAD.Get(p => p.ID ==ID);
+            return fileInfo;
+        }
 
         public static TEST_FILE_UPLOAD UploadFile(HandleForm provider)
         {
@@ -52,8 +57,8 @@
                 };
 
                 TEST_FILE_UPLOAD.Add(fileUpload);
-
-                return fileUpload;
+                TEST_FILE_UPLOAD fileInfo = TEST_FILE_UPLOAD.Get(p => p.ID == fileUpload.ID);
+                return fileInfo;
             }
 
             return null;

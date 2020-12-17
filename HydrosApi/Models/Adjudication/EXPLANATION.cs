@@ -15,6 +15,7 @@
         public int? WFR_ID { get; set; }
 
         public int? PWR_ID { get; set; }
+        public int? POD_ID { get; set; }
 
         [StringLength(50)]
         public string EXP_TYPE { get; set; }
