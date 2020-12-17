@@ -237,21 +237,21 @@
             }
             return generalInfo;
         }
+        
 
-       
 
-        /* [NotMapped]
-         public string StatusDate {
-             get {                  
-                 return APP_STATUS_DT.ToString();
-             }
+            /* [NotMapped]
+             public string StatusDate {
+                 get {                  
+                     return APP_STATUS_DT.ToString();
+                 }
 
-             set {
-                 this.StatusDate = value;
+                 set {
+                     this.StatusDate = value;
 
-                 APP_STATUS_DT=DateTime.Parse(value);
+                     APP_STATUS_DT=DateTime.Parse(value);
 
-             }            
-          }*/
-    }
+                 }            
+              }*/
+        }
 }

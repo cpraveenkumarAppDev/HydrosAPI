@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-
+    using System.Web.Http;
 
     public interface IRepository<TEntity>
     {
@@ -119,9 +119,32 @@ using System.Data.Entity.Infrastructure;
                 databaseContext.SaveChanges();                
                 return entity;
             }
-        }       
+        }
 
-        public static T UpdateSome(T entity, Expression<Func<T, bool>> predicate) //Updates some values but not all
+        public static T UpdateSome(T entity, params Expression<Func<T, object>>[] updatedProperties)
+        {         
+             
+            //Ensure only modified fields are updated.
+            using (var databaseContext = new OracleContext())
+            {
+                var dbEntry = databaseContext.Entry(entity);
+
+                foreach(var property in dbEntry.OriginalValues.PropertyNames)
+                {
+                    var original = dbEntry.OriginalValues.GetValue<object>(property);
+                    var current = dbEntry.CurrentValues.GetValue<object>(property);
+
+                    if(original != null && !original.Equals(current))
+                    {
+                        dbEntry.Property(property).IsModified = true;
+                    }
+                }
+
+                return entity;
+            }
+        }
+
+       /* public static T UpdateSome(T entity, Expression<Func<T, bool>> predicate) //Updates some values but not all
         {
             using (var databaseContext = new OracleContext())
             {
@@ -130,7 +153,7 @@ using System.Data.Entity.Infrastructure;
                 databaseContext.SaveChanges();
                 return entity;
             }
-        }
+        }*/
 
         public static List<T> ExecuteStoredProcedure(string sqlStatement, params object[] parameters)
         {

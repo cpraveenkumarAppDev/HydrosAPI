@@ -121,8 +121,13 @@ namespace HydrosApi.Controllers
         [HttpPut, Route("aws/updateapp")]
         public async Task<IHttpActionResult> UpdateApp([FromBody] V_AWS_GENERAL_INFO paramValues)  //Send all form values
         {
-            var user = User.Identity.Name;
-            var savedApplication = await Task.FromResult(AAWSProgramInfoViewModel.OnUpdate(paramValues, user.Replace("AZWATER0\\", "")));
+
+            var entity = V_AWS_GENERAL_INFO.GetGeneralInformation(paramValues.ProgramCertificateConveyance);
+            var user = User.Identity.Name;          
+
+            paramValues.UserName = user.Replace("AZWATER0\\", "");
+            var savedApplication = await Task.FromResult(V_AWS_GENERAL_INFO.UpdateSome(paramValues));
+
             return Ok(savedApplication);
         }
 
