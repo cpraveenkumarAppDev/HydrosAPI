@@ -15,36 +15,42 @@
 
     public class AAWSProgramInfoViewModel
     {
-        public AWS_OVER_VIEW OverView { get; set; }
-        public string ProgramCertificateConveyance { get; set; }
+        //public AWS_OVER_VIEW OverView { get; set; }
+       /* public string ProgramCertificateConveyance { get; set; }
         public string Subdivision { get; set; }
         public string ProgramCode { get; set; }
         public string Cama_code { get; set; }
-        public int? WaterRightFacilityId { get; set; }
+        public int? WaterRightFacilityId { get; set; }*/
          
-        public V_CD_AW_APP_FEE_RATES FeeRates { get; set; }
+       // public V_CD_AW_APP_FEE_RATES FeeRates { get; set; }
         public List<V_AWS_SUBBAS> SubbasinList { get; set; }
-        public List<SP_AW_CONV_DIAGRAM> Diagram { get; set; }
-        public V_AWS_HYDRO Hydrology { get; set; }
-        public List<CD_AMA_INA> AmaIna { get; set; }
+        //public List<SP_AW_CONV_DIAGRAM> Diagram { get; set; }
+        //public V_AWS_HYDRO Hydrology { get; set; }
+        //public List<CD_AMA_INA> AmaIna { get; set; }
         public List<CD_AMA_INA> AmaList { get; set; }
-        public List<CD_AMA_INA> InaList { get; set; }
+        //public List<CD_AMA_INA> InaList { get; set; }
         public List<V_AWS_COUNTY_BASIN> CountyBasinList { get; set; }
+
+        public List<V_AWS_GENERAL_INFO> GeneralInfo { get; set; }
         public static AAWSProgramInfoViewModel GetData(string PermitCertificateConveyanceNumber)
         {
             AAWSProgramInfoViewModel AAWSProgramInfoViewModel = new AAWSProgramInfoViewModel();
-            AWS_OVER_VIEW AAWSProgramInfoViewModelOverView = new AWS_OVER_VIEW();
-            V_AWS_HYDRO Hydrology = V_AWS_HYDRO.Get(p => p.PCC == PermitCertificateConveyanceNumber);
-            List<V_AWS_PROVIDER> lists = V_AWS_PROVIDER.GetAll();
-            AAWSProgramInfoViewModelOverView.SubbasinList = V_AWS_SUBBAS.GetAll().OrderBy(x => x.BasinDescription).ToList();
+            //AWS_OVER_VIEW AAWSProgramInfoViewModelOverView = new AWS_OVER_VIEW();
+           // V_AWS_HYDRO Hydrology = V_AWS_HYDRO.Get(p => p.PCC == PermitCertificateConveyanceNumber);
+            //List<V_AWS_PROVIDER> lists = V_AWS_PROVIDER.GetAll();
+            List<V_AWS_PROVIDER> Provider = V_AWS_PROVIDER.GetAll();
+            //AAWSProgramInfoViewModelOverView.SubbasinList = V_AWS_SUBBAS.GetAll().OrderBy(x => x.BasinDescription).ToList();
             AAWSProgramInfoViewModel.CountyBasinList= V_AWS_COUNTY_BASIN.GetAll().OrderBy(x => x.COUNTY_NAME).ToList();
-            
+            AAWSProgramInfoViewModel.SubbasinList = V_AWS_SUBBAS.GetAll().OrderBy(x => x.BasinDescription).ToList();
+
 
             try
             {
-                var GeneralInfo = V_AWS_GENERAL_INFO.Get(p => p.ProgramCertificateConveyance == PermitCertificateConveyanceNumber);
+                //var GeneralInfo = V_AWS_GENERAL_INFO.Get(p => p.ProgramCertificateConveyance == PermitCertificateConveyanceNumber);
+                AAWSProgramInfoViewModel.GeneralInfo = new List<V_AWS_GENERAL_INFO>();
+                AAWSProgramInfoViewModel.GeneralInfo.Add(V_AWS_GENERAL_INFO.GetGeneralInformation(PermitCertificateConveyanceNumber));
                 
-                AAWSProgramInfoViewModel.ProgramCertificateConveyance = PermitCertificateConveyanceNumber;
+               /* AAWSProgramInfoViewModel.ProgramCertificateConveyance = PermitCertificateConveyanceNumber;
                 AAWSProgramInfoViewModel.WaterRightFacilityId = GeneralInfo.WaterRightFacilityId;
                 AAWSProgramInfoViewModel.ProgramCode = GeneralInfo.ProgramCode;
                 AAWSProgramInfoViewModel.Subdivision = GeneralInfo.Subdivision;
@@ -96,7 +102,7 @@
                 AAWSProgramInfoViewModel.AmaIna = ama_ina_codes;
                 AAWSProgramInfoViewModel.AmaList = ama_ina_codes.Where(x => x.AMA_INA_TYPE == "AMA").ToList();
                 AAWSProgramInfoViewModel.InaList = ama_ina_codes.Where(x => x.AMA_INA_TYPE == "INA").ToList();
-                AAWSProgramInfoViewModelOverView.County = GeneralInfo.County_Descr;
+                AAWSProgramInfoViewModelOverView.County = GeneralInfo.County_Descr;*/
 
 
                return AAWSProgramInfoViewModel;
@@ -117,14 +123,14 @@
             }
         }
 
-        public static AAWSProgramInfoViewModel OnUpdate(AAWSProgramInfoViewModel paramValues, string user)
+        public static AAWSProgramInfoViewModel OnUpdate(V_AWS_GENERAL_INFO paramValues, string user)
         {
             AAWSProgramInfoViewModel AAWSProgramInfoViewModel = new AAWSProgramInfoViewModel();
             using (var ctx = new OracleContext())
             {
                 var application = ctx.V_AWS_GENERAL_INFO.Where(p => p.ProgramCertificateConveyance == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_GENERAL_INFO>();
                 
-                application.Physical_Availability = application.Physical_Availability == null && paramValues.OverView.Physical_Availability == false ? null: paramValues.OverView.Physical_Availability == true ? "Y" : "N";
+                /*application.Physical_Availability = application.Physical_Availability == null && paramValues.OverView.Physical_Availability == false ? null: paramValues.OverView.Physical_Availability == true ? "Y" : "N";
                 application.Hydrology = application.Hydrology == null && paramValues.OverView.Hydrology == false ? null : paramValues.OverView.Hydrology == true ? "Y" : "N";
                 application.Continuous_Availability = application.Continuous_Availability == null && paramValues.OverView.Continuous_Availability == false ? null : paramValues.OverView.Continuous_Availability == true ? "Y" : "N";
                 application.Legal_Availability = application.Legal_Availability == null && paramValues.OverView.Legal_Availability == false ? null : paramValues.OverView.Legal_Availability == true ? "Y" : "N";
@@ -156,7 +162,7 @@
                 var Hydrology = ctx.V_AWS_HYDRO.Where(p => p.PCC == paramValues.ProgramCertificateConveyance).FirstOrDefault<V_AWS_HYDRO>();
                 Hydrology.SUBBASIN_CODE = paramValues.OverView.SubbasinCode;
 
-                ctx.SaveChanges();
+                ctx.SaveChanges();*/
 
                 return AAWSProgramInfoViewModel;
             }

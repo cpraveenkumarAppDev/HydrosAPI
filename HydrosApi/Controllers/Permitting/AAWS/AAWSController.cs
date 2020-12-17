@@ -119,6 +119,15 @@ namespace HydrosApi.Controllers
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpPut, Route("aws/updateapp")]
+        public async Task<IHttpActionResult> UpdateApp([FromBody] V_AWS_GENERAL_INFO paramValues)  //Send all form values
+        {
+            var user = User.Identity.Name;
+            var savedApplication = await Task.FromResult(AAWSProgramInfoViewModel.OnUpdate(paramValues, user.Replace("AZWATER0\\", "")));
+            return Ok(savedApplication);
+        }
+
+       /* [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpPut, Route("aws/updateapp")]
         public IHttpActionResult UpdateApp([FromBody] AAWSProgramInfoViewModel paramValues) //New file
         {
 
@@ -127,7 +136,7 @@ namespace HydrosApi.Controllers
            
 
             return Ok(savedApplication);
-        }
+        }*/
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpGet, Route("aws/activity/{wrf}/{activity}")]

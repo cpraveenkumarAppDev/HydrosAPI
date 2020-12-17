@@ -8,6 +8,7 @@
     using ViewModel;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Dynamic;
 
     [Table("AWS.V_AWS_GENERAL_INFO")]
     public class V_AWS_GENERAL_INFO : Repository<V_AWS_GENERAL_INFO>
@@ -102,7 +103,7 @@
         public string County_Descr { get; set; }
 
         [NotMapped]
-        public Dictionary<string,bool> Criteria { get; set; } //add or remove 
+        public Dictionary<string,bool> Overview { get; set; } //add or remove 
 
         [NotMapped]
         public List<V_AWS_HYDRO> HydrologyInfo { get; set; } //add or remove 
@@ -114,8 +115,11 @@
         public List<SP_AW_CONV_DIAGRAM> Diagram { get; set; }
 
         [NotMapped]
-        public string ProcessStatus { get; set; } //Use this for error messages in stored procedure or api calls 
+        public List<V_CD_AW_APP_FEE_RATES> FeeRates { get; set; }
 
+        [NotMapped]
+        public string ProcessStatus { get; set; } //Use this for error messages in stored procedure or api calls 
+        //V_CD_AW_APP_FEE_RATES.Get(x => x.PROGRAM_CODE == PermitCertificateConveyanceNumber.Substring(0, 2));
 
         //from dictionary with field dictionary key names that correspond to the column or column alias names
         public static void SetGeneralInfoCriteriaFromBool(Dictionary<string, bool> criteriaValues, V_AWS_GENERAL_INFO generalInfo)
@@ -123,21 +127,21 @@
             foreach(var criteriaValue in criteriaValues)
             {
                 var property = generalInfo.GetType().GetProperty(criteriaValue.Key);
+                var currentValue=property.GetValue(generalInfo);
 
-                if (property != null)
+                if (property != null && currentValue !=null)
                 {
-                    property.SetValue(generalInfo, criteriaValue.Value == true ? "Y" : "N");
+                    property.SetValue(generalInfo, criteriaValue.Value == true ? "Y" : "N");       
                 }
             }
         }
 
+        //application.Physical_Availability = application.Physical_Availability == null && paramValues.OverView.Physical_Availability == false ? null: paramValues.OverView.Physical_Availability == true ? "Y" : "N";
+
         public static void PopulateGeneralInfo(V_AWS_GENERAL_INFO generalInfo)
         {
-
-            Dictionary<string, bool> setCriteria = new Dictionary<string, bool>();
-
-            generalInfo.Diagram = SP_AW_CONV_DIAGRAM.ConveyanceDiagram(generalInfo.ProgramCertificateConveyance);
-
+            Dictionary<string, bool> setCriteria = new Dictionary<string, bool>();        
+            generalInfo.Diagram = SP_AW_CONV_DIAGRAM.ConveyanceDiagram(generalInfo.ProgramCertificateConveyance);            
             setCriteria.Add("Physical_Availability", generalInfo.Physical_Availability == "Y" ? true : false);
             setCriteria.Add("Hydrology", generalInfo.Hydrology == "Y" ? true : false);
             setCriteria.Add("Continuous_Availability",generalInfo.Continuous_Availability == "Y" ? true : false);
@@ -147,14 +151,13 @@
             setCriteria.Add("Water_Quality", generalInfo.Water_Quality == "Y" ? true : false);
             setCriteria.Add("Financial_Capability", generalInfo.Financial_Capability == "Y" ? true : false);
             setCriteria.Add("Demand_Calculator", generalInfo.Demand_Calculator == "Y" ? true : false);
-
-            generalInfo.Criteria = setCriteria;
+            generalInfo.Overview = setCriteria;
 
             generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? V_AWS_PROVIDER.Get(p => p.PROVIDER_WRF_ID == generalInfo.PrimaryProviderWrfId).PWS_ID_Number : null;
             generalInfo.HydrologyInfo = V_AWS_HYDRO.GetList(h => h.WRFID == generalInfo.WaterRightFacilityId);
+            generalInfo.FeeRates= V_CD_AW_APP_FEE_RATES.GetList(x => x.PROGRAM_CODE == generalInfo.ProgramCode);
 
-
-            var overView = new AWS_OVER_VIEW();
+           /* var overView = new AWS_OVER_VIEW();
             var overViewProperties = overView.GetType().GetProperties();
             var generalInfoProperties = generalInfo.GetType().GetProperties();
 
@@ -178,8 +181,7 @@
                 {
                     oCriteria.SetValue(overView, s.Value);
                 }
-
-            }
+            }*/
         }
 
         public static V_AWS_GENERAL_INFO PopulateGeneralInfoSummary(V_AWS_GENERAL_INFO generalInfo)
