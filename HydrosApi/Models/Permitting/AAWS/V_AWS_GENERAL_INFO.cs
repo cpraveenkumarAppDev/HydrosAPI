@@ -101,6 +101,12 @@
         public string County_Code { get; set; }
         [Column("COUNTY_DESCR")]
         public string County_Descr { get; set; }
+        [Column("REVIEW_PLAT_MPC")]
+        public string Review_Plat_MPC { get; set; }
+        [Column("CHECK_PLAT_RECORDED")]
+        public string Check_Plat_Recorded { get; set; }
+        [Column("VERIFY_WTR_PROVIDER_LTR_REC")]
+        public string Verify_Wtr_Provider_Ltr_Rec { get; set; }
 
         [NotMapped]
         public Dictionary<string,bool> Overview { get; set; } //add or remove 

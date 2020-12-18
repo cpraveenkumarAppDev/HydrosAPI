@@ -79,6 +79,9 @@
                 AAWSProgramInfoViewModelOverView.Financial_Capability = GeneralInfo.Financial_Capability == "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.Ownership_Documents = GeneralInfo.Ownership_Documents== "Y" ? true : false;
                 AAWSProgramInfoViewModelOverView.Demand_Calculator = GeneralInfo.Demand_Calculator== "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.Review_Plat_MPC = GeneralInfo.Review_Plat_MPC == "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.Check_Plat_Recorded = GeneralInfo.Check_Plat_Recorded == "Y" ? true : false;
+                AAWSProgramInfoViewModelOverView.Verify_Wtr_Provider_Ltr_Rec = GeneralInfo.Verify_Wtr_Provider_Ltr_Rec == "Y" ? true : false;
 
                 AAWSProgramInfoViewModelOverView.Designation_Term = GeneralInfo.Designation_Term;
                 AAWSProgramInfoViewModelOverView.First_Notice = GeneralInfo.First_Notice_Date;
@@ -134,6 +137,9 @@
                 application.Financial_Capability = application.Financial_Capability == null && paramValues.OverView.Financial_Capability == false ? null : paramValues.OverView.Financial_Capability == true ? "Y" : "N";
                 application.Ownership_Documents = application.Ownership_Documents == null && paramValues.OverView.Ownership_Documents == false ? null : paramValues.OverView.Ownership_Documents == true ? "Y" : "N";
                 application.Demand_Calculator = application.Demand_Calculator == null && paramValues.OverView.Demand_Calculator == false ? null : paramValues.OverView.Demand_Calculator == true ? "Y" : "N";
+                application.Review_Plat_MPC = application.Review_Plat_MPC == null && paramValues.OverView.Review_Plat_MPC == false ? null : paramValues.OverView.Review_Plat_MPC == true ? "Y" : "N";
+                application.Check_Plat_Recorded = application.Check_Plat_Recorded == null && paramValues.OverView.Check_Plat_Recorded == false ? null : paramValues.OverView.Check_Plat_Recorded == true ? "Y" : "N";
+                application.Verify_Wtr_Provider_Ltr_Rec = application.Verify_Wtr_Provider_Ltr_Rec == null && paramValues.OverView.Verify_Wtr_Provider_Ltr_Rec == false ? null : paramValues.OverView.Verify_Wtr_Provider_Ltr_Rec == true ? "Y" : "N";
 
                 application.Designation_Term = paramValues.OverView.Designation_Term;                
                 application.PrimaryProviderWrfId = paramValues.OverView.PrimaryProviderWrfId;

@@ -25,6 +25,9 @@
         public bool Financial_Capability { get; set; }
         public bool Ownership_Documents { get; set; }
         public bool Demand_Calculator { get; set; }
+        public bool Review_Plat_MPC { get; set; }
+        public bool Check_Plat_Recorded { get; set; }
+        public bool Verify_Wtr_Provider_Ltr_Rec { get; set; }
         public int? Designation_Term { get; set; }
         public string Water_Provider_Name { get; set; }
         public DateTime? Date_Issued { get; set; }
