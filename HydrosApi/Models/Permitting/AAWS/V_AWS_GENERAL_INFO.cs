@@ -115,7 +115,7 @@
         public List<SP_AW_CONV_DIAGRAM> Diagram { get; set; }
 
         [NotMapped]
-        public List<V_CD_AW_APP_FEE_RATES> FeeRates { get; set; }
+        public V_CD_AW_APP_FEE_RATES FeeRates { get; set; }
 
         [NotMapped]
         public string ProcessStatus { get; set; } //Use this for error messages in stored procedure or api calls 
@@ -155,7 +155,7 @@
 
             generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? V_AWS_PROVIDER.Get(p => p.PROVIDER_WRF_ID == generalInfo.PrimaryProviderWrfId).PWS_ID_Number : null;
             generalInfo.HydrologyInfo = V_AWS_HYDRO.GetList(h => h.WRFID == generalInfo.WaterRightFacilityId);
-            generalInfo.FeeRates= V_CD_AW_APP_FEE_RATES.GetList(x => x.PROGRAM_CODE == generalInfo.ProgramCode);
+            generalInfo.FeeRates= V_CD_AW_APP_FEE_RATES.Get(x => x.PROGRAM_CODE == generalInfo.ProgramCode);
 
            /* var overView = new AWS_OVER_VIEW();
             var overViewProperties = overView.GetType().GetProperties();
