@@ -11,6 +11,7 @@ namespace HydrosApi.Controllers
     using System.Linq;
     using HydrosApi.Models.Permitting.AAWS;
     using System.Collections.Generic;
+    using HydrosApi.ViewModel.Permitting.AAWS;
 
     public class AAWSController : ApiController
     {
@@ -219,6 +220,20 @@ namespace HydrosApi.Controllers
                 return InternalServerError();
             }
             return Ok(codes);
+        }
+        [HttpGet, Route("aws/getCommon")]
+        public IHttpActionResult GetCommonAWS()
+        {
+            try
+            {
+                var info = new Common_ViewModel();
+                return Ok(info);
+            }
+            catch (Exception exception)
+            {
+                //log error
+                return InternalServerError();
+            }
         }
     }
 }
