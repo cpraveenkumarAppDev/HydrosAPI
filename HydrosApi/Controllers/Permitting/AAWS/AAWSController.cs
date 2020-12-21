@@ -120,16 +120,28 @@ namespace HydrosApi.Controllers
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpPut, Route("aws/updateapp")]
-        public async Task<IHttpActionResult> UpdateApp([FromBody] V_AWS_GENERAL_INFO paramValues)  //Send all form values
+        public async Task<IHttpActionResult> UpdateApp([FromBody] GenInfoWrapper paramValues)  //Send all form values
         {
+            var user = User.Identity.Name;
+            paramValues.Overview.UserName = user.Replace("AZWATER0\\", "");
+            V_AWS_GENERAL_INFO genInfo;
+            using(var context = new OracleContext())
+            {
+                genInfo = context.V_AWS_GENERAL_INFO.Where(x => x.ProgramCertificateConveyance == paramValues.Overview.ProgramCertificateConveyance).FirstOrDefault();
+                var props = genInfo.GetType().GetProperties().ToList();
+                foreach (var prop in props)
+                {
+                    var value = prop.GetValue(paramValues.Overview);
+                    if(value != null)
+                    {
+                    prop.SetValue(genInfo, value);
+                    }
+                }
 
-            var entity = V_AWS_GENERAL_INFO.GetGeneralInformation(paramValues.ProgramCertificateConveyance);
-            var user = User.Identity.Name;          
+                context.SaveChangesAsync();
+            }
 
-            paramValues.UserName = user.Replace("AZWATER0\\", "");
-            var savedApplication = await Task.FromResult(V_AWS_GENERAL_INFO.UpdateSome(paramValues));
-
-            return Ok(savedApplication);
+            return Ok(genInfo);
         }
 
        /* [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
