@@ -138,6 +138,9 @@ namespace HydrosApi.Controllers
                     }
                 }
 
+                //Convert county description to county code so that the DB will update
+                genInfo.County_Code = context.CD_AW_COUNTY.Where(x => x.DESCR.ToUpper() == paramValues.Overview.County_Descr.ToUpper()).Select(x => x.CODE).FirstOrDefault();
+
                 context.SaveChangesAsync();
             }
 
