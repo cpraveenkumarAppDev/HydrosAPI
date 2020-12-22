@@ -134,13 +134,14 @@ namespace HydrosApi.Controllers
                     var value = prop.GetValue(paramValues.Overview);
                     if(value != null)
                     {
-                    prop.SetValue(genInfo, value);
+                        prop.SetValue(genInfo, value);
                     }
                 }
 
                 //Convert county description to county code so that the DB will update
                 genInfo.County_Code = context.CD_AW_COUNTY.Where(x => x.DESCR.ToUpper() == paramValues.Overview.County_Descr.ToUpper()).Select(x => x.CODE).FirstOrDefault();
-
+                var Hydrology = context.V_AWS_HYDRO.Where(x => x.WRFID == paramValues.Overview.WaterRightFacilityId).FirstOrDefault();
+                Hydrology.SUBBASIN_CODE = paramValues.Overview.SubbasinCode;
                 context.SaveChangesAsync();
             }
 
