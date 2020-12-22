@@ -47,8 +47,9 @@
         public virtual DbSet<V_AWS_COUNTY_BASIN> V_AWS_COUNTY_BASIN { get; set; }
         public virtual DbSet<CD_AW_COMMENT_TYPE> CD_AW_COMMENT_TYPE { get; set; }
         public virtual DbSet<POINT_OF_DIVERSION_VIEW> POINT_OF_DIVERSION_VIEW { get; set; }
+        public virtual DbSet<WFR_POD> WFR_POD { get; set; }
 
-
+        
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

@@ -32,10 +32,8 @@
 
         [NotMapped]
         public virtual WATERSHED_FILE_REPORT WATERSHED_FILE_REPORT { get; set; }
-
         [NotMapped]
-        public virtual POINT_OF_DIVERSION PointOfDiversion
-        {
+        public string DWR_ID {
             get
             {
                 var pod = POINT_OF_DIVERSION.Get(p => p.OBJECTID == this.POD_ID);
@@ -48,16 +46,41 @@
                     //add vars in pod class
                     //pod.WFR_POD_ID = this.ID;
                     //pod.WFR_ID = this.WFR_ID;
-                    return pod;
+                    return pod.DWR_ID;
                 }
             }
 
             set
             {
-                this.PointOfDiversion = value;
+                this.DWR_ID = value;
             }
-
         }
+
+        //[NotMapped]
+        //public virtual POINT_OF_DIVERSION PointOfDiversion
+        //{
+        //    get
+        //    {
+        //        var pod = POINT_OF_DIVERSION.Get(p => p.OBJECTID == this.POD_ID);
+        //        if (pod == null)
+        //        {
+        //            return null;
+        //        }
+        //        else
+        //        {
+        //            //add vars in pod class
+        //            //pod.WFR_POD_ID = this.ID;
+        //            //pod.WFR_ID = this.WFR_ID;
+        //            return pod;
+        //        }
+        //    }
+
+        //    set
+        //    {
+        //        this.PointOfDiversion = value;
+        //    }
+
+        //}
 
     }
 }

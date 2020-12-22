@@ -112,11 +112,13 @@
         //---------------------------------- ADD/ DELETE/U PDATE ------------------------------------------------
         //--------------------------------------------------------------------------------------------------------       
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        [Route("adj/addpod/{podobjectid}/{pwrId}")]
+        [Route("adj/addpod/{podobjectid}/{Objtype}/{id}")]
         [HttpPost]
-        public async Task<IHttpActionResult> AddPod(int podobjectid, int pwrId)
+        public async Task<IHttpActionResult> AddPod(int podobjectid,string Objtype, int id)
         {
-            var pwrPodList = await Task.FromResult(PWR_POD.GetList(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == pwrId));
+            if(Objtype == "PWR")
+            {
+            var pwrPodList = await Task.FromResult(PWR_POD.GetList(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == id));
 
             if (pwrPodList != null && pwrPodList.Count() > 0)
             {
@@ -128,10 +130,30 @@
                 CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
                 CREATEDT = DateTime.Now,
                 POD_ID = podobjectid,
-                PWR_ID = pwrId
+                PWR_ID = id
             });
+                return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion(newPwrPod)));
 
-            return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion(newPwrPod)));
+            }
+            else
+            {
+   
+                var wfrPodList = await Task.FromResult(WFR_POD.Get(p => p.POD_ID == podobjectid && p.WFR_ID == id));
+
+                if (wfrPodList != null)
+                {
+                    return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
+                }
+                var newWfrPod = WFR_POD.Add(new WFR_POD()
+                {
+                    CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
+                    CREATEDT = DateTime.Now,
+                    POD_ID = podobjectid,
+                    WFR_ID = id
+                });
+                return Ok(newWfrPod);
+            }
+
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
