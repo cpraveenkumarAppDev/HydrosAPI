@@ -108,8 +108,8 @@
         [Column("VERIFY_WTR_PROVIDER_LTR_REC")]
         public string Verify_Wtr_Provider_Ltr_Rec { get; set; }
 
-        [NotMapped]
-        public Dictionary<string,bool> Overview { get; set; } //add or remove 
+        //[NotMapped]
+        //public Dictionary<string,bool> Overview { get; set; } //add or remove 
 
         [NotMapped]
         public List<V_AWS_HYDRO> HydrologyInfo { get; set; } //add or remove 
@@ -158,7 +158,7 @@
             setCriteria.Add("Water_Quality", generalInfo.Water_Quality == "Y" ? true : false);
             setCriteria.Add("Financial_Capability", generalInfo.Financial_Capability == "Y" ? true : false);
             setCriteria.Add("Demand_Calculator", generalInfo.Demand_Calculator == "Y" ? true : false);
-            generalInfo.Overview = setCriteria;
+            //generalInfo.Overview = setCriteria;
 
             generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? V_AWS_PROVIDER.Get(p => p.PROVIDER_WRF_ID == generalInfo.PrimaryProviderWrfId).PWS_ID_Number : null;
             generalInfo.HydrologyInfo = V_AWS_HYDRO.GetList(h => h.WRFID == generalInfo.WaterRightFacilityId);
