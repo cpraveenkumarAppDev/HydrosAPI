@@ -116,7 +116,8 @@
 
         [NotMapped]
         public string PWS_ID_Number { get; set; }
-
+        [NotMapped]
+        public string SubbasinCode { get; set; }
         [NotMapped]
         public List<SP_AW_CONV_DIAGRAM> Diagram { get; set; }
 
@@ -161,6 +162,7 @@
 
             generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? V_AWS_PROVIDER.Get(p => p.PROVIDER_WRF_ID == generalInfo.PrimaryProviderWrfId).PWS_ID_Number : null;
             generalInfo.HydrologyInfo = V_AWS_HYDRO.GetList(h => h.WRFID == generalInfo.WaterRightFacilityId);
+            generalInfo.SubbasinCode = V_AWS_HYDRO.Get(p => p.WRFID == generalInfo.WaterRightFacilityId).SUBBASIN_CODE;
             generalInfo.FeeRates= V_CD_AW_APP_FEE_RATES.Get(x => x.PROGRAM_CODE == generalInfo.ProgramCode);
 
            /* var overView = new AWS_OVER_VIEW();
