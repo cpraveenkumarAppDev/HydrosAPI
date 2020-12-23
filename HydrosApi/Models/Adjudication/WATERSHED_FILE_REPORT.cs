@@ -42,6 +42,7 @@ namespace HydrosApi.Models
         {
             var wfr = WATERSHED_FILE_REPORT.Get(p => p.OBJECTID == id);
             var wfrSde = WATERSHED_FILE_REPORT_SDE.WatershedFileReportSDE(id);
+            wfr.WFR_NUM = wfrSde.WFR_NUM;
             wfr.Explanations = EXPLANATIONS.GetList(p => p.WFR_ID == wfr.ID);
             wfr.FileList = FILE.GetList(p => p.WFR_ID == wfr.ID);
             wfr.pods = WFR_POD.GetList(p => p.WFR_ID == wfr.ID);
