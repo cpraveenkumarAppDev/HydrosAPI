@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace HydrosApi.Models.Adjudication
@@ -42,22 +43,15 @@ namespace HydrosApi.Models.Adjudication
             pod.FileList = FILE.GetList(p => p.POD_ID == pod.ID);
             char[] delimiters = new[] { ',', ';' };
 
-            try
-            {
-
-            pod.SOC = podSde.SOC == null ? null :
+            pod.SOC = podSde.SOC == null?null: Regex.Replace(podSde.SOC, @"\s+", "") == "" ? null :
                  (from s in podSde.SOC.Split(delimiters)
                   select new
                   {
                       program = s.IndexOf("-") > -1 ? s.Split('-')[0].Replace(" ", "") : "",
                       file_no = int.Parse((s.IndexOf("-") > -1 ? s.Split('-')[1].Replace(" ", "") : s).Replace(" ", ""))
                   }).Select(f => SOC_AIS_VIEW.Get(s => s.FILE_NO == f.file_no)).Where(c => c != null).Distinct().ToList();
-            }
-            catch(Exception e)
-            {
-                return pod;
-            }
-            if (podSde.BOC != null)
+
+            if (podSde.BOC != null && Regex.Replace(podSde.BOC, @"\s+", "") != "")
             {
                 var bocList = (from p in (from s in podSde.BOC.Split(delimiters)
                                           select new

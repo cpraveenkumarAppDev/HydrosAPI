@@ -92,7 +92,15 @@
         [HttpGet]
         public async Task<IHttpActionResult> GetPod(int id)
         {
+            try
+            {
+
             return Ok(await Task.FromResult(POINT_OF_DIVERSION_VIEW.PointOfDivsersionView(id)));
+            }
+            catch(Exception exception)
+            {
+                return Ok(exception);
+            }
         }
         [HttpGet, Route("adj/getwfr/{id?}")]
         public IHttpActionResult GetWfr(int? id = null)
@@ -114,30 +122,30 @@
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/addpod/{podobjectid}/{Objtype}/{id}")]
         [HttpPost]
-        public async Task<IHttpActionResult> AddPod(int podobjectid,string Objtype, int id)
+        public async Task<IHttpActionResult> AddPod(int podobjectid, string Objtype, int id)
         {
-            if(Objtype == "PWR")
+            if (Objtype == "PWR")
             {
-            var pwrPodList = await Task.FromResult(PWR_POD.GetList(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == id));
+                var pwrPodList = await Task.FromResult(PWR_POD.GetList(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == id));
 
-            if (pwrPodList != null && pwrPodList.Count() > 0)
-            {
-                return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
-            }
+                if (pwrPodList != null && pwrPodList.Count() > 0)
+                {
+                    return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
+                }
 
-            var newPwrPod = PWR_POD.Add(new PWR_POD()
-            {
-                CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
-                CREATEDT = DateTime.Now,
-                POD_ID = podobjectid,
-                PWR_ID = id
-            });
+                var newPwrPod = PWR_POD.Add(new PWR_POD()
+                {
+                    CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
+                    CREATEDT = DateTime.Now,
+                    POD_ID = podobjectid,
+                    PWR_ID = id
+                });
                 return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion(newPwrPod)));
 
             }
             else
             {
-   
+
                 var wfrPodList = await Task.FromResult(WFR_POD.Get(p => p.POD_ID == podobjectid && p.WFR_ID == id));
 
                 if (wfrPodList != null)
@@ -157,17 +165,31 @@
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        [HttpDelete, Route("adj/deletepod/{id}")]
-        public async Task<IHttpActionResult> DeletePod(int id) //<== ID IS THE ID FROM THE PWR_POD TABLE
+        [HttpDelete, Route("adj/deletepod/{id}/{fromFeature}")]
+        public async Task<IHttpActionResult> DeletePod(int id, string fromFeature) //<== ID IS THE ID FROM THE PWR_POD TABLE
         {
-            PWR_POD pod = await Task.FromResult(PWR_POD.Get(p => p.ID == id));
-
-            if (pod == null)
+            if (fromFeature == "PWR")
             {
-                return BadRequest("An invalid id was entered");
+
+                PWR_POD pod = await Task.FromResult(PWR_POD.Get(p => p.ID == id));
+
+                if (pod == null)
+                {
+                    return BadRequest("An invalid id was entered");
+                }
+                PWR_POD.Delete(pod);
+                return Ok("Point of Diversion Deleted");
             }
-            PWR_POD.Delete(pod);
-            return Ok("Point of Diversion Deleted");
+            else
+            {
+                WFR_POD pod = await Task.FromResult(WFR_POD.Get(p => p.ID == id));
+                if (pod == null)
+                {
+                    return BadRequest("An invalid id was entered");
+                }
+                WFR_POD.Delete(pod);
+                return Ok("Point of Diversion Deleted");
+            }
         }
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
