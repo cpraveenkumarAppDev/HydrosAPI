@@ -95,9 +95,9 @@
             try
             {
 
-            return Ok(await Task.FromResult(POINT_OF_DIVERSION_VIEW.PointOfDivsersionView(id)));
+                return Ok(await Task.FromResult(POINT_OF_DIVERSION_VIEW.PointOfDivsersionView(id)));
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 return Ok(exception);
             }
@@ -117,7 +117,7 @@
         }
 
         //--------------------------------------------------------------------------------------------------------
-        //---------------------------------- ADD/ DELETE/U PDATE ------------------------------------------------
+        //---------------------------------- ADD/ DELETE/UPDATE ------------------------------------------------
         //--------------------------------------------------------------------------------------------------------       
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/addpod/{podobjectid}/{Objtype}/{id}")]
@@ -161,6 +161,43 @@
                 });
                 return Ok(newWfrPod);
             }
+
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [Route("adj/updateWfr/{useage}/{id}/{wfr_num}")]
+        [HttpPost]
+        public async Task<IHttpActionResult> updateWfr(string useage, int id, string wfr_num)
+        {
+            try
+            {
+
+                var wfrSde = await Task.FromResult(WATERSHED_FILE_REPORT_SDE.Get(p => p.WFR_NUM == wfr_num));
+                var wfr = await Task.FromResult(WATERSHED_FILE_REPORT.Get(p => p.OBJECTID == wfrSde.OBJECTID));
+                if (useage == "POD")
+                {
+                    var pod = await Task.FromResult(WFR_POD.Get(p => p.ID == id));
+                    pod.WFR_ID = wfr.ID;
+                    pod.POD_ID =id;
+                    WFR_POD.Update(pod);
+                }
+                else
+                {
+                    var pwr = await Task.FromResult(PROPOSED_WATER_RIGHT.Get(p => p.ID == id));
+                    pwr.WFR_ID = wfr.ID;
+                    PROPOSED_WATER_RIGHT.Update(pwr);
+                }
+                wfr.WFR_NUM = wfr_num;
+                WATERSHED_FILE_REPORT.Update(wfr);
+                return Ok(wfr);
+
+            }
+            catch (Exception exception)
+            {
+                return BadRequest("Could not find WFR to assign");
+            }
+
+
 
         }
 
@@ -249,20 +286,22 @@
             {
                 return BadRequest("The file was not found.");
             }
-
-            if (fileRecord.LOCATION.IndexOf(ConfigurationManager.AppSettings["FileUploadLocation"]) == -1)
+            if (fileRecord.LOCATION != null)
             {
-                return BadRequest("This file could not be deleted.");
-            }
+                if (fileRecord.LOCATION != null && fileRecord.LOCATION.IndexOf(ConfigurationManager.AppSettings["FileUploadLocation"]) == -1)
+                {
+                    return BadRequest("This file could not be deleted.");
+                }
 
-            var fileExists = File.Exists(fileRecord.LOCATION);
-            if (!fileExists)
-            {
-                return Ok("The file record was deleted but the physical file was not found");
-            }
+                var fileExists = File.Exists(fileRecord.LOCATION);
+                if (!fileExists)
+                {
+                    return Ok("The file record was deleted but the physical file was not found");
+                }
 
+                File.Delete(fileRecord.LOCATION);
+            }
             FILE.Delete(fileRecord);
-            File.Delete(fileRecord.LOCATION);
             return Ok("File successfully deleted");
         }
 
