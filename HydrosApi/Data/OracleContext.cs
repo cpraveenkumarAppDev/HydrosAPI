@@ -38,11 +38,12 @@ namespace HydrosApi.Data
         public virtual DbSet<V_AWS_HYDRO> V_AWS_HYDRO { get; set; }
         public virtual DbSet<V_AWS_COUNTY_BASIN> V_AWS_COUNTY_BASIN { get; set; }
         public virtual DbSet<CD_AW_COUNTY> CD_AW_COUNTY { get; set; }
-        public virtual DbSet<AW_USERS> AW_USERS { get; set; }
         public virtual DbSet<POINT_OF_DIVERSION_VIEW> POINT_OF_DIVERSION_VIEW { get; set; }
         public virtual DbSet<WFR_POD> WFR_POD { get; set; }
+        public virtual DbSet<AW_USERS> AW_USERS { get; set; }
 
         public virtual DbSet<WTR_RIGHT_FACILITY> WTR_RIGHT_FACILITY { get; set; }
+        public virtual DbSet<AWS_COMMENTS> AWS_COMMENTS { get; set; }
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
         //public virtual DbSet<WATERSHED_FILE_REPORT> WATERSHED_FILE_REPORT { get; set; }
 

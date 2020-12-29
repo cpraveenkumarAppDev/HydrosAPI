@@ -62,6 +62,18 @@ namespace HydrosApi.Controllers
             return Ok(found);
         }
 
+        [Route("aws/getCommentsByWrfId/{id}")]
+        [HttpGet]
+        public IHttpActionResult GetGeneralInfoByPcc(int id)
+        {
+
+            //Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
+            //var pcc = regex.Replace(id, "$1-$2.$3");
+            // var pcc = regex.Replace("~", ".");
+            var found = AWS_CommentsVM.GetComments(id);
+            return Ok(found);
+        }
+
         [Route("aws/GetNewAWSRight")]
         [HttpGet]
         public IHttpActionResult GetNewApplicationCredentials()
