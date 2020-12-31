@@ -131,7 +131,7 @@
 
         //== get multiple records and only a few columns to populate the top tabs =======================
 
-        public static List<V_AWS_GENERAL_INFO> GetGeneralInformation(List<int> wrfId)
+       /* public static List<V_AWS_GENERAL_INFO> GetGeneralInformation(List<int> wrfId)
         {
             Dictionary<string, bool> setCriteria = new Dictionary<string, bool>();        
             generalInfo.Diagram = SP_AW_CONV_DIAGRAM.ConveyanceDiagram(generalInfo.ProgramCertificateConveyance);            
@@ -148,7 +148,7 @@
 
             generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? V_AWS_PROVIDER.Get(p => p.PROVIDER_WRF_ID == generalInfo.PrimaryProviderWrfId).PWS_ID_Number : null;
             generalInfo.HydrologyInfo = V_AWS_HYDRO.GetList(h => h.WRFID == generalInfo.WaterRightFacilityId);
-            generalInfo.FeeRates= V_CD_AW_APP_FEE_RATES.Get(x => x.PROGRAM_CODE == generalInfo.ProgramCode);
+            generalInfo.FeeRates= V_CD_AW_APP_FEE_RATES.Get(x => x.PROGRAM_CODE == generalInfo.ProgramCode);*/
 
            /* var overView = new AWS_OVER_VIEW();
             var overViewProperties = overView.GetType().GetProperties();
@@ -165,7 +165,7 @@
                 {
                     oProp.SetValue(overView, gValue);
                 }
-            }
+            }*/
 
         public static List<V_AWS_GENERAL_INFO> GetGeneralInformation(List<string> pcc)
         {
@@ -243,7 +243,7 @@
             setCriteria.Add("Water_Quality", generalInfo.Water_Quality == "Y" ? true : false);
             setCriteria.Add("Financial_Capability", generalInfo.Financial_Capability == "Y" ? true : false);
             setCriteria.Add("Demand_Calculator", generalInfo.Demand_Calculator == "Y" ? true : false);
-            generalInfo.Overview = setCriteria;
+            //generalInfo.Overview = setCriteria;
 
             generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? V_AWS_PROVIDER.Get(p => p.PROVIDER_WRF_ID == generalInfo.PrimaryProviderWrfId).PWS_ID_Number : null;
             generalInfo.HydrologyInfo = V_AWS_HYDRO.GetList(h => h.WRFID == generalInfo.WaterRightFacilityId);

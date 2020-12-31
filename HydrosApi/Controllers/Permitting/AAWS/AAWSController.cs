@@ -12,7 +12,8 @@ namespace HydrosApi.Controllers
     using HydrosApi.Models.Permitting.AAWS;
     using System.Collections.Generic;
     using HydrosApi.ViewModel.Permitting.AAWS;
-    using System.Collections.Generic;
+ 
+
     public class AAWSController : ApiController
     {
         // GET: AAWS
@@ -159,7 +160,7 @@ namespace HydrosApi.Controllers
                     }
                 }
 
-                context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
 
             return Ok(genInfo);

@@ -40,8 +40,7 @@ namespace HydrosApi.Data
         public virtual DbSet<CD_AW_COUNTY> CD_AW_COUNTY { get; set; }
         public virtual DbSet<POINT_OF_DIVERSION_VIEW> POINT_OF_DIVERSION_VIEW { get; set; }
         public virtual DbSet<WFR_POD> WFR_POD { get; set; }
-        public virtual DbSet<AW_USERS> AW_USERS { get; set; }
-        public virtual DbSet<POINT_OF_DIVERSION_VIEW> POINT_OF_DIVERSION_VIEW { get; set; }
+        public virtual DbSet<AW_USERS> AW_USERS { get; set; }        
 
         public virtual DbSet<WTR_RIGHT_FACILITY> WTR_RIGHT_FACILITY { get; set; }
         public virtual DbSet<AWS_COMMENTS> AWS_COMMENTS { get; set; }
