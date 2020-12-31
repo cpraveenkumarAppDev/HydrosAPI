@@ -92,7 +92,15 @@
         [HttpGet]
         public async Task<IHttpActionResult> GetPod(int id)
         {
-            return Ok(await Task.FromResult(POINT_OF_DIVERSION_VIEW.PointOfDivsersionView(id)));
+            try
+            {
+
+                return Ok(await Task.FromResult(POINT_OF_DIVERSION_VIEW.PointOfDivsersionView(id)));
+            }
+            catch (Exception exception)
+            {
+                return Ok(exception);
+            }
         }
         [HttpGet, Route("adj/getwfr/{id?}")]
         public IHttpActionResult GetWfr(int? id = null)
@@ -109,43 +117,116 @@
         }
 
         //--------------------------------------------------------------------------------------------------------
-        //---------------------------------- ADD/ DELETE/U PDATE ------------------------------------------------
+        //---------------------------------- ADD/ DELETE/UPDATE ------------------------------------------------
         //--------------------------------------------------------------------------------------------------------       
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        [Route("adj/addpod/{podobjectid}/{pwrId}")]
+        [Route("adj/addpod/{podobjectid}/{Objtype}/{id}")]
         [HttpPost]
-        public async Task<IHttpActionResult> AddPod(int podobjectid, int pwrId)
+        public async Task<IHttpActionResult> AddPod(int podobjectid, string Objtype, int id)
         {
-            var pwrPodList = await Task.FromResult(PWR_POD.GetList(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == pwrId));
-
-            if (pwrPodList != null && pwrPodList.Count() > 0)
+            if (Objtype == "PWR")
             {
-                return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
+                var pwrPodList = await Task.FromResult(PWR_POD.GetList(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == id));
+
+                if (pwrPodList != null && pwrPodList.Count() > 0)
+                {
+                    return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
+                }
+
+                var newPwrPod = PWR_POD.Add(new PWR_POD()
+                {
+                    CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
+                    CREATEDT = DateTime.Now,
+                    POD_ID = podobjectid,
+                    PWR_ID = id
+                });
+                return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion(newPwrPod)));
+
+            }
+            else
+            {
+
+                var wfrPodList = await Task.FromResult(WFR_POD.Get(p => p.POD_ID == podobjectid && p.WFR_ID == id));
+
+                if (wfrPodList != null)
+                {
+                    return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
+                }
+                var newWfrPod = WFR_POD.Add(new WFR_POD()
+                {
+                    CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
+                    CREATEDT = DateTime.Now,
+                    POD_ID = podobjectid,
+                    WFR_ID = id
+                });
+                return Ok(newWfrPod);
             }
 
-            var newPwrPod = PWR_POD.Add(new PWR_POD()
-            {
-                CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
-                CREATEDT = DateTime.Now,
-                POD_ID = podobjectid,
-                PWR_ID = pwrId
-            });
-
-            return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion(newPwrPod)));
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        [HttpDelete, Route("adj/deletepod/{id}")]
-        public async Task<IHttpActionResult> DeletePod(int id) //<== ID IS THE ID FROM THE PWR_POD TABLE
+        [Route("adj/updateWfr/{useage}/{id}/{wfr_num}")]
+        [HttpPost]
+        public async Task<IHttpActionResult> updateWfr(string useage, int id, string wfr_num)
         {
-            PWR_POD pod = await Task.FromResult(PWR_POD.Get(p => p.ID == id));
-
-            if (pod == null)
+            try
             {
-                return BadRequest("An invalid id was entered");
+
+                var wfrSde = await Task.FromResult(WATERSHED_FILE_REPORT_SDE.Get(p => p.WFR_NUM == wfr_num));
+                var wfr = await Task.FromResult(WATERSHED_FILE_REPORT.Get(p => p.OBJECTID == wfrSde.OBJECTID));
+                if (useage == "POD")
+                {
+                    var pod = await Task.FromResult(WFR_POD.Get(p => p.ID == id));
+                    pod.WFR_ID = wfr.ID;
+                    pod.POD_ID =id;
+                    WFR_POD.Update(pod);
+                }
+                else
+                {
+                    var pwr = await Task.FromResult(PROPOSED_WATER_RIGHT.Get(p => p.ID == id));
+                    pwr.WFR_ID = wfr.ID;
+                    PROPOSED_WATER_RIGHT.Update(pwr);
+                }
+                wfr.WFR_NUM = wfr_num;
+                WATERSHED_FILE_REPORT.Update(wfr);
+                return Ok(wfr);
+
             }
-            PWR_POD.Delete(pod);
-            return Ok("Point of Diversion Deleted");
+            catch (Exception exception)
+            {
+                return BadRequest("Could not find WFR to assign");
+            }
+
+
+
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpDelete, Route("adj/deletepod/{id}/{fromFeature}")]
+        public async Task<IHttpActionResult> DeletePod(int id, string fromFeature) //<== ID IS THE ID FROM THE PWR_POD TABLE
+        {
+            if (fromFeature == "PWR")
+            {
+
+                PWR_POD pod = await Task.FromResult(PWR_POD.Get(p => p.ID == id));
+
+                if (pod == null)
+                {
+                    return BadRequest("An invalid id was entered");
+                }
+                PWR_POD.Delete(pod);
+                return Ok("Point of Diversion Deleted");
+            }
+            else
+            {
+                WFR_POD pod = await Task.FromResult(WFR_POD.Get(p => p.ID == id));
+                if (pod == null)
+                {
+                    return BadRequest("An invalid id was entered");
+                }
+                WFR_POD.Delete(pod);
+                return Ok("Point of Diversion Deleted");
+            }
         }
 
 
@@ -226,20 +307,22 @@
             {
                 return BadRequest("The file was not found.");
             }
-
-            if (fileRecord.LOCATION.IndexOf(ConfigurationManager.AppSettings["FileUploadLocation"]) == -1)
+            if (fileRecord.LOCATION != null)
             {
-                return BadRequest("This file could not be deleted.");
-            }
+                if (fileRecord.LOCATION != null && fileRecord.LOCATION.IndexOf(ConfigurationManager.AppSettings["FileUploadLocation"]) == -1)
+                {
+                    return BadRequest("This file could not be deleted.");
+                }
 
-            var fileExists = File.Exists(fileRecord.LOCATION);
-            if (!fileExists)
-            {
-                return Ok("The file record was deleted but the physical file was not found");
-            }
+                var fileExists = File.Exists(fileRecord.LOCATION);
+                if (!fileExists)
+                {
+                    return Ok("The file record was deleted but the physical file was not found");
+                }
 
+                File.Delete(fileRecord.LOCATION);
+            }
             FILE.Delete(fileRecord);
-            File.Delete(fileRecord.LOCATION);
             return Ok("File successfully deleted");
         }
 

@@ -12,7 +12,7 @@ namespace HydrosApi.Controllers
     using HydrosApi.Models.Permitting.AAWS;
     using System.Collections.Generic;
     using HydrosApi.ViewModel.Permitting.AAWS;
-
+    using System.Collections.Generic;
     public class AAWSController : ApiController
     {
         // GET: AAWS
@@ -42,8 +42,17 @@ namespace HydrosApi.Controllers
             Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
             var pcc = regex.Replace(id, "$1-$2.$3");
             // var pcc = regex.Replace("~", ".");
-            var found = AAWSProgramInfoViewModel.GetData(pcc);
+            //var found = AAWSProgramInfoViewModel.GetData(pcc);
+            var found = V_AWS_GENERAL_INFO.GetGeneralInformation(pcc);
             return Json(found);
+        }
+
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        [Route("aws/getAmaCountyBasin")]
+        [HttpGet]
+        public async Task<IHttpActionResult> GetAMACountyBasin()
+        {   
+            return Ok(await Task.FromResult(AW_AMA_COUNTY_BASIN_SUBBAS.GetAmaCountyBasinSubbasin()));
         }
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
@@ -59,6 +68,18 @@ namespace HydrosApi.Controllers
             var pcc = regex.Replace(id, "$1-$2.$3");
             // var pcc = regex.Replace("~", ".");
             var found = V_AWS_GENERAL_INFO.GetGeneralInformation(pcc);
+            return Ok(found);
+        }
+
+        [Route("aws/getCommentsByWrfId/{id}")]
+        [HttpGet]
+        public IHttpActionResult GetGeneralInfoByPcc(int id)
+        {
+
+            //Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
+            //var pcc = regex.Replace(id, "$1-$2.$3");
+            // var pcc = regex.Replace("~", ".");
+            var found = AWS_CommentsVM.GetComments(id);
             return Ok(found);
         }
 
@@ -134,7 +155,7 @@ namespace HydrosApi.Controllers
                     var value = prop.GetValue(paramValues.Overview);
                     if(value != null)
                     {
-                    prop.SetValue(genInfo, value);
+                        prop.SetValue(genInfo, value);
                     }
                 }
 

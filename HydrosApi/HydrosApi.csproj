@@ -323,6 +323,7 @@
     <Compile Include="Models\Adjudication\WFR_POD.cs" />
     <Compile Include="Models\ADWR\WTR_RIGHT_FACILITY.cs" />
     <Compile Include="Models\CD_AMA_INA.cs" />
+    <Compile Include="Models\Permitting\AAWS\AW_AMA_COUNTY_BASIN_SUBBAS.cs" />
     <Compile Include="Models\Permitting\AAWS\AW_APP_ACTIVITY_TRK.cs" />
     <Compile Include="Models\Permitting\AAWS\CD_AW_APP_ACTIVITY.cs" />
     <Compile Include="Models\Permitting\AAWS\CD_AW_COMMENT_TYPE.cs" />
@@ -346,7 +347,6 @@
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\PCC.cs" />
     <Compile Include="ViewModel\ADWR\GeoBoundaryViewModel.cs" />
-    <Compile Include="ViewModel\Permitting\AAWS\AAWSProgramInfoViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWSNewApp.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWS_OVER_VIEW.cs" />
     <Compile Include="Data\ADWRContext.cs" />
@@ -386,6 +386,8 @@
     <Compile Include="Models\Adjudication\SW_AIS_VIEW.cs" />
     <Compile Include="Models\Adjudication\WATERSHED_FILE_REPORT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\Permitting\AAWS\Common_ViewModel.cs" />
+    <Compile Include="ViewModel\Permitting\AAWS\GenInfoWrapper.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\SP_AW_CONV_DIAGRAM.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\SP_AW_INS.cs" />
   </ItemGroup>

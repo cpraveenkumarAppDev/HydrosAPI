@@ -17,7 +17,7 @@
         public int OBJECTID { get; set; } 
 
         [StringLength(50)]
-        public string WFR_NUMBER { get; set; }
+        public string WFR_NUM { get; set; }
 
         [StringLength(50)]
         public string WFR_STATUS { get; set; }
@@ -68,7 +68,7 @@
         ///get the WFR using its WFR_NUM
         public static WATERSHED_FILE_REPORT_SDE WatershedFileReportSDE(string wfr_num)
         {
-            return WATERSHED_FILE_REPORT_SDE.Get(p => p.WFR_NUMBER == wfr_num);
+            return WATERSHED_FILE_REPORT_SDE.Get(p => p.WFR_NUM == wfr_num);
         }
 
         ///get all WFRS

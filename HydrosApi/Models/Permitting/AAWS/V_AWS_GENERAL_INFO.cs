@@ -102,15 +102,16 @@
         [Column("COUNTY_DESCR")]
         public string County_Descr { get; set; }
 
-        [NotMapped]
-        public Dictionary<string,bool> Overview { get; set; } //add or remove 
+        //[NotMapped]
+        //public Dictionary<string,bool> Overview { get; set; } //add or remove 
 
         [NotMapped]
         public List<V_AWS_HYDRO> HydrologyInfo { get; set; } //add or remove 
 
         [NotMapped]
         public string PWS_ID_Number { get; set; }
-
+        [NotMapped]
+        public string SubbasinCode { get; set; }
         [NotMapped]
         public List<SP_AW_CONV_DIAGRAM> Diagram { get; set; }
 
@@ -132,10 +133,39 @@
 
         public static List<V_AWS_GENERAL_INFO> GetGeneralInformation(List<int> wrfId)
         {
-            //get only a few fields populated with data for top tabs
-            var general = V_AWS_GENERAL_INFO.GetList(g => wrfId.Contains(g.WaterRightFacilityId ?? -1));
-            return PopulateGeneralInfoSummary(general);
-        }
+            Dictionary<string, bool> setCriteria = new Dictionary<string, bool>();        
+            generalInfo.Diagram = SP_AW_CONV_DIAGRAM.ConveyanceDiagram(generalInfo.ProgramCertificateConveyance);            
+            setCriteria.Add("Physical_Availability", generalInfo.Physical_Availability == "Y" ? true : false);
+            setCriteria.Add("Hydrology", generalInfo.Hydrology == "Y" ? true : false);
+            setCriteria.Add("Continuous_Availability",generalInfo.Continuous_Availability == "Y" ? true : false);
+            setCriteria.Add("Legal_Availability", generalInfo.Legal_Availability == "Y" ? true : false);
+            setCriteria.Add("Consistency_With_Mgmt_Plan", generalInfo.Consistency_With_Mgmt_Plan == "Y" ? true : false);
+            setCriteria.Add("Consistency_With_Mgmt_Goal", generalInfo.Consistency_With_Mgmt_Goal == "Y" ? true : false);
+            setCriteria.Add("Water_Quality", generalInfo.Water_Quality == "Y" ? true : false);
+            setCriteria.Add("Financial_Capability", generalInfo.Financial_Capability == "Y" ? true : false);
+            setCriteria.Add("Demand_Calculator", generalInfo.Demand_Calculator == "Y" ? true : false);
+            generalInfo.Overview = setCriteria;
+
+            generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? V_AWS_PROVIDER.Get(p => p.PROVIDER_WRF_ID == generalInfo.PrimaryProviderWrfId).PWS_ID_Number : null;
+            generalInfo.HydrologyInfo = V_AWS_HYDRO.GetList(h => h.WRFID == generalInfo.WaterRightFacilityId);
+            generalInfo.FeeRates= V_CD_AW_APP_FEE_RATES.Get(x => x.PROGRAM_CODE == generalInfo.ProgramCode);
+
+           /* var overView = new AWS_OVER_VIEW();
+            var overViewProperties = overView.GetType().GetProperties();
+            var generalInfoProperties = generalInfo.GetType().GetProperties();
+
+            foreach(var prop in generalInfoProperties)
+            {
+                var gValue = prop.GetValue(generalInfo);
+                var gType = prop.PropertyType.Name;
+                var gName = prop.Name;
+
+                var oProp = overView.GetType().GetProperty(gName);
+                if(oProp !=null && oProp.PropertyType.Name==gType)
+                {
+                    oProp.SetValue(overView, gValue);
+                }
+            }
 
         public static List<V_AWS_GENERAL_INFO> GetGeneralInformation(List<string> pcc)
         {

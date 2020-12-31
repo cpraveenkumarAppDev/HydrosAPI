@@ -15,8 +15,10 @@ namespace HydrosApi.Models.Permitting.AAWS
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("COUNTY_NAME")]
+        [Column("COUNTY")]
         public string COUNTY_NAME { get; set; }
+        [Column("AMA_CODE")]
+        public string AMA_CODE { get; set; }
         [Column("BASIN_ABBR")]
         public string BASIN_ABBR { get; set; }
         [Column("BASIN_NAME")]

@@ -176,7 +176,21 @@
 
             return pod;            
         }
+        public static List<POINT_OF_DIVERSION> PointOfDiversionWfr(List<WFR_POD>wfrPod)
+        {
+            var matchList = wfrPod.Select(i => i.POD_ID ?? -1).Distinct();
+            var podList = POINT_OF_DIVERSION.PointOfDiversion(matchList);
 
+            var pod = (from pd in podList
+                       join pp in wfrPod on pd.OBJECTID equals pp.POD_ID ?? -1
+                       select new
+                       {
+                           pd,
+                           pwrPid = pd.PWR_POD_ID = pp.ID
+                       }).Distinct().Select(x => x.pd).ToList();
+
+            return pod;
+        }
 
         //This is populated at runtime
         ///get the point of diversion with a single Proposed Water Right/and Point of Diversion pair (populates the pwr_pod_id)
