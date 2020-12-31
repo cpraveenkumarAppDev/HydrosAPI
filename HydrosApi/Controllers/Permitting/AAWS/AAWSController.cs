@@ -49,11 +49,20 @@ namespace HydrosApi.Controllers
         }
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [Route("aws/getAmaCountyBasin")]
+        [Route("aws/getAmaCountyBasin/{ama?}")]
         [HttpGet]
-        public async Task<IHttpActionResult> GetAMACountyBasin()
-        {   
-            return Ok(await Task.FromResult(AW_AMA_COUNTY_BASIN_SUBBAS.GetAmaCountyBasinSubbasin()));
+        public IHttpActionResult GetAMACountyBasin(string ama=null)
+        {
+            var infoList = ama == null ? AW_AMA_COUNTY_BASIN_SUBBAS.GetAll() :
+                AW_AMA_COUNTY_BASIN_SUBBAS.GetList(a => a.AMA.ToUpper() == ama.ToUpper());
+
+            return Ok(infoList.GroupBy(g => g.AMA)
+               .Select(a => new { AMA = a.Key, AMAInfo = a.GroupBy(g => g.COUNTY)
+               .Select(c => new { County = c.Key, Basin = c.GroupBy(g => new { g.BASIN_ABBR, g.BASIN_NAME })
+               .Select(i => new { BasinAbbr = i.Key.BASIN_ABBR, BasinName = i.Key.BASIN_NAME
+                    , Subbasin = i.Select(s => new { SubbasinAbbr=s.SUBBASIN_ABBR, SubbasinName=s.SUBBASIN_NAME }).Distinct() 
+               })}).Distinct()
+               }).OrderBy(o=>o.AMA != "OUTSIDE OF AMA OR INA" ? "_"+o.AMA : o.AMA).ToList());
         }
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]

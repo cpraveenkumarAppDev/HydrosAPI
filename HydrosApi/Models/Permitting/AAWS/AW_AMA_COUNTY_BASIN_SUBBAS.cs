@@ -29,26 +29,7 @@ namespace HydrosApi.Models.Permitting.AAWS
         [Column("SUBBASIN_ABBR")]
         public string SUBBASIN_ABBR { get; set; }
         [Column("SUBBASIN_NAME")]
-        public string SUBBASIN_NAME { get; set; }
-       
-       public static List<dynamic> GetAmaCountyBasinSubbasin()
-        {
-            dynamic formattedList = new List<dynamic>();
-            
-            //get only a few fields populated with data for top tabs
-            var infoList = AW_AMA_COUNTY_BASIN_SUBBAS.GetAll();
-            return infoList.GroupBy(g => new { g.AMA })
-                .Select(a => new
-                {
-                    AMA = a.Key,
-                    AMAInfo = a.GroupBy(g => new { g.COUNTY })
-                .Select(c => new
-                {
-                    County = c.Key,
-                    Basin = c.GroupBy(g => new { g.BASIN_ABBR, g.BASIN_NAME })
-                .Select(i => new { Basin = i.Key, Subbasin = i.Select(s => new { s.SUBBASIN_ABBR, s.SUBBASIN_NAME }).Distinct() })
-                }).Distinct()
-                }).Distinct().ToList<dynamic>();
-        }
+        public string SUBBASIN_NAME { get; set; }       
+      
     }
 }
