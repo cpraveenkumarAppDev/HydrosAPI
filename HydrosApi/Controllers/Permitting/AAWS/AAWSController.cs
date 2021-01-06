@@ -222,6 +222,28 @@ namespace HydrosApi.Controllers
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpPost, Route("aws/activity/{wrf}/{activityCode}")]
+        public IHttpActionResult UpdateActivity(int wrf, string activityCode)
+        {
+            var record = new AW_APP_ACTIVITY_TRK();
+            record.ACT_TRK_DT_TIME = DateTime.Now;
+            record.WRF_ID = wrf;
+            record.ActivityCode = "ISSD";
+            record.CREATEBY = User.Identity.Name.Replace(@"AZWATER0\", "");
+            try
+            {
+                AW_APP_ACTIVITY_TRK.Add(record);
+                return Ok("Created");
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError();
+            }
+            
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpGet, Route("aws/activity/{pcc}")]
         public IHttpActionResult GetAllActivity(int pcc)
         {

@@ -24,6 +24,5 @@ namespace HydrosApi.Models.Permitting.AAWS
         public string CREATEBY { get; set; }
         [Column("CREATEDT")]
         public DateTime CREATEDT  { get; set; }
-
     }
 }
