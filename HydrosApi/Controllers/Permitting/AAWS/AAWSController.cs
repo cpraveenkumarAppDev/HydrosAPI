@@ -166,6 +166,10 @@ namespace HydrosApi.Controllers
                     if(value != null)
                     {
                         prop.SetValue(genInfo, value);
+                        if (prop.Name == "SubbasinCode")
+                        {
+                            var hydro = context.V_AWS_HYDRO.Where(x => x.PCC == paramValues.Overview.ProgramCertificateConveyance).FirstOrDefault().SUBBASIN_CODE = value.ToString();
+                        }
                     }
                 }
 
