@@ -44,7 +44,8 @@
 
         [Column("APP_STATUS_DT")]
         public DateTime? StatusDate { get; set; }
-
+        [Column("APP_STATUS_CODE")]
+        public string StatusCode { get; set; }
         //public DateTime? APP_STATUS_DT { get; set; }
 
         [Column("HYDROLOGY")]
