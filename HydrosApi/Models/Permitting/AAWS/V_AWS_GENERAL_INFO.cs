@@ -246,7 +246,12 @@
             //generalInfo.Overview = setCriteria;
 
             generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? V_AWS_PROVIDER.Get(p => p.PROVIDER_WRF_ID == generalInfo.PrimaryProviderWrfId).PWS_ID_Number : null;
-            generalInfo.HydrologyInfo = V_AWS_HYDRO.GetList(h => h.WRFID == generalInfo.WaterRightFacilityId);
+            var hydrologyInfo = V_AWS_HYDRO.Get(h => h.WRFID == generalInfo.WaterRightFacilityId);
+
+            if (hydrologyInfo != null)
+            {
+                generalInfo.SubbasinCode = hydrologyInfo.SUBBASIN_CODE;
+            }
             generalInfo.FeeRates = V_CD_AW_APP_FEE_RATES.Get(x => x.PROGRAM_CODE == generalInfo.ProgramCode);
 
         }
