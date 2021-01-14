@@ -44,6 +44,9 @@ namespace HydrosApi.Data
 
         public virtual DbSet<WTR_RIGHT_FACILITY> WTR_RIGHT_FACILITY { get; set; }
         public virtual DbSet<AWS_COMMENTS> AWS_COMMENTS { get; set; }
+        public virtual DbSet<V_AWS_CUSTOMER_LONG_NAME> V_AWS_CUSTOMER_LONG_NAME { get; set; }
+        public virtual DbSet<CUSTOMER> CUSTOMER { get; set; }
+        public virtual DbSet<WRF_CUST> WRF_CUST { get; set; }
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
         //public virtual DbSet<WATERSHED_FILE_REPORT> WATERSHED_FILE_REPORT { get; set; }
 

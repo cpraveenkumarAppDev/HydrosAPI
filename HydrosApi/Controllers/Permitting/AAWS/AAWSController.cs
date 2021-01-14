@@ -12,7 +12,8 @@ namespace HydrosApi.Controllers
     using HydrosApi.Models.Permitting.AAWS;
     using System.Collections.Generic;
     using HydrosApi.ViewModel.Permitting.AAWS;
- 
+    using HydrosApi.Models.ADWR;
+    using Oracle.ManagedDataAccess.Client;
 
     public class AAWSController : ApiController
     {
@@ -297,6 +298,140 @@ namespace HydrosApi.Controllers
             {
                 var info = new Common_ViewModel();
                 return Ok(info);
+            }
+            catch (Exception exception)
+            {
+                //log error
+                return InternalServerError();
+            }
+        }
+
+        [HttpGet, Route("aws/customer/{wrf}/{custType?}")]
+        public IHttpActionResult GetCustomerByWrf(int wrf, string custType = null)
+        {
+            try
+            {
+                var customers = WRF_CUST.GetList(x => x.WRF_ID == wrf).ToList();
+                if (custType != null)
+                {
+                    customers = customers.Where(x => x.CCT_CODE == custType).ToList();
+                }
+                var custIdList = customers.Select(x => x.CUST_ID).ToList();
+
+                var customerList = V_AWS_CUSTOMER_LONG_NAME.GetList(x => custIdList.Contains(x.CUST_ID) && x.BAD_ADDRESS_FLAG != "Y");// "not yes" because no and null are acceptable
+
+                return Ok(customerList);
+            }
+            catch (Exception exception)
+            {
+                //log error
+                return InternalServerError();
+            }
+        }
+
+        [HttpGet, Route("aws/customer/")]
+        public IHttpActionResult GetCustomerByName(string firstName = null, string lastName = null)
+        {
+            try
+            {
+                using (var context = new OracleContext())
+                {
+                    var customerList = new List<V_AWS_CUSTOMER_LONG_NAME>();
+                    if (firstName != null)
+                    {
+                        var query = context.V_AWS_CUSTOMER_LONG_NAME.Where(x => x.FIRST_NAME.ToLower().Contains(firstName.ToLower()));
+                        if (lastName != null)
+                        {
+                            customerList = query.Where(x => x.LAST_NAME.ToLower().Contains(lastName.ToLower())).ToList();
+                        }
+                        else
+                        {
+                            customerList = query.ToList();
+                        }
+                    }
+                    else if (lastName != null)
+                    {
+                        customerList = context.V_AWS_CUSTOMER_LONG_NAME.Where(x => x.LAST_NAME.ToLower().Contains(lastName.ToLower())).ToList();
+                    }
+
+                    return Ok(customerList);
+                }
+            }
+            catch (Exception exception)
+            {
+                //log error
+                return InternalServerError();
+            }
+        }
+
+        [HttpPost, Route("aws/customer/{custType}/{wrf}")]
+        public IHttpActionResult CreateCustomer(string custType, int wrf, [FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
+        {
+            try
+            {
+                //sp_aw_ins_cust_long_name
+                using (var context = new OracleContext())
+                {
+                    //var newCustId = new OracleParameter("p_new_wrf_id", OracleDbType.Decimal);
+                    var newCustId = new OracleParameter("ID", OracleDbType.Decimal);
+                    newCustId.Direction = System.Data.ParameterDirection.InputOutput;
+                    var parameters = new OracleParameter[] { newCustId };
+                    string custIdProcCall = "BEGIN aws.sp_aw_ins_id(:ID); end;";//procedure to get a new ID from sequence
+
+                    var transaction = context.Database.BeginTransaction();
+                    context.Database.ExecuteSqlCommand(custIdProcCall, parameters);
+                    transaction.Commit();
+
+                    var wrfCust = new WRF_CUST();
+                    wrfCust.CUST_ID = Int32.Parse(newCustId.Value.ToString());//get this customer id from the stored procedure sp_aw_ins_id
+
+
+                    wrfCust.WRF_ID = wrf;
+                    wrfCust.CCT_CODE = custType;
+                    wrfCust.LINE_NUM = 1;//one is the default set in the procedure AWS.SP_AW_INS_WRF_CUST. this property was used to order the addresses on the front end
+                    wrfCust.IS_ACTIVE = "Y";
+                    wrfCust.PRIMARY_MAILING_ADDRESS = "N";
+                   
+                    var added = context.V_AWS_CUSTOMER_LONG_NAME.Add(customer);
+                    context.SaveChanges();
+
+                    context.WRF_CUST.Add(wrfCust);
+
+                    context.SaveChanges();
+                    return Ok(added);
+                }
+            }
+            catch (Exception exception)
+            {
+                //log error
+                return InternalServerError();
+            }
+        }
+
+        [HttpPatch, Route("aws/customer/{custId}")]
+        public IHttpActionResult UpdateCustomer(int custId, V_AWS_CUSTOMER_LONG_NAME customer)
+        {
+            try
+            {
+                using (var context = new OracleContext())
+                {
+                    var foundUser = context.V_AWS_CUSTOMER_LONG_NAME.Where(x => x.CUST_ID == custId).FirstOrDefault();
+                    var propList = customer.GetType().GetProperties().ToList();
+                    foreach (var prop in propList)
+                    {
+                        var tempVal = prop.GetValue(customer);
+                        if (tempVal != Activator.CreateInstance(prop.PropertyType))
+                        {
+                            prop.SetValue(foundUser, tempVal);
+                        }
+                        else
+                        {
+                            var a = 1;
+                        }
+                    }
+                    context.SaveChanges();
+                    return Ok(foundUser);
+                }
             }
             catch (Exception exception)
             {
