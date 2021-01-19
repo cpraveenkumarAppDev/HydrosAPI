@@ -88,12 +88,12 @@ namespace HydrosApi.Models.ADWR
         [Column("CREATEDT")]
         public DateTime? CREATEDT { get; set; }
 
-        [Column("UPDATEDBY")]
+        [Column("UPDATEBY")]
         [StringLength(30)]
-        public string UPDATEDBY { get; set; }
+        public string UPDATEBY { get; set; }
 
-        [Column("UPDATEDDT")]
-        public DateTime? UPDATEDDT { get; set; }
+        [Column("UPDATEDT")]
+        public DateTime? UPDATEDT { get; set; }
 
         public CUSTOMER()
         {

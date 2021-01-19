@@ -14,6 +14,7 @@ namespace HydrosApi.Controllers
     using HydrosApi.ViewModel.Permitting.AAWS;
     using HydrosApi.Models.ADWR;
     using Oracle.ManagedDataAccess.Client;
+    using System.Data.Entity.Infrastructure;
 
     public class AAWSController : ApiController
     {
@@ -370,35 +371,36 @@ namespace HydrosApi.Controllers
                 using (var context = new OracleContext())
                 {
                     //var newCustId = new OracleParameter("p_new_wrf_id", OracleDbType.Decimal);
-                    var newCustId = new OracleParameter("ID", OracleDbType.Decimal);
-                    newCustId.Direction = System.Data.ParameterDirection.InputOutput;
-                    var parameters = new OracleParameter[] { newCustId };
-                    string custIdProcCall = "BEGIN aws.sp_aw_ins_id(:ID); end;";//procedure to get a new ID from sequence
+                    //var newCustId = new OracleParameter("ID", OracleDbType.Decimal);
+                    //newCustId.Direction = System.Data.ParameterDirection.InputOutput;
+                    //var parameters = new OracleParameter[] { newCustId };
+                    //string custIdProcCall = "BEGIN aws.sp_aw_ins_id(:ID); end;";//procedure to get a new ID from sequence
 
-                    var transaction = context.Database.BeginTransaction();
-                    context.Database.ExecuteSqlCommand(custIdProcCall, parameters);
-                    transaction.Commit();
+                    //var transaction = context.Database.BeginTransaction();
+                    //context.Database.ExecuteSqlCommand(custIdProcCall, parameters);
+                    //transaction.Commit();
+
+
+                    var rgrCustomer = new CUSTOMER(customer, User.Identity.Name.Replace("@azwater.gov", ""));
+                    context.CUSTOMER.Add(rgrCustomer);
 
                     var wrfCust = new WRF_CUST();
-                    wrfCust.CUST_ID = Int32.Parse(newCustId.Value.ToString());//get this customer id from the stored procedure sp_aw_ins_id
-
+                    wrfCust.CUST_ID = rgrCustomer.ID;
 
                     wrfCust.WRF_ID = wrf;
                     wrfCust.CCT_CODE = custType;
                     wrfCust.LINE_NUM = 1;//one is the default set in the procedure AWS.SP_AW_INS_WRF_CUST. this property was used to order the addresses on the front end
                     wrfCust.IS_ACTIVE = "Y";
                     wrfCust.PRIMARY_MAILING_ADDRESS = "N";
-                   
-                    var added = context.V_AWS_CUSTOMER_LONG_NAME.Add(customer);
-                    context.SaveChanges();
+
 
                     context.WRF_CUST.Add(wrfCust);
 
                     context.SaveChanges();
-                    return Ok(added);
+                    return Ok(rgrCustomer);
                 }
             }
-            catch (Exception exception)
+            catch (DbUpdateException exception)
             {
                 //log error
                 return InternalServerError();
