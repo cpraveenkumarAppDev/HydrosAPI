@@ -18,6 +18,7 @@ namespace HydrosApi.Controllers
 
     public class AAWSController : ApiController
     {
+        private readonly List<string> AwsCodes = new List<string> { "AS", "BY", "C", "CH", "CN", "DV", "MP", "MR", "O", "PY", "AP" };
         // GET: AAWS
         //IRR-29-A16011018CBB-01
         [Route("aws/getgeneralInfo/")]
@@ -379,10 +380,14 @@ namespace HydrosApi.Controllers
                     //var transaction = context.Database.BeginTransaction();
                     //context.Database.ExecuteSqlCommand(custIdProcCall, parameters);
                     //transaction.Commit();
-
+                    if (!customer.IsValid())
+                    {
+                        return BadRequest();
+                    }
 
                     var rgrCustomer = new CUSTOMER(customer, User.Identity.Name.Replace("@azwater.gov", ""));
                     context.CUSTOMER.Add(rgrCustomer);
+                    context.SaveChanges();//need to save and get rgr.customer ID back from DB sequence to use in wrf_cust
 
                     var wrfCust = new WRF_CUST();
                     wrfCust.CUST_ID = rgrCustomer.ID;
@@ -400,7 +405,7 @@ namespace HydrosApi.Controllers
                     return Ok(rgrCustomer);
                 }
             }
-            catch (DbUpdateException exception)
+            catch (Exception exception)
             {
                 //log error
                 return InternalServerError();
@@ -442,8 +447,7 @@ namespace HydrosApi.Controllers
         [HttpGet, Route("aws/customer/types/")]
         public IHttpActionResult GetCustomerTypeCodes()
         {
-            var awsCodes = new List<string> { "AS", "BY", "C", "CH", "CN", "DV", "MP", "MR", "O", "PY", "AP" };
-            var codes = CD_CUST_TYPE.GetList(x => awsCodes.Contains(x.CODE));
+            var codes = CD_CUST_TYPE.GetList(x => AwsCodes.Contains(x.CODE));
             return Ok(codes);
         }
     }

@@ -63,7 +63,7 @@ namespace HydrosApi.Models.Permitting.AAWS
         [StringLength(100)]
         public string ADDRESS2 { get; set; }
 
-        [Column("ADDRESS1")]
+        [Column("ADDRESS1"), Required]
         [StringLength(100)]
         public string ADDRESS1 { get; set; }
 
@@ -82,5 +82,27 @@ namespace HydrosApi.Models.Permitting.AAWS
         [Column("LAST_NAME")]
         [StringLength(30)]
         public string LAST_NAME { get; set; }
+
+        public bool IsValid()
+        {
+            var isValid = true;
+            if (this.ADDRESS1 == null)
+            {
+                isValid = false;
+            }
+            if (this.CITY == null)
+            {
+                isValid = false;
+            }
+            if (this.STATE == null)
+            {
+                isValid = false;
+            }
+            if(this.COMPANY_LONG_NAME == null && (this.FIRST_NAME == null || this.LAST_NAME == null))
+            {
+                isValid = false;
+            }
+            return isValid;
+        }
     }
 }
