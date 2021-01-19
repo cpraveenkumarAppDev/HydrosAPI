@@ -311,15 +311,12 @@ namespace HydrosApi.Controllers
         {
             try
             {
-                var customers = WRF_CUST.GetList(x => x.WRF_ID == wrf).ToList();
-                if (custType != null)
+                var custIdList = WRF_CUST.GetList(x => x.WRF_ID == wrf).Select(x => x.CUST_ID).ToList();
+                List<Aws_customer_wrf_ViewModel> customerList = new List<Aws_customer_wrf_ViewModel>();
+                foreach(var custId in custIdList)
                 {
-                    customers = customers.Where(x => x.CCT_CODE == custType).ToList();
+                    customerList.Add(new Aws_customer_wrf_ViewModel(custId, wrf, custType));
                 }
-                var custIdList = customers.Select(x => x.CUST_ID).ToList();
-
-                var customerList = V_AWS_CUSTOMER_LONG_NAME.GetList(x => custIdList.Contains(x.CUST_ID) && x.BAD_ADDRESS_FLAG != "Y");// "not yes" because no and null are acceptable
-
                 return Ok(customerList);
             }
             catch (Exception exception)

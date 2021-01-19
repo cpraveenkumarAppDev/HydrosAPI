@@ -17,7 +17,7 @@ namespace HydrosApi.Models.ADWR
         [Key, Column("WRF_ID", Order = 0)]
         public int WRF_ID { get; set; }
 
-        [Column("CCT_CODE")]
+        [Key, Column("CCT_CODE", Order = 2)]
         [StringLength(4)]
         public string CCT_CODE { get; set; }
 
