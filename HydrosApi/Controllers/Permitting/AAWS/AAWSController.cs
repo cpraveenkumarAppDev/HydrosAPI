@@ -438,5 +438,13 @@ namespace HydrosApi.Controllers
                 return InternalServerError();
             }
         }
+
+        [HttpGet, Route("aws/customer/types/")]
+        public IHttpActionResult GetCustomerTypeCodes()
+        {
+            var awsCodes = new List<string> { "AS", "BY", "C", "CH", "CN", "DV", "MP", "MR", "O", "PY", "AP" };
+            var codes = CD_CUST_TYPE.GetList(x => awsCodes.Contains(x.CODE));
+            return Ok(codes);
+        }
     }
 }

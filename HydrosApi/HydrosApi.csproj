@@ -321,6 +321,7 @@
     <Compile Include="Models\ADWR\AW_USERS.cs" />
     <Compile Include="Models\ADWR\CD_AW_COUNTY.cs" />
     <Compile Include="Models\Adjudication\WFR_POD.cs" />
+    <Compile Include="Models\ADWR\CD_CUST_TYPE.cs" />
     <Compile Include="Models\ADWR\CUSTOMER.cs" />
     <Compile Include="Models\ADWR\WRF_CUST.cs" />
     <Compile Include="Models\ADWR\WTR_RIGHT_FACILITY.cs" />
