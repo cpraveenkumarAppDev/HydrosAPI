@@ -384,7 +384,7 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpPost, Route("aws/customer/{wrf}")]
+        [HttpPost, Route("aws/customer/{wrf}/{custType}")]
         [Authorize]
         public IHttpActionResult CreateCustomer(string custType, int wrf, [FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
         {
