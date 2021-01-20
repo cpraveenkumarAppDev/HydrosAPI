@@ -384,21 +384,18 @@ namespace HydrosApi.Controllers
 
                     var wrfCust = new WRF_CUST();
                     wrfCust.CUST_ID = rgrCustomer.ID;
-
                     wrfCust.WRF_ID = wrf;
                     wrfCust.CCT_CODE = custType;
                     wrfCust.LINE_NUM = 1;//one is the default set in the procedure AWS.SP_AW_INS_WRF_CUST. this property was used to order the addresses on the front end (Delphi)
                     wrfCust.IS_ACTIVE = "Y";
                     wrfCust.PRIMARY_MAILING_ADDRESS = "N";
-
-
                     context.WRF_CUST.Add(wrfCust);
-
                     context.SaveChanges();
 
                     //return customer wrf viewmodel to match other customer endpoints
                     customer.CUST_ID = rgrCustomer.ID;
                     var custwrfVM = new Aws_customer_wrf_ViewModel(customer, wrfCust);
+
                     return Ok(custwrfVM);
                 }
             }
@@ -421,17 +418,18 @@ namespace HydrosApi.Controllers
                     foreach (var prop in propList)
                     {
                         var tempVal = prop.GetValue(customer);
-                        if (tempVal != Activator.CreateInstance(prop.PropertyType))
+                        //if the Type is a valueType then make the default object and compare, otherwise it's a ref type and is compared to null
+                        if (tempVal != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null))
                         {
-                            prop.SetValue(foundUser, tempVal);
-                        }
-                        else
-                        {
-                            var a = 1;
+                            if(prop.Name != "CUST_ID")//can't update the DB Key
+                                prop.SetValue(foundUser, tempVal);
                         }
                     }
                     context.SaveChanges();
-                    return Ok(foundUser);
+
+                    //return aws_customer_wrf_viewmodel to be consistent with other customer calls
+                    var customerWrf = new Aws_customer_wrf_ViewModel(foundUser);
+                    return Ok(customerWrf);
                 }
             }
             catch (Exception exception)

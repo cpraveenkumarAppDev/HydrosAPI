@@ -17,13 +17,22 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         {
 
         }
-
+        /// <summary>
+        /// Use when creating a new customer and wrf_cust relation, no wrf lookup as new customers own't have any
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <param name="wrfCust"></param>
         public Aws_customer_wrf_ViewModel(V_AWS_CUSTOMER_LONG_NAME customer, WRF_CUST wrfCust)
         {
             this.Customer = customer;
             this.Waterrights = new List<WRF_CUST> { wrfCust };
         }
-
+        /// <summary>
+        /// finds customer by ID and CustomerType and queries wrf_cust relations by wrf
+        /// </summary>
+        /// <param name="custId"></param>
+        /// <param name="wrf"></param>
+        /// <param name="custType"></param>
         public Aws_customer_wrf_ViewModel(int custId, int wrf, string custType)
         {
             try
@@ -43,7 +52,10 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
                 var sentOkay = EmailService.Message("appdev@azwater.gov", $"{Environment.MachineName} - HydrosAPI", $"{exception.Message}{Environment.NewLine}{exception.StackTrace}");
             }
         }
-
+        /// <summary>
+        /// Yields all wrf_cust relations
+        /// </summary>
+        /// <param name="customer"></param>
         public Aws_customer_wrf_ViewModel(V_AWS_CUSTOMER_LONG_NAME customer)
         {
             this.Customer = customer;
