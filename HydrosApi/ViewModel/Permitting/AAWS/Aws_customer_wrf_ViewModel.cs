@@ -61,5 +61,35 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
             this.Customer = customer;
             this.Waterrights = WRF_CUST.GetList(x => x.CUST_ID == customer.CUST_ID).OrderBy(x => x.WRF_ID).ToList();
         }
+
+        public bool IsValid()
+        {
+            var isValid = true;
+            if (this.Customer.ADDRESS1 == null)
+            {
+                isValid = false;
+            }
+            if (this.Customer.CITY == null)
+            {
+                isValid = false;
+            }
+            if (this.Customer.STATE == null)
+            {
+                isValid = false;
+            }
+            if (this.Customer.COMPANY_LONG_NAME == null && (this.Customer.FIRST_NAME == null || this.Customer.LAST_NAME == null))
+            {
+                isValid = false;
+            }
+
+            foreach(var waterright in this.Waterrights)
+            {
+                if(waterright.CCT_CODE == null || waterright.WRF_ID == 0 || waterright.LINE_NUM == 0)
+                {
+                    isValid = false;
+                }
+            }
+            return isValid;
+        }
     }
 }

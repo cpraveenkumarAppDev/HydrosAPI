@@ -386,12 +386,10 @@ namespace HydrosApi.Controllers
 
         [HttpPost, Route("aws/customer/{wrf}")]
         [Authorize]
-        public IHttpActionResult CreateCustomer(string custType, int wrf, [FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
+        public IHttpActionResult CreateCustomer(int wrf, [FromBody] Aws_customer_wrf_ViewModel customer)
         {
             try
-            {
-                var cystTypeList = new Regex(@"[^a-zA-Z]").Split(custType).ToList();
-                
+            {                
                 using (var context = new OracleContext())
                 {
                     //check for required properties
@@ -399,32 +397,21 @@ namespace HydrosApi.Controllers
                     {
                         return BadRequest();
                     }
-
-                    var rgrCustomer = new CUSTOMER(customer, User.Identity.Name.Replace("AZWATER0\\", ""));
+                    customer.Customer.BAD_ADDRESS_FLAG = customer.Customer.BAD_ADDRESS_FLAG == "false" ? "N" : "Y";
+                    var rgrCustomer = new CUSTOMER(customer.Customer, User.Identity.Name.Replace("AZWATER0\\", ""));
                     context.CUSTOMER.Add(rgrCustomer);
                     context.SaveChanges();//need to save and get rgr.customer ID back from DB sequence to use in wrf_cust
+                    customer.Customer.CUST_ID = rgrCustomer.ID;
 
-                    //collect the wrfs for viewmodel
-                    var wrfCustList = new List<WRF_CUST>();
-                    foreach(var type in cystTypeList)
+                    foreach(var waterright in customer.Waterrights)
                     {
-                        var wrfCust = new WRF_CUST();
-                        wrfCust.CUST_ID = rgrCustomer.ID;
-                        wrfCust.WRF_ID = wrf;
-                        wrfCust.CCT_CODE = type;
-                        wrfCust.LINE_NUM = 1;//one is the default set in the procedure AWS.SP_AW_INS_WRF_CUST. this property was used to order the addresses on the front end (Delphi)
-                        wrfCust.IS_ACTIVE = "Y";
-                        wrfCust.PRIMARY_MAILING_ADDRESS = "N";
-                        context.WRF_CUST.Add(wrfCust);
-                        wrfCustList.Add(wrfCust);
+                        waterright.WRF_ID = wrf;
+                        waterright.CUST_ID = rgrCustomer.ID;
+                        context.WRF_CUST.Add(waterright);
                     }
                     context.SaveChanges();
 
-                    //return customer wrf viewmodel to match other customer endpoints
-                    customer.CUST_ID = rgrCustomer.ID;
-                    var custwrfVM = new Aws_customer_wrf_ViewModel(customer, wrfCustList);
-
-                    return Ok(custwrfVM);
+                    return Ok(customer);
                 }
             }
             catch (Exception exception)
