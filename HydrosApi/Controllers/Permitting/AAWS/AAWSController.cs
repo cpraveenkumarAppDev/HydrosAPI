@@ -470,7 +470,8 @@ namespace HydrosApi.Controllers
         [HttpGet, Route("aws/customer/types/")]
         public IHttpActionResult GetCustomerTypeCodes()
         {
-            var codes = CD_CUST_TYPE.GetList(x => AwsCustomerCodes.Select(item => item.Value).Contains(x.CODE));
+            var custCodeList = AwsCustomerCodes.Select(item => item.Key).ToList();
+            var codes = CD_CUST_TYPE.GetList(x => custCodeList.Contains(x.CODE));
             return Ok(codes);
         }
     }
