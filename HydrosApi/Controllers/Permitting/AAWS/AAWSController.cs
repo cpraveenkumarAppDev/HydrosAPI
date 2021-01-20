@@ -18,7 +18,9 @@ namespace HydrosApi.Controllers
 
     public class AAWSController : ApiController
     {
-        private readonly List<string> AwsCodes = new List<string> { "AS", "BY", "C", "CH", "CN", "DV", "MP", "MR", "O", "PY", "AP" };
+        //subset approved by aaws team
+        private readonly Dictionary<string, string> AwsCustomerCodes = new Dictionary<string, string> { { "AS", "ASSIGNEE" }, { "BY", "BUYER" }, { "C", "CONTACT PARTY" }, { "CH", "CERTIFICATE HOLDER" }, { "CN", "CONSULTANT" }, { "MR", "MUNICIPAL REPRESENTATIVE" }, { "O", "OWNER" }, { "AP", "APPLICANT" } }; 
+
         // GET: AAWS
         //IRR-29-A16011018CBB-01
         [Route("aws/getgeneralInfo/")]
@@ -382,11 +384,14 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpPost, Route("aws/customer/{custType}/{wrf}")]
+        [HttpPost, Route("aws/customer/{wrf}")]
+        [Authorize]
         public IHttpActionResult CreateCustomer(string custType, int wrf, [FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
         {
             try
             {
+                var cystTypeList = new Regex(@"[^a-zA-Z]").Split(custType).ToList();
+                
                 using (var context = new OracleContext())
                 {
                     //check for required properties
@@ -395,24 +400,29 @@ namespace HydrosApi.Controllers
                         return BadRequest();
                     }
 
-                    var rgrCustomer = new CUSTOMER(customer, User.Identity.Name.Replace("@azwater.gov", ""));
-                    rgrCustomer.COMPANY = rgrCustomer.COMPANY.Substring(0, 59);
+                    var rgrCustomer = new CUSTOMER(customer, User.Identity.Name.Replace("AZWATER0\\", ""));
                     context.CUSTOMER.Add(rgrCustomer);
                     context.SaveChanges();//need to save and get rgr.customer ID back from DB sequence to use in wrf_cust
 
-                    var wrfCust = new WRF_CUST();
-                    wrfCust.CUST_ID = rgrCustomer.ID;
-                    wrfCust.WRF_ID = wrf;
-                    wrfCust.CCT_CODE = custType;
-                    wrfCust.LINE_NUM = 1;//one is the default set in the procedure AWS.SP_AW_INS_WRF_CUST. this property was used to order the addresses on the front end (Delphi)
-                    wrfCust.IS_ACTIVE = "Y";
-                    wrfCust.PRIMARY_MAILING_ADDRESS = "N";
-                    context.WRF_CUST.Add(wrfCust);
+                    //collect the wrfs for viewmodel
+                    var wrfCustList = new List<WRF_CUST>();
+                    foreach(var type in cystTypeList)
+                    {
+                        var wrfCust = new WRF_CUST();
+                        wrfCust.CUST_ID = rgrCustomer.ID;
+                        wrfCust.WRF_ID = wrf;
+                        wrfCust.CCT_CODE = type;
+                        wrfCust.LINE_NUM = 1;//one is the default set in the procedure AWS.SP_AW_INS_WRF_CUST. this property was used to order the addresses on the front end (Delphi)
+                        wrfCust.IS_ACTIVE = "Y";
+                        wrfCust.PRIMARY_MAILING_ADDRESS = "N";
+                        context.WRF_CUST.Add(wrfCust);
+                        wrfCustList.Add(wrfCust);
+                    }
                     context.SaveChanges();
 
                     //return customer wrf viewmodel to match other customer endpoints
                     customer.CUST_ID = rgrCustomer.ID;
-                    var custwrfVM = new Aws_customer_wrf_ViewModel(customer, wrfCust);
+                    var custwrfVM = new Aws_customer_wrf_ViewModel(customer, wrfCustList);
 
                     return Ok(custwrfVM);
                 }
@@ -460,7 +470,7 @@ namespace HydrosApi.Controllers
         [HttpGet, Route("aws/customer/types/")]
         public IHttpActionResult GetCustomerTypeCodes()
         {
-            var codes = CD_CUST_TYPE.GetList(x => AwsCodes.Contains(x.CODE));
+            var codes = CD_CUST_TYPE.GetList(x => AwsCustomerCodes.Select(item => item.Value).Contains(x.CODE));
             return Ok(codes);
         }
     }

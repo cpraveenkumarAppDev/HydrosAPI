@@ -21,7 +21,7 @@ namespace HydrosApi.Models.ADWR
         [StringLength(4)]
         public string CCT_CODE { get; set; }
 
-        [Column("LINE_NUM")]
+        [Key, Column("LINE_NUM", Order = 3)]
         public int LINE_NUM { get; set; }
 
         [Column("IS_ACTIVE")]
