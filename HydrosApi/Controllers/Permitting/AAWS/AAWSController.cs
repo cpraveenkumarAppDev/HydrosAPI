@@ -379,6 +379,7 @@ namespace HydrosApi.Controllers
                     }
 
                     var rgrCustomer = new CUSTOMER(customer, User.Identity.Name.Replace("@azwater.gov", ""));
+                    rgrCustomer.COMPANY = rgrCustomer.COMPANY.Substring(0, 59);
                     context.CUSTOMER.Add(rgrCustomer);
                     context.SaveChanges();//need to save and get rgr.customer ID back from DB sequence to use in wrf_cust
 
