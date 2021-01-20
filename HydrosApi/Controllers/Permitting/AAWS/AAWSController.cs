@@ -365,6 +365,23 @@ namespace HydrosApi.Controllers
             }
         }
 
+        [HttpGet, Route("aws/company/{company}")]
+        public IHttpActionResult GetCustomerByCompany(string company)
+        {            
+            try
+            {                 
+                var customerList = V_AWS_CUSTOMER_LONG_NAME.GetList(co => co.COMPANY_LONG_NAME.Contains(company.ToUpper()));
+                var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x));
+                return Ok(custWrfViewModelList);
+               
+            }
+            catch //(Exception exception)
+            {
+                //log error
+                return InternalServerError();
+            }
+        }
+
         [HttpPost, Route("aws/customer/{custType}/{wrf}")]
         public IHttpActionResult CreateCustomer(string custType, int wrf, [FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
         {
