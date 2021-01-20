@@ -1,5 +1,6 @@
 ﻿using HydrosApi.Models.ADWR;
 using HydrosApi.Models.Permitting.AAWS;
+using HydrosApi.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,12 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         public Aws_customer_wrf_ViewModel()
         {
 
+        }
+
+        public Aws_customer_wrf_ViewModel(V_AWS_CUSTOMER_LONG_NAME customer, WRF_CUST wrfCust)
+        {
+            this.Customer = customer;
+            this.Waterrights = new List<WRF_CUST> { wrfCust };
         }
 
         public Aws_customer_wrf_ViewModel(int custId, int wrf, string custType)
@@ -33,7 +40,7 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
             }
             catch(Exception exception)
             {
-                var a = 1;
+                var sentOkay = EmailService.Message("appdev@azwater.gov", $"{Environment.MachineName} - HydrosAPI", $"{exception.Message}{Environment.NewLine}{exception.StackTrace}");
             }
         }
     }

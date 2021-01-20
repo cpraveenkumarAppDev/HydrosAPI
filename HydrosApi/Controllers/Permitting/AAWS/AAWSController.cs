@@ -371,15 +371,6 @@ namespace HydrosApi.Controllers
                 //sp_aw_ins_cust_long_name
                 using (var context = new OracleContext())
                 {
-                    //var newCustId = new OracleParameter("p_new_wrf_id", OracleDbType.Decimal);
-                    //var newCustId = new OracleParameter("ID", OracleDbType.Decimal);
-                    //newCustId.Direction = System.Data.ParameterDirection.InputOutput;
-                    //var parameters = new OracleParameter[] { newCustId };
-                    //string custIdProcCall = "BEGIN aws.sp_aw_ins_id(:ID); end;";//procedure to get a new ID from sequence
-
-                    //var transaction = context.Database.BeginTransaction();
-                    //context.Database.ExecuteSqlCommand(custIdProcCall, parameters);
-                    //transaction.Commit();
                     if (!customer.IsValid())
                     {
                         return BadRequest();
@@ -394,7 +385,7 @@ namespace HydrosApi.Controllers
 
                     wrfCust.WRF_ID = wrf;
                     wrfCust.CCT_CODE = custType;
-                    wrfCust.LINE_NUM = 1;//one is the default set in the procedure AWS.SP_AW_INS_WRF_CUST. this property was used to order the addresses on the front end
+                    wrfCust.LINE_NUM = 1;//one is the default set in the procedure AWS.SP_AW_INS_WRF_CUST. this property was used to order the addresses on the front end (Delphi)
                     wrfCust.IS_ACTIVE = "Y";
                     wrfCust.PRIMARY_MAILING_ADDRESS = "N";
 
@@ -402,7 +393,11 @@ namespace HydrosApi.Controllers
                     context.WRF_CUST.Add(wrfCust);
 
                     context.SaveChanges();
-                    return Ok(rgrCustomer);
+
+                    //return customer wrf viewmodel to match other customer endpoints
+                    customer.CUST_ID = rgrCustomer.ID;
+                    var custwrfVM = new Aws_customer_wrf_ViewModel(customer, wrfCust);
+                    return Ok(custwrfVM);
                 }
             }
             catch (Exception exception)

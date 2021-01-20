@@ -63,7 +63,7 @@ namespace HydrosApi.Models.Permitting.AAWS
         [StringLength(100)]
         public string ADDRESS2 { get; set; }
 
-        [Column("ADDRESS1"), Required]
+        [Column("ADDRESS1")]
         [StringLength(100)]
         public string ADDRESS1 { get; set; }
 
