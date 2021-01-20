@@ -22,10 +22,10 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         /// </summary>
         /// <param name="customer"></param>
         /// <param name="wrfCust"></param>
-        public Aws_customer_wrf_ViewModel(V_AWS_CUSTOMER_LONG_NAME customer, WRF_CUST wrfCust)
+        public Aws_customer_wrf_ViewModel(V_AWS_CUSTOMER_LONG_NAME customer, List<WRF_CUST> wrfCustList)
         {
             this.Customer = customer;
-            this.Waterrights = new List<WRF_CUST> { wrfCust };
+            this.Waterrights = wrfCustList;
         }
         /// <summary>
         /// finds customer by ID and CustomerType and queries wrf_cust relations by wrf
