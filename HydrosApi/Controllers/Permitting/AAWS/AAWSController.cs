@@ -353,7 +353,9 @@ namespace HydrosApi.Controllers
                         customerList = context.V_AWS_CUSTOMER_LONG_NAME.Where(x => x.LAST_NAME.ToLower().Contains(lastName.ToLower())).ToList();
                     }
 
-                    return Ok(customerList);
+                    var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x));
+
+                    return Ok(custWrfViewModelList);
                 }
             }
             catch (Exception exception)
@@ -368,9 +370,9 @@ namespace HydrosApi.Controllers
         {
             try
             {
-                //sp_aw_ins_cust_long_name
                 using (var context = new OracleContext())
                 {
+                    //check for required properties
                     if (!customer.IsValid())
                     {
                         return BadRequest();

@@ -43,5 +43,11 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
                 var sentOkay = EmailService.Message("appdev@azwater.gov", $"{Environment.MachineName} - HydrosAPI", $"{exception.Message}{Environment.NewLine}{exception.StackTrace}");
             }
         }
+
+        public Aws_customer_wrf_ViewModel(V_AWS_CUSTOMER_LONG_NAME customer)
+        {
+            this.Customer = customer;
+            this.Waterrights = WRF_CUST.GetList(x => x.CUST_ID == customer.CUST_ID).OrderBy(x => x.WRF_ID).ToList();
+        }
     }
 }
