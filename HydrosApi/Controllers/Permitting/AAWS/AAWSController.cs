@@ -560,7 +560,8 @@ namespace HydrosApi.Controllers
         {
             try
             {
-                using(var context = new OracleContext())
+                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
+                using (var context = new OracleContext())
                 {
                     foreach (var wrfcust in wrfcustList)
                     {
@@ -573,6 +574,8 @@ namespace HydrosApi.Controllers
                         }
                         if (count > -1)
                         {
+                            wrfcust.CREATEBY = userName;
+                            wrfcust.CREATEDT = DateTime.Now;
                             context.WRF_CUST.Add(wrfcust);
                         }
                         else
