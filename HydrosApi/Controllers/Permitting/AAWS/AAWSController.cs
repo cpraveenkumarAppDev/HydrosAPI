@@ -315,7 +315,7 @@ namespace HydrosApi.Controllers
         {
             try
             {
-                var custIdList = WRF_CUST.GetList(x => x.WRF_ID == wrf).Select(x => x.CUST_ID).ToList();
+                var custIdList = WRF_CUST.GetList(x => x.WRF_ID == wrf).Select(x => x.CUST_ID).ToList().Distinct();
                 List<Aws_customer_wrf_ViewModel> customerList = new List<Aws_customer_wrf_ViewModel>();
                 foreach(var custId in custIdList)
                 {
@@ -513,14 +513,14 @@ namespace HydrosApi.Controllers
                     {
                         waterRight.UPDATEBY = userName;
                         waterRight.UPDATEDT = DateTime.Now;
-                        var wrf_cust = WRF_CUST.Get(x => x.CUST_ID == waterRight.CUST_ID && x.WRF_ID == waterRight.WRF_ID, context);
+                        var wrf_cust = WRF_CUST.Get(x => x.CUST_ID == waterRight.CUST_ID && x.WRF_ID == waterRight.WRF_ID && x.CCT_CODE == waterRight.CCT_CODE, context);
                         foreach(var prop in rightProps)
                         {
                             var tempValue = prop.GetValue(waterRight);
                             var incomingValue = prop.GetValue(wrf_cust);
                             if (tempValue != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null) && tempValue != incomingValue)
                             {
-                                if(prop.Name != "WRF_ID" && prop.Name != "CUST_ID")
+                                if(prop.Name != "WRF_ID" && prop.Name != "CUST_ID" && prop.Name != "CCT_CODE")
                                     prop.SetValue(wrf_cust, tempValue);
                             }
                         }
