@@ -544,7 +544,10 @@ namespace HydrosApi.Controllers
                     }                    
 
                     context.SaveChanges();
-
+                    var rgrCustomer = context.CUSTOMER.Where(x => x.ID == foundUser.CUST_ID).FirstOrDefault();
+                    rgrCustomer.UPDATEBY = userName;
+                    rgrCustomer.UPDATEDT = DateTime.Now;
+                    context.SaveChanges();
                     return Ok(customer);
                 }
             }
