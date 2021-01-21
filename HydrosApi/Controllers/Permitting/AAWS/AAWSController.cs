@@ -533,29 +533,32 @@ namespace HydrosApi.Controllers
         }
 
         [HttpPost, Route("aws/customer/wrf")]
-        public IHttpActionResult CreateWrfcust([FromBody] WRF_CUST wrfcust)
+        public IHttpActionResult CreateWrfcust([FromBody] List<WRF_CUST> wrfcustList)
         {
             try
             {
                 using(var context = new OracleContext())
                 {
-                    var customerExists = context.CUSTOMER.Where(x => x.ID == wrfcust.CUST_ID).FirstOrDefault() != null ? true : false;
-                    var wrfExists = context.WRF_CUST.Where(x => x.WRF_ID == wrfcust.WRF_ID).FirstOrDefault() != null ? true : false;
-                    var count = WRF_CUST.GetList(x => x.WRF_ID == wrfcust.WRF_ID && x.CUST_ID == wrfcust.CUST_ID && x.CCT_CODE == wrfcust.CCT_CODE).Count();
-                    if(!customerExists || !wrfExists)
+                    foreach (var wrfcust in wrfcustList)
                     {
-                        return BadRequest("customer or wrf does not exist");
+                        var customerExists = context.CUSTOMER.Where(x => x.ID == wrfcust.CUST_ID).FirstOrDefault() != null ? true : false;
+                        var wrfExists = context.WRF_CUST.Where(x => x.WRF_ID == wrfcust.WRF_ID).FirstOrDefault() != null ? true : false;
+                        var count = WRF_CUST.GetList(x => x.WRF_ID == wrfcust.WRF_ID && x.CUST_ID == wrfcust.CUST_ID && x.CCT_CODE == wrfcust.CCT_CODE).Count();
+                        if (!customerExists || !wrfExists)
+                        {
+                            return BadRequest("customer or wrf does not exist");
+                        }
+                        if (count == 0)
+                        {
+                            context.WRF_CUST.Add(wrfcust);
+                        }
+                        else
+                        {
+                            return BadRequest("wrf, cust, custType record already exists");
+                        }
                     }
-                    if(count == 0)
-                    {
-                        context.WRF_CUST.Add(wrfcust);
-                        context.SaveChanges();
-                        return Ok(wrfcust);
-                    }
-                    else
-                    {
-                        return BadRequest("wrf, cust, custType record already exists");
-                    }
+                    context.SaveChanges();
+                    return Ok(wrfcustList);
                 }
 
             }
