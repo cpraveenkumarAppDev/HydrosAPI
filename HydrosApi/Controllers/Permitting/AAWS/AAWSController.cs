@@ -367,16 +367,23 @@ namespace HydrosApi.Controllers
             }
         }
 
-
         [HttpGet, Route("aws/company/{company}")]
         public IHttpActionResult GetCustomerByCompany(string company)
         {            
             try
             {                 
-                var customerList = V_AWS_CUSTOMER_LONG_NAME.GetList(co => co.COMPANY_LONG_NAME.Contains(company.ToUpper()));
+                var customerList = V_AWS_CUSTOMER_LONG_NAME.GetList(co => co.COMPANY_LONG_NAME.Contains(company.ToUpper()))
+                    .Select(result => new
+                    {
+                        companyRank = company != null && result.COMPANY_LONG_NAME != null ? result.COMPANY_LONG_NAME.ToLower() == company.ToLower() 
+                        ? "   " + result.COMPANY_LONG_NAME.ToLower() : result.COMPANY_LONG_NAME.ToLower().StartsWith(company.ToLower())
+                        ? "  " + result.COMPANY_LONG_NAME.ToLower() : result.COMPANY_LONG_NAME.ToLower() : null,                       
+                        result
+                    })
+                     .OrderBy(o =>o.companyRank)
+                     .Select(s => s.result).Take(20);
                 var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x));
-                return Ok(custWrfViewModelList);
-               
+                return Ok(custWrfViewModelList);               
             }
             catch //(Exception exception)
             {
