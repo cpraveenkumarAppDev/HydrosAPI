@@ -460,6 +460,8 @@ namespace HydrosApi.Controllers
                     }
                     customer.Customer.BAD_ADDRESS_FLAG = customer.Customer.BAD_ADDRESS_FLAG == "false" ? "N" : "Y";
                     var rgrCustomer = new CUSTOMER(customer.Customer, userName);
+                    rgrCustomer.CREATEBY = User.Identity.Name.Replace("AZWATER0\\", "");
+                    rgrCustomer.CREATEDT = DateTime.Now;
                     context.CUSTOMER.Add(rgrCustomer);
                     context.SaveChanges();//need to save and get rgr.customer ID back from DB sequence to use in wrf_cust
                     customer.Customer.CUST_ID = rgrCustomer.ID;
