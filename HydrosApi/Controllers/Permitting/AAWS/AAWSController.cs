@@ -449,7 +449,8 @@ namespace HydrosApi.Controllers
         public IHttpActionResult CreateCustomer(int wrf, [FromBody] Aws_customer_wrf_ViewModel customer)
         {
             try
-            {                
+            {
+                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
                 using (var context = new OracleContext())
                 {
                     //check for required properties
@@ -458,7 +459,7 @@ namespace HydrosApi.Controllers
                         return BadRequest();
                     }
                     customer.Customer.BAD_ADDRESS_FLAG = customer.Customer.BAD_ADDRESS_FLAG == "false" ? "N" : "Y";
-                    var rgrCustomer = new CUSTOMER(customer.Customer, User.Identity.Name.Replace("AZWATER0\\", ""));
+                    var rgrCustomer = new CUSTOMER(customer.Customer, userName);
                     context.CUSTOMER.Add(rgrCustomer);
                     context.SaveChanges();//need to save and get rgr.customer ID back from DB sequence to use in wrf_cust
                     customer.Customer.CUST_ID = rgrCustomer.ID;
@@ -467,6 +468,9 @@ namespace HydrosApi.Controllers
                     {
                         waterright.WRF_ID = wrf;
                         waterright.CUST_ID = rgrCustomer.ID;
+                        waterright.LINE_NUM = 1;
+                        waterright.CREATEBY = userName;
+                        waterright.CREATEDT = DateTime.Now;
                         context.WRF_CUST.Add(waterright);
                     }
                     context.SaveChanges();
@@ -481,12 +485,12 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpPut, Route("aws/customer/{custId}")]
+        [HttpPut, Route("aws/customer/{custId}"), Authorize]
         public IHttpActionResult UpdateCustomer(int custId, Aws_customer_wrf_ViewModel customer)
         {
             try
             {
-
+                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
                 using (var context = new OracleContext())
                 {
                     var foundUser = V_AWS_CUSTOMER_LONG_NAME.Get(x => x.CUST_ID == custId, context);
@@ -499,7 +503,7 @@ namespace HydrosApi.Controllers
                         //if the Type is a valueType then make the default object and compare, otherwise it's a ref type and is compared to null
                         if (tempVal != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null))
                         {
-                            if(prop.Name != "CUST_ID")//can't update the DB Key
+                            if(prop.Name != "CUST_ID" && prop.Name != "CCT_CODE")//can't update the DB Key
                                 prop.SetValue(foundUser, tempVal);
                         }
                     }
@@ -507,6 +511,8 @@ namespace HydrosApi.Controllers
                     var rightProps = typeof(WRF_CUST).GetProperties().ToList();
                     foreach(var waterRight in customer.Waterrights)
                     {
+                        waterRight.UPDATEBY = userName;
+                        waterRight.UPDATEDT = DateTime.Now;
                         var wrf_cust = WRF_CUST.Get(x => x.CUST_ID == waterRight.CUST_ID && x.WRF_ID == waterRight.WRF_ID, context);
                         foreach(var prop in rightProps)
                         {
@@ -548,7 +554,7 @@ namespace HydrosApi.Controllers
                         {
                             return BadRequest("customer or wrf does not exist");
                         }
-                        if (count == 0)
+                        if (count > -1)
                         {
                             context.WRF_CUST.Add(wrfcust);
                         }
