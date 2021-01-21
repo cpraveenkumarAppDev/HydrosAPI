@@ -481,7 +481,7 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpPatch, Route("aws/customer/{custId}")]
+        [HttpPut, Route("aws/customer/{custId}")]
         public IHttpActionResult UpdateCustomer(int custId, Aws_customer_wrf_ViewModel customer)
         {
             try
