@@ -84,7 +84,7 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
 
             foreach(var waterright in this.Waterrights)
             {
-                if(waterright.CCT_CODE == null || waterright.WRF_ID == 0 || waterright.LINE_NUM == 0)
+                if(waterright.CCT_CODE == null || waterright.WRF_ID == 0 )
                 {
                     isValid = false;
                 }

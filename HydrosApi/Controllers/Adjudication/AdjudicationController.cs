@@ -127,20 +127,27 @@
             if (Objtype == "PWR")
             {
                 var pwrPodList = await Task.FromResult(PWR_POD.GetList(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == id));
-
+                var adwrpod = POINT_OF_DIVERSION_VIEW.Get(p => p.OBJECTID == podobjectid);
                 if (pwrPodList != null && pwrPodList.Count() > 0)
                 {
                     return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
                 }
-
-                var newPwrPod = PWR_POD.Add(new PWR_POD()
+                if (adwrpod != null)
                 {
-                    CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
-                    CREATEDT = DateTime.Now,
-                    POD_ID = podobjectid,
-                    PWR_ID = id
-                });
-                return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion(newPwrPod)));
+
+                    var newPwrPod = PWR_POD.Add(new PWR_POD()
+                    {
+                        CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
+                        CREATEDT = DateTime.Now,
+                        POD_ID = adwrpod.ID,
+                        PWR_ID = id
+                    });
+                    return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion(newPwrPod)));
+                }
+                else
+                {
+                    return Ok("No POD found in ADWR table");
+                }
 
             }
             else
@@ -174,12 +181,17 @@
 
                 var wfrSde = await Task.FromResult(WATERSHED_FILE_REPORT_SDE.Get(p => p.WFR_NUM == wfr_num));
                 var wfr = await Task.FromResult(WATERSHED_FILE_REPORT.Get(p => p.OBJECTID == wfrSde.OBJECTID));
-                if (useage == "POD")
+                var adwrpod = POINT_OF_DIVERSION_VIEW.Get(p => p.OBJECTID == id);
+                if (useage == "POD" && adwrpod != null)
                 {
                     var pod = await Task.FromResult(WFR_POD.Get(p => p.ID == id));
                     pod.WFR_ID = wfr.ID;
-                    pod.POD_ID =id;
+                    pod.POD_ID = adwrpod.ID;
                     WFR_POD.Update(pod);
+                }
+                else if(useage == "POD" && adwrpod == null)
+                {
+                    return Ok("No POD found in ADWR table");
                 }
                 else
                 {
@@ -272,7 +284,7 @@
 
         [HttpGet, Route("adj/addfileblob/{id}")] //PWR_ID or an error message is returned       
         public async Task<IHttpActionResult> FindFileBlob(int? id) //<== ID IS THE ID FROM THE EXPLANATION TABLE
-        {            
+        {
             return Ok(await Task.FromResult(TEST_FILE_UPLOAD.FindFile(id)));
         }
 

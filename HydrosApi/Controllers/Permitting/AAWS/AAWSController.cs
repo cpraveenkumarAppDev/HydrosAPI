@@ -385,7 +385,7 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpGet, Route("aws/customerbyany/")]
+        [HttpPost, Route("aws/customerbyany/")]
         public IHttpActionResult GetCustomerByAny([FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
         {
             //search using firstname, lastname, company_long_name and/or address1
@@ -481,7 +481,7 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpPatch, Route("aws/customer/{custId}")]
+        [HttpPut, Route("aws/customer/{custId}")]
         public IHttpActionResult UpdateCustomer(int custId, Aws_customer_wrf_ViewModel customer)
         {
             try
