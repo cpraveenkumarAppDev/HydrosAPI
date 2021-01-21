@@ -522,11 +522,11 @@ namespace HydrosApi.Controllers
                     foreach(var waterRight in customer.Waterrights)
                     {
                         var wrf_cust = WRF_CUST.Get(x => x.CUST_ID == waterRight.CUST_ID && x.WRF_ID == waterRight.WRF_ID && x.CCT_CODE == waterRight.CCT_CODE, context);
+                        bool changesOccurred = false;
                         foreach(var prop in rightProps)
                         {
                             var tempValue = prop.GetValue(waterRight);
                             var incomingValue = prop.GetValue(wrf_cust);
-                            bool changesOccurred = false;
                             if (tempValue != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null) && tempValue != incomingValue)
                             {
                                 if(prop.Name != "WRF_ID" && prop.Name != "CUST_ID" && prop.Name != "CCT_CODE")
@@ -535,11 +535,11 @@ namespace HydrosApi.Controllers
                                     changesOccurred = true;
                                 }
                             }
-                            if (changesOccurred)
-                            {
-                                waterRight.UPDATEBY = userName;
-                                waterRight.UPDATEDT = DateTime.Now;
-                            }
+                        }
+                        if (changesOccurred)
+                        {
+                            waterRight.UPDATEBY = userName;
+                            waterRight.UPDATEDT = DateTime.Now;
                         }
                     }                    
 
