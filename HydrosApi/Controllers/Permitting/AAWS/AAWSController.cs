@@ -315,7 +315,7 @@ namespace HydrosApi.Controllers
         {
             try
             {
-                var custIdList = WRF_CUST.GetList(x => x.WRF_ID == wrf).Select(x => x.CUST_ID).ToList();
+                var custIdList = WRF_CUST.GetList(x => x.WRF_ID == wrf).Select(x => x.CUST_ID).ToList().Distinct();
                 List<Aws_customer_wrf_ViewModel> customerList = new List<Aws_customer_wrf_ViewModel>();
                 foreach(var custId in custIdList)
                 {
@@ -392,7 +392,7 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpGet, Route("aws/customerbyany/")]
+        [HttpPost, Route("aws/customerbyany/")]
         public IHttpActionResult GetCustomerByAny([FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
         {
             //search using firstname, lastname, company_long_name and/or address1
@@ -456,7 +456,8 @@ namespace HydrosApi.Controllers
         public IHttpActionResult CreateCustomer(int wrf, [FromBody] Aws_customer_wrf_ViewModel customer)
         {
             try
-            {                
+            {
+                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
                 using (var context = new OracleContext())
                 {
                     //check for required properties
@@ -465,7 +466,9 @@ namespace HydrosApi.Controllers
                         return BadRequest();
                     }
                     customer.Customer.BAD_ADDRESS_FLAG = customer.Customer.BAD_ADDRESS_FLAG == "false" ? "N" : "Y";
-                    var rgrCustomer = new CUSTOMER(customer.Customer, User.Identity.Name.Replace("AZWATER0\\", ""));
+                    var rgrCustomer = new CUSTOMER(customer.Customer, userName);
+                    rgrCustomer.CREATEBY = User.Identity.Name.Replace("AZWATER0\\", "");
+                    rgrCustomer.CREATEDT = DateTime.Now;
                     context.CUSTOMER.Add(rgrCustomer);
                     context.SaveChanges();//need to save and get rgr.customer ID back from DB sequence to use in wrf_cust
                     customer.Customer.CUST_ID = rgrCustomer.ID;
@@ -474,6 +477,10 @@ namespace HydrosApi.Controllers
                     {
                         waterright.WRF_ID = wrf;
                         waterright.CUST_ID = rgrCustomer.ID;
+                        waterright.LINE_NUM = 1;
+                        waterright.CREATEBY = userName;
+                        waterright.CREATEDT = DateTime.Now;
+                        waterright.IS_ACTIVE = "Y";
                         context.WRF_CUST.Add(waterright);
                     }
                     context.SaveChanges();
@@ -488,35 +495,91 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpPatch, Route("aws/customer/{custId}")]
-        public IHttpActionResult UpdateCustomer(int custId, V_AWS_CUSTOMER_LONG_NAME customer)
+        [HttpPut, Route("aws/customer/{custId}"), Authorize]
+        public IHttpActionResult UpdateCustomer(int custId, Aws_customer_wrf_ViewModel customer)
         {
             try
             {
+                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
                 using (var context = new OracleContext())
                 {
-                    var foundUser = context.V_AWS_CUSTOMER_LONG_NAME.Where(x => x.CUST_ID == custId).FirstOrDefault();
-                    var propList = customer.GetType().GetProperties().ToList();
-                    foreach (var prop in propList)
+                    var foundUser = V_AWS_CUSTOMER_LONG_NAME.Get(x => x.CUST_ID == custId, context);
+                    var foundWaterRights = WRF_CUST.Get(x => x.CUST_ID == custId, context);
+                    //get customer properties
+                    var custPropList = customer.Customer.GetType().GetProperties().ToList();
+                    foreach (var prop in custPropList)
                     {
-                        var tempVal = prop.GetValue(customer);
+                        var tempVal = prop.GetValue(customer.Customer);
                         //if the Type is a valueType then make the default object and compare, otherwise it's a ref type and is compared to null
                         if (tempVal != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null))
                         {
-                            if(prop.Name != "CUST_ID")//can't update the DB Key
+                            if(prop.Name != "CUST_ID" && prop.Name != "CCT_CODE")//can't update the DB Key
                                 prop.SetValue(foundUser, tempVal);
                         }
                     }
+
+                    var rightProps = typeof(WRF_CUST).GetProperties().ToList();
+                    foreach(var waterRight in customer.Waterrights)
+                    {
+                        waterRight.UPDATEBY = userName;
+                        waterRight.UPDATEDT = DateTime.Now;
+                        var wrf_cust = WRF_CUST.Get(x => x.CUST_ID == waterRight.CUST_ID && x.WRF_ID == waterRight.WRF_ID && x.CCT_CODE == waterRight.CCT_CODE, context);
+                        foreach(var prop in rightProps)
+                        {
+                            var tempValue = prop.GetValue(waterRight);
+                            var incomingValue = prop.GetValue(wrf_cust);
+                            if (tempValue != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null) && tempValue != incomingValue)
+                            {
+                                if(prop.Name != "WRF_ID" && prop.Name != "CUST_ID" && prop.Name != "CCT_CODE")
+                                    prop.SetValue(wrf_cust, tempValue);
+                            }
+                        }
+                    }                    
+
                     context.SaveChanges();
 
-                    //return aws_customer_wrf_viewmodel to be consistent with other customer calls
-                    var customerWrf = new Aws_customer_wrf_ViewModel(foundUser);
-                    return Ok(customerWrf);
+                    return Ok(customer);
                 }
             }
             catch (Exception exception)
             {
                 //log error
+                return InternalServerError();
+            }
+        }
+
+        [HttpPost, Route("aws/customer/wrf")]
+        public IHttpActionResult CreateWrfcust([FromBody] List<WRF_CUST> wrfcustList)
+        {
+            try
+            {
+                using(var context = new OracleContext())
+                {
+                    foreach (var wrfcust in wrfcustList)
+                    {
+                        var customerExists = context.CUSTOMER.Where(x => x.ID == wrfcust.CUST_ID).FirstOrDefault() != null ? true : false;
+                        var wrfExists = context.WRF_CUST.Where(x => x.WRF_ID == wrfcust.WRF_ID).FirstOrDefault() != null ? true : false;
+                        var count = WRF_CUST.GetList(x => x.WRF_ID == wrfcust.WRF_ID && x.CUST_ID == wrfcust.CUST_ID && x.CCT_CODE == wrfcust.CCT_CODE).Count();
+                        if (!customerExists || !wrfExists)
+                        {
+                            return BadRequest("customer or wrf does not exist");
+                        }
+                        if (count > -1)
+                        {
+                            context.WRF_CUST.Add(wrfcust);
+                        }
+                        else
+                        {
+                            return BadRequest("wrf, cust, custType record already exists");
+                        }
+                    }
+                    context.SaveChanges();
+                    return Ok(wrfcustList);
+                }
+
+            }
+            catch(Exception exception)
+            {
                 return InternalServerError();
             }
         }
