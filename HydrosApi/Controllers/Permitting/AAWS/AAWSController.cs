@@ -482,17 +482,20 @@ namespace HydrosApi.Controllers
         }
 
         [HttpPatch, Route("aws/customer/{custId}")]
-        public IHttpActionResult UpdateCustomer(int custId, V_AWS_CUSTOMER_LONG_NAME customer)
+        public IHttpActionResult UpdateCustomer(int custId, Aws_customer_wrf_ViewModel customer)
         {
             try
             {
+
                 using (var context = new OracleContext())
                 {
-                    var foundUser = context.V_AWS_CUSTOMER_LONG_NAME.Where(x => x.CUST_ID == custId).FirstOrDefault();
-                    var propList = customer.GetType().GetProperties().ToList();
-                    foreach (var prop in propList)
+                    var foundUser = V_AWS_CUSTOMER_LONG_NAME.Get(x => x.CUST_ID == custId, context);
+                    var foundWaterRights = WRF_CUST.Get(x => x.CUST_ID == custId, context);
+                    //get customer properties
+                    var custPropList = customer.Customer.GetType().GetProperties().ToList();
+                    foreach (var prop in custPropList)
                     {
-                        var tempVal = prop.GetValue(customer);
+                        var tempVal = prop.GetValue(customer.Customer);
                         //if the Type is a valueType then make the default object and compare, otherwise it's a ref type and is compared to null
                         if (tempVal != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null))
                         {
@@ -500,11 +503,26 @@ namespace HydrosApi.Controllers
                                 prop.SetValue(foundUser, tempVal);
                         }
                     }
+
+                    var rightProps = typeof(WRF_CUST).GetProperties().ToList();
+                    foreach(var waterRight in customer.Waterrights)
+                    {
+                        var wrf_cust = WRF_CUST.Get(x => x.CUST_ID == waterRight.CUST_ID && x.WRF_ID == waterRight.WRF_ID, context);
+                        foreach(var prop in rightProps)
+                        {
+                            var tempValue = prop.GetValue(waterRight);
+                            var incomingValue = prop.GetValue(wrf_cust);
+                            if (tempValue != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null) && tempValue != incomingValue)
+                            {
+                                if(prop.Name != "WRF_ID" && prop.Name != "CUST_ID")
+                                    prop.SetValue(wrf_cust, tempValue);
+                            }
+                        }
+                    }                    
+
                     context.SaveChanges();
 
-                    //return aws_customer_wrf_viewmodel to be consistent with other customer calls
-                    var customerWrf = new Aws_customer_wrf_ViewModel(foundUser);
-                    return Ok(customerWrf);
+                    return Ok(customer);
                 }
             }
             catch (Exception exception)
