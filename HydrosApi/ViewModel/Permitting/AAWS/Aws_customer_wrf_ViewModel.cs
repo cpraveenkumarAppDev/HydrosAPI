@@ -40,11 +40,11 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
                 this.Customer = V_AWS_CUSTOMER_LONG_NAME.Get(x => x.CUST_ID == custId);
                 if(custType == null)
                 {
-                    this.Waterrights = WRF_CUST.GetList(x => x.WRF_ID == wrf && x.CUST_ID == custId);
+                    this.Waterrights = WRF_CUST.GetList(x => x.WRF_ID == wrf && x.CUST_ID == custId && x.IS_ACTIVE == "Y");
                 }
                 else
                 {
-                    this.Waterrights = WRF_CUST.GetList(x => x.WRF_ID == wrf && x.CUST_ID == custId && x.CCT_CODE.ToLower() == custType.ToLower());
+                    this.Waterrights = WRF_CUST.GetList(x => x.WRF_ID == wrf && x.CUST_ID == custId && x.CCT_CODE.ToLower() == custType.ToLower() && x.IS_ACTIVE == "Y");
                 }
             }
             catch(Exception exception)
@@ -59,7 +59,7 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         public Aws_customer_wrf_ViewModel(V_AWS_CUSTOMER_LONG_NAME customer)
         {
             this.Customer = customer;
-            this.Waterrights = WRF_CUST.GetList(x => x.CUST_ID == customer.CUST_ID).OrderBy(x => x.WRF_ID).ToList();
+            this.Waterrights = WRF_CUST.GetList(x => x.CUST_ID == customer.CUST_ID && x.IS_ACTIVE == "Y").OrderBy(x => x.WRF_ID).ToList();
         }
 
         public bool IsValid()
