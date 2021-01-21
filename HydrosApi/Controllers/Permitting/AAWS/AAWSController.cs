@@ -473,6 +473,7 @@ namespace HydrosApi.Controllers
                         waterright.LINE_NUM = 1;
                         waterright.CREATEBY = userName;
                         waterright.CREATEDT = DateTime.Now;
+                        waterright.IS_ACTIVE = "Y";
                         context.WRF_CUST.Add(waterright);
                     }
                     context.SaveChanges();
