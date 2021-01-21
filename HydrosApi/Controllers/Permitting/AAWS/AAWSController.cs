@@ -18,7 +18,9 @@ namespace HydrosApi.Controllers
 
     public class AAWSController : ApiController
     {
-        private readonly List<string> AwsCodes = new List<string> { "AS", "BY", "C", "CH", "CN", "DV", "MP", "MR", "O", "PY", "AP" };
+        //subset approved by aaws team
+        private readonly Dictionary<string, string> AwsCustomerCodes = new Dictionary<string, string> { { "AS", "ASSIGNEE" }, { "BY", "BUYER" }, { "C", "CONTACT PARTY" }, { "CH", "CERTIFICATE HOLDER" }, { "CN", "CONSULTANT" }, { "MR", "MUNICIPAL REPRESENTATIVE" }, { "O", "OWNER" }, { "AP", "APPLICANT" } }; 
+
         // GET: AAWS
         //IRR-29-A16011018CBB-01
         [Route("aws/getgeneralInfo/")]
@@ -365,56 +367,14 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpGet, Route("aws/customerbyany/")]
-        public IHttpActionResult GetCustomerByAny([FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
-        {
-            //search using firstname, lastname, company_long_name and/or address1
-            //or anything if you want to
+        [HttpGet, Route("aws/company/{company}")]
+        public IHttpActionResult GetCustomerByCompany(string company)
+        {            
             try
-            {
-                if (customer == null)
-                {
-                    return BadRequest("At least one search term must be entered (First Name, Last Name, Company Name or Address1/Care of)");
-                }
-
-                string firstname = customer.FIRST_NAME;
-                string lastname = customer.LAST_NAME;
-                string company = customer.COMPANY_LONG_NAME;
-                string address1 = customer.ADDRESS1;
-
-                if (firstname == null && lastname == null && company == null && address1 == null)
-                {
-                    return BadRequest("At least one search term must be entered (First Name, Last Name, Company Name or Address1/Care of)");
-                }
-
-                var searchString = String.Format("FirstName={0} LastName={1} Company={2} Address1={3}", firstname, lastname, company, address1);
-
-                var customerList = V_AWS_CUSTOMER_LONG_NAME.GetList(
-                 c =>
-                     ((company != null && c.COMPANY_LONG_NAME.ToLower().Contains(company.ToLower())) || company == null) &&
-                     ((firstname != null && c.FIRST_NAME.ToLower().Contains(firstname.ToLower())) || firstname == null) &&
-                     ((lastname != null && c.LAST_NAME.ToLower().Contains(lastname.ToLower())) || lastname == null) &&
-                     ((address1 != null && c.ADDRESS1.ToLower().Contains(address1.ToLower())) || address1 == null)
-                     ).Select(s => new
-                     {
-                         companyRank = company != null && s.COMPANY_LONG_NAME != null ? s.COMPANY_LONG_NAME.ToLower() == company.ToLower() ? "   "+s.COMPANY_LONG_NAME.ToLower() : s.COMPANY_LONG_NAME.ToLower().StartsWith(company.ToLower()) ? "  "+s.COMPANY_LONG_NAME.ToLower() : s.COMPANY_LONG_NAME.ToLower() : null,
-                         firstnameRank = firstname != null && s.FIRST_NAME != null ? s.FIRST_NAME.ToLower() == firstname.ToLower() ? "   "+ s.FIRST_NAME.ToLower() : s.FIRST_NAME.ToLower().StartsWith(firstname.ToLower()) ? "  "+s.FIRST_NAME.ToLower() : s.FIRST_NAME.ToLower() : null,
-                         lastnameRank = lastname != null & s.LAST_NAME != null ? s.LAST_NAME.ToLower() == lastname.ToLower() ? "   "+s.LAST_NAME.ToLower() : s.LAST_NAME.ToLower().StartsWith(lastname.ToLower()) ? "  "+ s.LAST_NAME.ToLower() : s.LAST_NAME.ToLower() : null,
-                         addressRank = address1 != null & s.ADDRESS1 != null ? s.ADDRESS1.ToLower() == address1.ToLower() ? "   "+s.ADDRESS1.ToLower() : s.ADDRESS1.ToLower().StartsWith(address1.ToLower()) ? "  "+s.ADDRESS1.ToLower() : s.ADDRESS1.ToLower() : null,
-                         s
-
-                     })                 
-                     .OrderBy(o => String.Format("{0}{1}{2}{3}",o.companyRank,o.firstnameRank,o.lastnameRank,o.addressRank))
-                     .Select(s => s.s).Take(20);            
-               
-                    if (!(customerList != null && customerList.Count() > 0))
-                    {
-                        return Ok("No results were found for " + searchString);
-
-                    }
-
-                    var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x));
-                    return Ok(custWrfViewModelList);
+            {                 
+                var customerList = V_AWS_CUSTOMER_LONG_NAME.GetList(co => co.COMPANY_LONG_NAME.Contains(company.ToUpper()));
+                var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x));
+                return Ok(custWrfViewModelList);
                
             }
             catch //(Exception exception)
@@ -424,12 +384,12 @@ namespace HydrosApi.Controllers
             }
         }
 
-
-        [HttpPost, Route("aws/customer/{custType}/{wrf}")]
-        public IHttpActionResult CreateCustomer(string custType, int wrf, [FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
+        [HttpPost, Route("aws/customer/{wrf}")]
+        [Authorize]
+        public IHttpActionResult CreateCustomer(int wrf, [FromBody] Aws_customer_wrf_ViewModel customer)
         {
             try
-            {
+            {                
                 using (var context = new OracleContext())
                 {
                     //check for required properties
@@ -437,27 +397,21 @@ namespace HydrosApi.Controllers
                     {
                         return BadRequest();
                     }
-
-                    var rgrCustomer = new CUSTOMER(customer, User.Identity.Name.Replace("@azwater.gov", ""));
-                    rgrCustomer.COMPANY = rgrCustomer.COMPANY.Substring(0, 59);
+                    customer.Customer.BAD_ADDRESS_FLAG = customer.Customer.BAD_ADDRESS_FLAG == "false" ? "N" : "Y";
+                    var rgrCustomer = new CUSTOMER(customer.Customer, User.Identity.Name.Replace("AZWATER0\\", ""));
                     context.CUSTOMER.Add(rgrCustomer);
                     context.SaveChanges();//need to save and get rgr.customer ID back from DB sequence to use in wrf_cust
+                    customer.Customer.CUST_ID = rgrCustomer.ID;
 
-                    var wrfCust = new WRF_CUST();
-                    wrfCust.CUST_ID = rgrCustomer.ID;
-                    wrfCust.WRF_ID = wrf;
-                    wrfCust.CCT_CODE = custType;
-                    wrfCust.LINE_NUM = 1;//one is the default set in the procedure AWS.SP_AW_INS_WRF_CUST. this property was used to order the addresses on the front end (Delphi)
-                    wrfCust.IS_ACTIVE = "Y";
-                    wrfCust.PRIMARY_MAILING_ADDRESS = "N";
-                    context.WRF_CUST.Add(wrfCust);
+                    foreach(var waterright in customer.Waterrights)
+                    {
+                        waterright.WRF_ID = wrf;
+                        waterright.CUST_ID = rgrCustomer.ID;
+                        context.WRF_CUST.Add(waterright);
+                    }
                     context.SaveChanges();
 
-                    //return customer wrf viewmodel to match other customer endpoints
-                    customer.CUST_ID = rgrCustomer.ID;
-                    var custwrfVM = new Aws_customer_wrf_ViewModel(customer, wrfCust);
-
-                    return Ok(custwrfVM);
+                    return Ok(customer);
                 }
             }
             catch (Exception exception)
@@ -503,7 +457,8 @@ namespace HydrosApi.Controllers
         [HttpGet, Route("aws/customer/types/")]
         public IHttpActionResult GetCustomerTypeCodes()
         {
-            var codes = CD_CUST_TYPE.GetList(x => AwsCodes.Contains(x.CODE));
+            var custCodeList = AwsCustomerCodes.Select(item => item.Key).ToList();
+            var codes = CD_CUST_TYPE.GetList(x => custCodeList.Contains(x.CODE));
             return Ok(codes);
         }
     }
