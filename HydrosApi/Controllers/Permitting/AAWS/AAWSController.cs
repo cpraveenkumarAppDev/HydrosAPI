@@ -552,9 +552,8 @@ namespace HydrosApi.Controllers
                     var rightProps = typeof(WRF_CUST).GetProperties().ToList();
                     foreach(var waterRight in customer.Waterrights)
                     {
-                        waterRight.UPDATEBY = userName;
-                        waterRight.UPDATEDT = DateTime.Now;
                         var wrf_cust = WRF_CUST.Get(x => x.CUST_ID == waterRight.CUST_ID && x.WRF_ID == waterRight.WRF_ID && x.CCT_CODE == waterRight.CCT_CODE, context);
+                        bool changesOccurred = false;
                         foreach(var prop in rightProps)
                         {
                             var tempValue = prop.GetValue(waterRight);
@@ -562,13 +561,24 @@ namespace HydrosApi.Controllers
                             if (tempValue != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null) && tempValue != incomingValue)
                             {
                                 if(prop.Name != "WRF_ID" && prop.Name != "CUST_ID" && prop.Name != "CCT_CODE")
+                                {
                                     prop.SetValue(wrf_cust, tempValue);
+                                    changesOccurred = true;
+                                }
                             }
+                        }
+                        if (changesOccurred)
+                        {
+                            waterRight.UPDATEBY = userName;
+                            waterRight.UPDATEDT = DateTime.Now;
                         }
                     }                    
 
                     context.SaveChanges();
-
+                    var rgrCustomer = context.CUSTOMER.Where(x => x.ID == foundUser.CUST_ID).FirstOrDefault();
+                    rgrCustomer.UPDATEBY = userName;
+                    rgrCustomer.UPDATEDT = DateTime.Now;
+                    context.SaveChanges();
                     return Ok(customer);
                 }
             }
@@ -584,7 +594,8 @@ namespace HydrosApi.Controllers
         {
             try
             {
-                using(var context = new OracleContext())
+                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
+                using (var context = new OracleContext())
                 {
                     foreach (var wrfcust in wrfcustList)
                     {
@@ -597,6 +608,8 @@ namespace HydrosApi.Controllers
                         }
                         if (count > -1)
                         {
+                            wrfcust.CREATEBY = userName;
+                            wrfcust.CREATEDT = DateTime.Now;
                             context.WRF_CUST.Add(wrfcust);
                         }
                         else
