@@ -2,6 +2,7 @@
 using HydrosApi.Models.ADWR;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 
@@ -25,7 +26,7 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
                 var commentTypes = CD_AW_COMMENT_TYPE.Get(p => p.CODE == comments.CACM_CODE);
                 var commentObj = new AWS_CommentsVM();
                 commentObj.WrfId = comments.WRF_ID;
-                commentObj.Date = comments.CMT_DT_TIME.ToString("M/d/yyyy");
+                commentObj.Date = comments.CMT_DT_TIME.ToString("g",DateTimeFormatInfo.InvariantInfo);
                 commentObj.Code = commentTypes.CODE;
                 commentObj.Description = commentTypes.DESCR;
                 commentObj.FileManager = user.FIRST_NAME + " " + user.LAST_NAME;
