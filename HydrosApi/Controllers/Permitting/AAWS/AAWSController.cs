@@ -15,6 +15,8 @@ namespace HydrosApi.Controllers
     using HydrosApi.Models.ADWR;
     using Oracle.ManagedDataAccess.Client;
     using System.Data.Entity.Infrastructure;
+    using System.Net.Http;
+    using System.Net;
 
     public class AAWSController : ApiController
     {
@@ -420,7 +422,7 @@ namespace HydrosApi.Controllers
         /// Order by the ranking of the found results
         /// </remarks>
 
-        [HttpGet, Route("aws/customerbyany/")]
+        [HttpPost, Route("aws/customerbyany/")]
         public IHttpActionResult GetCustomerByAny([FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
         {            
             try
@@ -544,23 +546,23 @@ namespace HydrosApi.Controllers
                         //if the Type is a valueType then make the default object and compare, otherwise it's a ref type and is compared to null
                         if (tempVal != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null))
                         {
-                            if(prop.Name != "CUST_ID" && prop.Name != "CCT_CODE")//can't update the DB Key
+                            if (prop.Name != "CUST_ID" && prop.Name != "CCT_CODE")//can't update the DB Key
                                 prop.SetValue(foundUser, tempVal);
                         }
                     }
 
                     var rightProps = typeof(WRF_CUST).GetProperties().ToList();
-                    foreach(var waterRight in customer.Waterrights)
+                    foreach (var waterRight in customer.Waterrights)
                     {
                         var wrf_cust = WRF_CUST.Get(x => x.CUST_ID == waterRight.CUST_ID && x.WRF_ID == waterRight.WRF_ID && x.CCT_CODE == waterRight.CCT_CODE, context);
                         bool changesOccurred = false;
-                        foreach(var prop in rightProps)
+                        foreach (var prop in rightProps)
                         {
                             var tempValue = prop.GetValue(waterRight);
                             var incomingValue = prop.GetValue(wrf_cust);
                             if (tempValue != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null) && tempValue != incomingValue)
                             {
-                                if(prop.Name != "WRF_ID" && prop.Name != "CUST_ID" && prop.Name != "CCT_CODE")
+                                if (prop.Name != "WRF_ID" && prop.Name != "CUST_ID" && prop.Name != "CCT_CODE")
                                 {
                                     prop.SetValue(wrf_cust, tempValue);
                                     changesOccurred = true;
@@ -572,7 +574,7 @@ namespace HydrosApi.Controllers
                             waterRight.UPDATEBY = userName;
                             waterRight.UPDATEDT = DateTime.Now;
                         }
-                    }                    
+                    }
 
                     context.SaveChanges();
                     var rgrCustomer = context.CUSTOMER.Where(x => x.ID == foundUser.CUST_ID).FirstOrDefault();
@@ -585,7 +587,7 @@ namespace HydrosApi.Controllers
             catch (Exception exception)
             {
                 //log error
-                return InternalServerError();
+               throw new Exception(exception.Message);
             }
         }
 
