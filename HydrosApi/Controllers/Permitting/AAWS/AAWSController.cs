@@ -19,6 +19,7 @@ namespace HydrosApi.Controllers
     public class AAWSController : ApiController
     {
         //subset approved by aaws team
+
         private readonly Dictionary<string, string> AwsCustomerCodes = new Dictionary<string, string> { { "AS", "ASSIGNEE" }, { "BY", "BUYER" }, { "C", "CONTACT PARTY" }, { "CH", "CERTIFICATE HOLDER" }, { "CN", "CONSULTANT" }, { "MR", "MUNICIPAL REPRESENTATIVE" }, { "O", "OWNER" }, { "AP", "APPLICANT" } }; 
 
         // GET: AAWS
@@ -53,9 +54,17 @@ namespace HydrosApi.Controllers
             return Json(found);
         }
 
+        /// <summary>
+        /// aws/getAmaCountyBasin/{ama?}
+        /// </summary>
+        /// <param name="ama">ama</param>
+        /// <returns>AMA, County, Basin, Subbasin list in a Hierarchy (in that order)</returns>
+        /// <remarks>
+        /// <para>When an ama is not provided, the entire list of all amas are returned</para>   
+        /// </remarks>
+
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [Route("aws/getAmaCountyBasin/{ama?}")]
-        [HttpGet]
+        [HttpGet,Route("aws/getAmaCountyBasin/{ama?}")]      
         public IHttpActionResult GetAMACountyBasin(string ama=null)
         {
             var infoList = ama == null ? AW_AMA_COUNTY_BASIN_SUBBAS.GetAll() :
@@ -71,8 +80,7 @@ namespace HydrosApi.Controllers
         }
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [Route("aws/getgeneralInfoByPcc/{id}")]
-        [HttpGet]
+        [HttpGet,Route("aws/getgeneralInfoByPcc/{id}")]        
         public IHttpActionResult GetGeneralInfoByPcc(string id)
         {
             //this will format any pcc as long as the pattern is two numbers, six numbers, four numbers in it
@@ -86,11 +94,9 @@ namespace HydrosApi.Controllers
             return Ok(found);
         }
 
-        [Route("aws/getCommentsByWrfId/{id}")]
-        [HttpGet]
+        [HttpGet,Route("aws/getCommentsByWrfId/{id}")]
         public IHttpActionResult GetGeneralInfoByPcc(int id)
         {
-
             //Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
             //var pcc = regex.Replace(id, "$1-$2.$3");
             // var pcc = regex.Replace("~", ".");
@@ -109,11 +115,9 @@ namespace HydrosApi.Controllers
         [HttpGet, Route("aws/diagram/{id}")]
         public IHttpActionResult GetConveyanceDiagram(string id) //New conveyance
         {
-
             Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
             var pcc = regex.Replace(id, "$1-$2.$3");
             return Ok(SP_AW_CONV_DIAGRAM.ConveyanceDiagram(pcc));
-
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
@@ -124,14 +128,12 @@ namespace HydrosApi.Controllers
 
             if(conveyance==null)
             {
-                return Ok(new { message = "A new conveyance was not created" });
-               
+                return Ok(new { message = "A new conveyance was not created" });               
             }
             else if(conveyance.Result.ProcessStatus != null)
             {
                 return Ok(new { message = conveyance.Result.ProcessStatus });               
-            }
-             
+            }             
             return Ok(conveyance);
         }
 
@@ -150,8 +152,7 @@ namespace HydrosApi.Controllers
                 return Ok(new { message = application.Result.ProcessStatus });
             }
 
-            return Ok(application);
-             
+            return Ok(application);             
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
@@ -177,7 +178,6 @@ namespace HydrosApi.Controllers
                         }
                     }
                 }
-
                 await context.SaveChangesAsync();
             }
 
@@ -249,7 +249,6 @@ namespace HydrosApi.Controllers
                 //log exception
                 return InternalServerError();
             }
-            
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
@@ -367,23 +366,40 @@ namespace HydrosApi.Controllers
             }
         }
 
+        /// <summary>
+        /// aws/company/{company} Search for a company (COMPANY_LONG_NAME) field.
+        /// </summary>
+        /// <param name="company">company</param>
+        /// <returns>Returns top 20 results with relevance ranking</returns>
+        /// <remarks>
+        /// <para>Search Ranking Description</para>
+        /// if the search string is equal to the result string, pad result with 3 spaces                       
+        /// otherwise, prepend the formatted index of the search string within the result string   
+        /// </remarks>
+
         [HttpGet, Route("aws/company/{company}")]
         public IHttpActionResult GetCustomerByCompany(string company)
         {            
             try
-            {                 
-                var customerList = V_AWS_CUSTOMER_LONG_NAME.GetList(co => co.COMPANY_LONG_NAME.Contains(company.ToUpper()))
+            {
+                if (company == null)
+                {
+                    return Ok(new { Message = "Please enter a company name" });
+                }
+                var customerList = V_AWS_CUSTOMER_LONG_NAME.GetList(co => co.COMPANY_LONG_NAME.ToLower().Contains(company.ToLower()))
                     .Select(result => new
                     {
-                        companyRank = company != null && result.COMPANY_LONG_NAME != null ? result.COMPANY_LONG_NAME.ToLower() == company.ToLower() 
-                        ? "   " + result.COMPANY_LONG_NAME.ToLower() : result.COMPANY_LONG_NAME.ToLower().StartsWith(company.ToLower())
-                        ? "  " + result.COMPANY_LONG_NAME.ToLower() : result.COMPANY_LONG_NAME.ToLower() : null,                       
+                        companyRank = company != null && result.COMPANY_LONG_NAME != null ? result.COMPANY_LONG_NAME.ToLower() == company.ToLower()                                          
+                        ? new string(' ',3)+result.COMPANY_LONG_NAME.ToLower()
+                        : String.Format("{0:D20}{1}",result.COMPANY_LONG_NAME.ToLower().IndexOf(company.ToLower()),result.COMPANY_LONG_NAME.ToLower()) : null,                          
+
                         result
                     })
                      .OrderBy(o =>o.companyRank)
                      .Select(s => s.result).Take(20);
+
                 var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x));
-                return Ok(custWrfViewModelList);               
+                return Ok(custWrfViewModelList);                     
             }
             catch //(Exception exception)
             {
@@ -392,18 +408,23 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpPost, Route("aws/customerbyany/")]
-        public IHttpActionResult GetCustomerByAny([FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
-        {
-            //search using firstname, lastname, company_long_name and/or address1
-            //or anything if you want to
-            try
-            {
-                if (customer == null)
-                {
-                    return BadRequest("At least one search term must be entered (First Name, Last Name, Company Name or Address1/Care of)");
-                }
+        /// <summary>
+        /// Advanced Search for Company, First Name, Last Name and Address1 fields.
+        /// </summary>
+        /// <param name="customer"> V_AWS_CUSTOMER_LONG_NAME customer (JSON object matching view structure) </param>
+        /// <returns>Returns top 20 results with relevance ranking</returns>
+        /// <remarks>
+        /// <para>Search Ranking Description</para>
+        /// <para>If the search string is equal to the result string, pad result with 3 spaces                       
+        /// otherwise, prepend the formatted index of the search string within the result string</para>
+        /// Order by the ranking of the found results
+        /// </remarks>
 
+        [HttpGet, Route("aws/customerbyany/")]
+        public IHttpActionResult GetCustomerByAny([FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
+        {            
+            try
+            {             
                 string firstname = customer.FIRST_NAME;
                 string lastname = customer.LAST_NAME;
                 string company = customer.COMPANY_LONG_NAME;
@@ -411,38 +432,48 @@ namespace HydrosApi.Controllers
 
                 if (firstname == null && lastname == null && company == null && address1 == null)
                 {
-                    return BadRequest("At least one search term must be entered (First Name, Last Name, Company Name or Address1/Care of)");
+                    return Ok(new { Message = "At least one search term must be entered (First Name, Last Name, Company Name or Address1/Care of" });                    
                 }
 
                 var searchString = String.Format("FirstName={0} LastName={1} Company={2} Address1={3}", firstname, lastname, company, address1);
-
                 var customerList = V_AWS_CUSTOMER_LONG_NAME.GetList(
-                 c =>
-                     ((company != null && c.COMPANY_LONG_NAME.ToLower().Contains(company.ToLower())) || company == null) &&
-                     ((firstname != null && c.FIRST_NAME.ToLower().Contains(firstname.ToLower())) || firstname == null) &&
-                     ((lastname != null && c.LAST_NAME.ToLower().Contains(lastname.ToLower())) || lastname == null) &&
-                     ((address1 != null && c.ADDRESS1.ToLower().Contains(address1.ToLower())) || address1 == null)
-                     ).Select(s => new
-                     {
-                         companyRank = company != null && s.COMPANY_LONG_NAME != null ? s.COMPANY_LONG_NAME.ToLower() == company.ToLower() ? "   " + s.COMPANY_LONG_NAME.ToLower() : s.COMPANY_LONG_NAME.ToLower().StartsWith(company.ToLower()) ? "  " + s.COMPANY_LONG_NAME.ToLower() : s.COMPANY_LONG_NAME.ToLower() : null,
-                         firstnameRank = firstname != null && s.FIRST_NAME != null ? s.FIRST_NAME.ToLower() == firstname.ToLower() ? "   " + s.FIRST_NAME.ToLower() : s.FIRST_NAME.ToLower().StartsWith(firstname.ToLower()) ? "  " + s.FIRST_NAME.ToLower() : s.FIRST_NAME.ToLower() : null,
-                         lastnameRank = lastname != null & s.LAST_NAME != null ? s.LAST_NAME.ToLower() == lastname.ToLower() ? "   " + s.LAST_NAME.ToLower() : s.LAST_NAME.ToLower().StartsWith(lastname.ToLower()) ? "  " + s.LAST_NAME.ToLower() : s.LAST_NAME.ToLower() : null,
-                         addressRank = address1 != null & s.ADDRESS1 != null ? s.ADDRESS1.ToLower() == address1.ToLower() ? "   " + s.ADDRESS1.ToLower() : s.ADDRESS1.ToLower().StartsWith(address1.ToLower()) ? "  " + s.ADDRESS1.ToLower() : s.ADDRESS1.ToLower() : null,
-                         s
+                  c =>
+                      ((company != null && c.COMPANY_LONG_NAME.ToLower().Contains(company.ToLower())) || company == null) &&
+                      ((firstname != null && c.FIRST_NAME.ToLower().Contains(firstname.ToLower())) || firstname == null) &&
+                      ((lastname != null && c.LAST_NAME.ToLower().Contains(lastname.ToLower())) || lastname == null) &&
+                      ((address1 != null && c.ADDRESS1.ToLower().Contains(address1.ToLower())) || address1 == null)
+                      ).Select(result => new
+                      {
+                          companyRank = company != null && result.COMPANY_LONG_NAME != null ?
+                          result.COMPANY_LONG_NAME.ToLower() == company.ToLower() ? new string(' ', 3) + result.COMPANY_LONG_NAME.ToLower()
+                          : String.Format("{0:D20}{1}", result.COMPANY_LONG_NAME.ToLower().IndexOf(company.ToLower()), result.COMPANY_LONG_NAME.ToLower()) : null,
 
-                     })
-                     .OrderBy(o => String.Format("{0}{1}{2}{3}", o.companyRank, o.firstnameRank, o.lastnameRank, o.addressRank))
-                     .Select(s => s.s).Take(20);
+                          firstNameRank = firstname != null && result.FIRST_NAME != null ?
+                          result.FIRST_NAME.ToLower() == firstname.ToLower() ? new string(' ', 3) + result.FIRST_NAME.ToLower()
+                          : String.Format("{0:D20}{1}", result.FIRST_NAME.ToLower().IndexOf(firstname.ToLower()), result.FIRST_NAME.ToLower()) : null,
+
+                          lastNameRank = lastname != null && result.LAST_NAME != null ?
+                          result.LAST_NAME.ToLower() == lastname.ToLower() ? new string(' ', 3) + result.LAST_NAME.ToLower()
+                          : String.Format("{0:D20}{1}", result.LAST_NAME.ToLower().IndexOf(lastname.ToLower()), result.LAST_NAME.ToLower()) : null,
+
+                          addressRank = address1 != null && result.ADDRESS1 != null ?
+                          result.ADDRESS1.ToLower() == address1.ToLower() ? new string(' ', 3) + result.ADDRESS1.ToLower()
+                          : String.Format("{0:D20}{1}", result.ADDRESS1.ToLower().IndexOf(address1.ToLower()), result.ADDRESS1.ToLower()) : null,   
+
+                          result
+                     })                    
+                    .OrderBy(o => o.companyRank)
+                    .ThenBy(o => o.addressRank)
+                    .ThenBy(o => o.firstNameRank)
+                    .ThenBy(o => o.lastNameRank)
+                    .Select(s=>s.result);                    
 
                 if (!(customerList != null && customerList.Count() > 0))
                 {
-                    return Ok("No results were found for " + searchString);
-
+                    return Ok(new { Message = "No results were found for " + searchString });
                 }
-
                 var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x));
                 return Ok(custWrfViewModelList);
-
             }
             catch //(Exception exception)
             {
