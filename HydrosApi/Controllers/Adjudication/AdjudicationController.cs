@@ -124,10 +124,10 @@
         [HttpPost]
         public async Task<IHttpActionResult> AddPod(int podobjectid, string Objtype, int id)
         {
+            var adwrpod = POINT_OF_DIVERSION_VIEW.Get(p => p.OBJECTID == podobjectid);
             if (Objtype == "PWR")
             {
-                var pwrPodList = await Task.FromResult(PWR_POD.GetList(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == id));
-                var adwrpod = POINT_OF_DIVERSION_VIEW.Get(p => p.OBJECTID == podobjectid);
+                var pwrPodList = await Task.FromResult(PWR_POD.GetList(p => (p.POD_ID ?? -1) == adwrpod.ID && (p.PWR_ID ?? -1) == id));
                 if (pwrPodList != null && pwrPodList.Count() > 0)
                 {
                     return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
@@ -163,7 +163,7 @@
                 {
                     CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
                     CREATEDT = DateTime.Now,
-                    POD_ID = podobjectid,
+                    POD_ID = adwrpod.ID,
                     WFR_ID = id
                 });
                 return Ok(newWfrPod);
@@ -189,7 +189,7 @@
                     pod.POD_ID = adwrpod.ID;
                     WFR_POD.Update(pod);
                 }
-                else if(useage == "POD" && adwrpod == null)
+                else if (useage == "POD" && adwrpod == null)
                 {
                     return Ok("No POD found in ADWR table");
                 }

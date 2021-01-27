@@ -8,6 +8,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using HydrosApi.Data;
+    using HydrosApi.Models.Adjudication;
 
     [Table("ADJ_INV.WFR_POD")]
 
@@ -36,7 +37,8 @@
         public string DWR_ID {
             get
             {
-                var pod = POINT_OF_DIVERSION.Get(p => p.OBJECTID == this.POD_ID);
+                var PodView = POINT_OF_DIVERSION_VIEW.Get(p => p.ID == this.POD_ID);
+                var pod = POINT_OF_DIVERSION.Get(p => p.OBJECTID == PodView.OBJECTID);
                 if (pod == null)
                 {
                     return null;

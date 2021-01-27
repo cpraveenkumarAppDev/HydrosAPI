@@ -6,8 +6,9 @@
     using System.ComponentModel.DataAnnotations.Schema;    
     using System.Linq;    
     using System.Web.UI.WebControls;
-    using System.Web;    
-   
+    using System.Web;
+    using HydrosApi.Models.Adjudication;
+
     [Table("ADJ.PLACE_OF_USE_VIEW")]
     public partial class PLACE_OF_USE_VIEW :SdeRepository<PLACE_OF_USE_VIEW>
     {
@@ -182,6 +183,7 @@
                 pou.PWR_ID = pwr.ID;
                    
                 pou.ProposedWaterRight = pwr;
+
                 pou.PointOfDiversion = PWR_POD.GetList(p => p.PWR_ID == pwr.ID).Select(p => p.PointOfDiversion).Distinct().ToList();
                 pou.FileList = FILE.GetList(f => f.PWR_ID == pwr.ID);
                 pou.Explanation = EXPLANATIONS.GetList(i => i.PWR_ID == pwr.ID);
