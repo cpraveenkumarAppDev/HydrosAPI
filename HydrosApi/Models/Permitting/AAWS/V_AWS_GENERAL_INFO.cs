@@ -102,11 +102,11 @@
         public string County_Code { get; set; }
         [Column("COUNTY_DESCR")]
         public string County_Descr { get; set; }
-        [NotMapped]
+        [Column("REVIEW_PLAT_MPC")]
         public string Review_Plat_for_MPC { get; set; }
-        [NotMapped]
+        [Column("CHECK_PLAT_RECORDED")]
         public string Check_Plat_Recorded { get; set; }
-        [NotMapped]
+        [Column("VERIFY_WTR_PROVIDER_LTR_REC")]
         public string Verify_Water_Provider_Letter_Received { get; set; }
 
         //[NotMapped]
