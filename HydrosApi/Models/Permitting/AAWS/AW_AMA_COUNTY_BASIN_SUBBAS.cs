@@ -15,20 +15,28 @@ namespace HydrosApi.Models.Permitting.AAWS
         [Key]
         [Column("ID")]
         public int ID { get; set; }
-
-        [Column("AMA")]
+       
         public string AMA { get; set; }
+        
+        public string CAMA_CODE { get; set; }
+
+        public string AMA_INA_TYPE { get; set; }
 
         [Column("COUNTY")]
-        public string COUNTY { get; set; }
+        public string County_Descr { get; set; }
 
-        [Column("BASIN_ABBR")]
+        [Column("COUNTY_CODE")]
+        public string County_Code { get; set; }
+
+
         public string BASIN_ABBR { get; set; }
-        [Column("BASIN_NAME")]
+         
         public string BASIN_NAME { get; set; }
+      
+        
         [Column("SUBBASIN_ABBR")]
-        public string SUBBASIN_ABBR { get; set; }
-        [Column("SUBBASIN_NAME")]
+        public string SubbasinCode { get; set; }
+
         public string SUBBASIN_NAME { get; set; }       
       
     }

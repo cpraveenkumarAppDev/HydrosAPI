@@ -21,7 +21,7 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         /// Use when creating a new customer and wrf_cust relation, no wrf lookup as new customers own't have any
         /// </summary>
         /// <param name="customer"></param>
-        /// <param name="wrfCust"></param>
+        /// <param name="wrfCustList"></param>
         public Aws_customer_wrf_ViewModel(V_AWS_CUSTOMER_LONG_NAME customer, List<WRF_CUST> wrfCustList)
         {
             this.Customer = customer;
