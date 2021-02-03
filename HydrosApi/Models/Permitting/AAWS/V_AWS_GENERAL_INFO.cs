@@ -102,6 +102,12 @@
         public string County_Code { get; set; }
         [Column("COUNTY_DESCR")]
         public string County_Descr { get; set; }
+        [Column("REVIEW_PLAT_MPC")]
+        public string Review_Plat_for_MPC { get; set; }
+        [Column("CHECK_PLAT_RECORDED")]
+        public string Check_Plat_Recorded { get; set; }
+        [Column("VERIFY_WTR_PROVIDER_LTR_REC")]
+        public string Verify_Water_Provider_Letter_Received { get; set; }
 
         //[NotMapped]
         //public Dictionary<string,bool> Overview { get; set; } //add or remove 
@@ -244,6 +250,9 @@
             setCriteria.Add("Water_Quality", generalInfo.Water_Quality == "Y" ? true : false);
             setCriteria.Add("Financial_Capability", generalInfo.Financial_Capability == "Y" ? true : false);
             setCriteria.Add("Demand_Calculator", generalInfo.Demand_Calculator == "Y" ? true : false);
+            setCriteria.Add("Review_Plat_for_MPC", generalInfo.Demand_Calculator == "Y" ? true : false);
+            setCriteria.Add("Check_Plat_Recorded", generalInfo.Demand_Calculator == "Y" ? true : false);
+            setCriteria.Add("Verify_Water_Provider_Letter_Received", generalInfo.Demand_Calculator == "Y" ? true : false);
             //generalInfo.Overview = setCriteria;
 
             generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? V_AWS_PROVIDER.Get(p => p.PROVIDER_WRF_ID == generalInfo.PrimaryProviderWrfId).PWS_ID_Number : null;
