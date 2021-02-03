@@ -74,23 +74,13 @@ namespace HydrosApi.Controllers
             var infoList = ama == null ? AW_AMA_COUNTY_BASIN_SUBBAS.GetAll() :
                 AW_AMA_COUNTY_BASIN_SUBBAS.GetList(a => a.AMA.ToUpper() == ama.ToUpper());
 
-            /* return Ok(infoList.GroupBy(g=> new {g.AMA, g.CAMA_CODE, g.AMA_INA_TYPE})
-                .Select(a => new { a.Key.AMA, a.Key.CAMA_CODE, a.Key.AMA_INA_TYPE, AMAInfo = a.GroupBy(g => g.COUNTY) 
-                .Select(c => new { County = c.Key, SubbasinsInCounty=c.Count(), Basin = c.GroupBy(g => new { g.BASIN_ABBR, g.BASIN_NAME })
-                .Select(i => new { BasinAbbr = i.Key.BASIN_ABBR, BasinName = i.Key.BASIN_NAME
-                     , Subbasin = i.Select(s => new { SubbasinAbbr=s.SUBBASIN_ABBR, SubbasinName=s.SUBBASIN_NAME }).Distinct() 
-                })}).Distinct()
-                    }).OrderBy(o=>o.AMA != "OUTSIDE OF AMA OR INA" ? "_"+o.AMA : o.AMA).ToList());*/
-
             return Ok(infoList.GroupBy(g=> new {g.AMA, g.CAMA_CODE, g.AMA_INA_TYPE})
               .Select(a => new { a.Key.AMA, a.Key.CAMA_CODE, a.Key.AMA_INA_TYPE, AMAInfo = a.GroupBy(g => new { g.County_Descr, g.County_Code }) 
               .Select(c => new {c.Key.County_Descr, c.Key.County_Code, Subbasin = c
               .Select(i => new { BasinAbbr = i.BASIN_ABBR, BasinName = i.BASIN_NAME,SubbasinCode=i.SubbasinCode, SubbasinName=i.SUBBASIN_NAME
                    
               }).OrderBy(o=>o.SubbasinName)}).Distinct().OrderBy(o=>o.County_Descr)
-                  }).OrderBy(o=>o.AMA != "OUTSIDE OF AMA OR INA" ? "_"+o.AMA : o.AMA).ToList());
-
-           
+                  }).OrderBy(o=>o.AMA != "OUTSIDE OF AMA OR INA" ? "_"+o.AMA : o.AMA).ToList());           
         }
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
