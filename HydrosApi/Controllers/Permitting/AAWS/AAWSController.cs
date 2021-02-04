@@ -424,7 +424,7 @@ namespace HydrosApi.Controllers
         /// Order by the ranking of the found results
         /// </remarks>
 
-        [HttpGet, Route("aws/customerbyany/")]
+        [HttpPost, Route("aws/customerbyany/")]
         public IHttpActionResult GetCustomerByAny([FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
         {            
             try
@@ -589,7 +589,7 @@ namespace HydrosApi.Controllers
             catch (Exception exception)
             {
                 //log error
-               throw new Exception(exception.Message);
+                return InternalServerError(exception);
             }
         }
 
