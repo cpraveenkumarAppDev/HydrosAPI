@@ -94,7 +94,7 @@
 
                 if(requestType=="conveyance")
                 {
-                    command = "BEGIN aws.aw_spkg_hydros_insert.ins_conv(:p_program_code, :p_ama_code, :p_exist_filenum, :p_file_reviewer, :p_createby, :p_new_filenum, :p_new_wrf_id); end;";
+                    command = "BEGIN aws.aw_spkg_hydros_insert.ins_conv(:p_program_code, :p_ama_code, :p_exist_filenum, :p_file_reviewer, :p_createby, :p_filename, :p_new_filenum, :p_new_wrf_id); end;";
                 }
                 else if(requestType=="newApplication")
                 {
