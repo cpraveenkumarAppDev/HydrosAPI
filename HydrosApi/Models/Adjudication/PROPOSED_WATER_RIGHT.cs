@@ -36,7 +36,7 @@ namespace HydrosApi.Models
 
         public DateTime? UPDATEDT { get; set; }
 
-      [StringLength(50)]
+        [StringLength(50)]
         public string POU_ID { get; set; }
        
         [NotMapped]
@@ -55,6 +55,10 @@ namespace HydrosApi.Models
             return PROPOSED_WATER_RIGHT.Get(p => p.ID == id);             
         }
 
+        //public static <List>PROPOSED_WATER_RIGHT WaterRight(string DWR_ID)
+        //{
+        //    var pwrs = 
+        //}
         /* 
        [StringLength(255)]
        public string WATER_STRUCTURE_FAC_TYPE { get; set; }

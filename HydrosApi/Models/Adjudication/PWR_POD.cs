@@ -34,23 +34,61 @@ namespace HydrosApi.Models
         [NotMapped]
         public virtual PROPOSED_WATER_RIGHT PROPOSED_WATER_RIGHT { get; set; }
 
+        //[NotMapped]
+        //public virtual POINT_OF_DIVERSION PointOfDiversion
+        //{
+        //    get
+        //    {
+        //        var PodView = POINT_OF_DIVERSION_VIEW.Get(p => p.ID == this.POD_ID);
+        //        var pod = POINT_OF_DIVERSION.Get(p => p.OBJECTID == PodView.OBJECTID);
+        //        if(pod == null)
+        //        {
+        //            return null;
+        //        }
+        //        else
+        //        {
+        //            pod.PWR_POD_ID = this.ID;
+        //            pod.PWR_ID = this.PWR_ID;
+        //            return pod;
+        //        }            
+        //    }
+
+        //    set
+        //    {
+        //        this.PointOfDiversion = value;
+        //    }
+
+        //}
         [NotMapped]
-        public virtual POINT_OF_DIVERSION PointOfDiversion
+        public AISPODS PointOfDiversion
         {
             get
             {
                 var PodView = POINT_OF_DIVERSION_VIEW.Get(p => p.ID == this.POD_ID);
                 var pod = POINT_OF_DIVERSION.Get(p => p.OBJECTID == PodView.OBJECTID);
-                if(pod == null)
+                if (pod == null)
                 {
-                    return null;
+                    return new AISPODS { };
                 }
                 else
                 {
-                    pod.PWR_POD_ID = this.ID;
-                    pod.PWR_ID = this.PWR_ID;
-                    return pod;
-                }            
+                    var newPOD = new AISPODS
+                    {
+                        DWR_ID = pod.DWR_ID,
+                        TYPE = pod.Type,
+                        SEQ = pod.POD_SEQ,
+                        NAME = pod.Name,
+                        SHARED = pod.SHARED_POD,
+                        SOC = pod.SOC,
+                        BOC = pod.BOC,
+                        LAND_OWNER = pod.LAND_OWNER,
+                        ID = this.ID,
+                        //PARENT_ID = this.PWR_ID,
+                        POD_ID = this.POD_ID
+                    };
+
+                    return newPOD;
+                }
             }
 
             set
@@ -59,7 +97,6 @@ namespace HydrosApi.Models
             }
 
         }
-
         /*public static List<PWR_POD> ProposedWaterRightToPoint(int podobjectid, int pwrId) //gets (what should be single) record for the specified pwr/pod
         {
             return PWR_POD.GetList(p => (p.POD_ID ?? -1) == podobjectid && (p.PWR_ID ?? -1) == pwrId);

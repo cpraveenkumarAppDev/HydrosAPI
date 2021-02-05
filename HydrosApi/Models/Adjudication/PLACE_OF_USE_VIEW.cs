@@ -103,7 +103,7 @@
         public PROPOSED_WATER_RIGHT ProposedWaterRight { get; set; }
 
         [NotMapped]
-        public List<POINT_OF_DIVERSION> PointOfDiversion { get; set;}
+        public List<AISPODS> PointOfDiversion { get; set;}
 
         [NotMapped]
         public List<SOC_AIS_VIEW> StatementOfClaim{get; set;}        

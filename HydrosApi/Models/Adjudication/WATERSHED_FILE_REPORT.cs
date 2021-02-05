@@ -7,6 +7,7 @@ namespace HydrosApi.Models
     using System.Data.Entity.Spatial;
     using System.Linq;
     using HydrosApi.Data;
+    using HydrosApi.Models.Adjudication;
 
     [Table("ADJ_INV.WATERSHED_FILE_REPORT")]
     public partial class WATERSHED_FILE_REPORT : AdwrRepository<WATERSHED_FILE_REPORT>
@@ -34,7 +35,7 @@ namespace HydrosApi.Models
         [NotMapped]
         public List<FILE> FileList { get; set; }
         [NotMapped]
-        public List<WFR_POD> pods { get; set; }
+        public List<AISPODS> pods { get; set; }
         [NotMapped]
         public List<PROPOSED_WATER_RIGHT> ProposedWaterRights { get; set; }
 
@@ -45,7 +46,9 @@ namespace HydrosApi.Models
             wfr.WFR_NUM = wfrSde.WFR_NUM;
             wfr.Explanations = EXPLANATIONS.GetList(p => p.WFR_ID == wfr.ID);
             wfr.FileList = FILE.GetList(p => p.WFR_ID == wfr.ID);
-            wfr.pods = WFR_POD.GetList(p => p.WFR_ID == wfr.ID);
+            //wfr.pods = WFR_POD.GetList(p => p.WFR_ID == wfr.ID);
+            wfr.pods = WFR_POD.GetList(p => p.WFR_ID == wfr.ID).Select(p => p.PointOfDiversion).ToList();
+
             char[] delimiters = new[] { ',', ';'};
             wfr.SOC = wfrSde.SOC == null ? null :
                  (from s in wfrSde.SOC.Split(delimiters)

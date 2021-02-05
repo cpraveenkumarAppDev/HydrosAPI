@@ -166,7 +166,7 @@
                     POD_ID = adwrpod.ID,
                     WFR_ID = id
                 });
-                return Ok(newWfrPod);
+                return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversionWfr(newWfrPod)));
             }
 
         }
