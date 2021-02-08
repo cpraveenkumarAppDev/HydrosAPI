@@ -57,7 +57,7 @@ namespace HydrosApi.Models.Adjudication
                                           select new
                                           {
                                               program = s.IndexOf("-") > -1 ? s.Split('-')[0].Replace(" ", "") : "",
-                                              file_no = (s.IndexOf("-") > -1 ? s.Split('-')[1].Replace(" ", "") : s).Replace(" ", "")
+                                              file_no = (s.IndexOf("-") > -1 ? s.Split('-')[1].Split('.')[0].Replace(" ", "") : s).Replace(" ", "")
                                           })
                                select new
                                {

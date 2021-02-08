@@ -191,7 +191,18 @@
 
             return pod;
         }
-
+        public static POINT_OF_DIVERSION PointOfDiversionWfr(WFR_POD wfrPod)
+        {
+            var objectid = wfrPod.POD_ID ?? -1;
+            var PodView = POINT_OF_DIVERSION_VIEW.Get(p => p.ID == wfrPod.POD_ID);
+            if (objectid > -1)
+            {
+                var pod = POINT_OF_DIVERSION.PointOfDiversion(PodView.OBJECTID);
+                pod.PWR_POD_ID = wfrPod.ID;
+                return pod;
+            }
+            return null;
+        }
         //This is populated at runtime
         ///get the point of diversion with a single Proposed Water Right/and Point of Diversion pair (populates the pwr_pod_id)
         public static POINT_OF_DIVERSION PointOfDiversion(PWR_POD pwrPod) 

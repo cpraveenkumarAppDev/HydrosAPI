@@ -58,31 +58,46 @@
             }
         }
 
-        //[NotMapped]
-        //public virtual POINT_OF_DIVERSION PointOfDiversion
-        //{
-        //    get
-        //    {
-        //        var pod = POINT_OF_DIVERSION.Get(p => p.OBJECTID == this.POD_ID);
-        //        if (pod == null)
-        //        {
-        //            return null;
-        //        }
-        //        else
-        //        {
-        //            //add vars in pod class
-        //            //pod.WFR_POD_ID = this.ID;
-        //            //pod.WFR_ID = this.WFR_ID;
-        //            return pod;
-        //        }
-        //    }
+        [NotMapped]
+        public AISPODS PointOfDiversion
+        {
+            get
+            {
+                var PodView = POINT_OF_DIVERSION_VIEW.Get(p => p.ID == this.POD_ID);
+                var pod = POINT_OF_DIVERSION.Get(p => p.OBJECTID == PodView.OBJECTID);
+                if (pod == null)
+                {
+                    return new AISPODS { };
+                }
+                else
+                {
+                    var newPOD = new AISPODS
+                    {
+                        DWR_ID = pod.DWR_ID,
+                        TYPE = pod.Type,
+                        SEQ = pod.POD_SEQ,
+                        NAME = pod.Name,
+                        SHARED = pod.SHARED_POD,
+                        SOC = pod.SOC,
+                        BOC = pod.BOC,
+                        LAND_OWNER = pod.LAND_OWNER,
+                        ID = this.ID,
+                        //PARENT_ID = this.WFR_ID,
+                        POD_ID = this.POD_ID
+                    };
 
-        //    set
-        //    {
-        //        this.PointOfDiversion = value;
-        //    }
+                    return newPOD;
+                }
+            }
 
-        //}
+            set
+            {
+                this.PointOfDiversion = value;
+            }
+
+        }
 
     }
+
 }
+

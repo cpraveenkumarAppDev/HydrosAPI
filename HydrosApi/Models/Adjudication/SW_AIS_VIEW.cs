@@ -13,37 +13,6 @@ namespace HydrosApi.Models
     [Table("ADWR.SW_AIS_VIEW")]
     public partial class SW_AIS_VIEW:AdwrRepository<SW_AIS_VIEW>
     {
-        [Key]
-        [Column(Order = 0)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long ID { get; set; }
-
-        [StringLength(6)]
-        public string ART_PROGRAM { get; set; }
-
-        public int? ART_APPLI_NO { get; set; }
-
-        public int? ART_CONVY_NO { get; set; }
-
-        [StringLength(40)]
-        public string NAME { get; set; }
-
-        [Key]
-        [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long ART_IDNO { get; set; }
-
-        [StringLength(88)]
-        public string PCC { get; set; }
-
-        [StringLength(6)]
-        public string WS_CODE { get; set; }
-
-        public DateTime? ART_FILE_DATE { get; set; }
-
-        [StringLength(4000)]
-        public string USE { get; set; }
-
         [NotMapped]         
         public List<string> FILE_LINK
         {
@@ -58,6 +27,38 @@ namespace HydrosApi.Models
                 this.FILE_LINK = value;
             }
         }
+
+        [StringLength(40)]
+        public string NAME { get; set; }
+        [StringLength(4000)]
+        public string USE { get; set; }
+        [StringLength(88)]
+        public string PCC { get; set; }
+        public string FILE_STATUS { get; set; }
+        public DateTime? ART_FILE_DATE { get; set; }
+        [Key]
+        [Column(Order = 0)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long ID { get; set; }
+
+        [StringLength(6)]
+        public string ART_PROGRAM { get; set; }
+
+        public int? ART_APPLI_NO { get; set; }
+
+        public int? ART_CONVY_NO { get; set; }
+
+
+        [Key]
+        [Column(Order = 1)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long ART_IDNO { get; set; }
+
+        [StringLength(6)]
+        public string WS_CODE { get; set; }
+
+
+
 
         //this is no longer necessary and can be removed eventually
         public static List<SW_AIS_VIEW> SurfaceWaterView(string swList) //a comma-delimited list
