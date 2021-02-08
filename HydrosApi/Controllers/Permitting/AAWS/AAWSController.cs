@@ -493,6 +493,13 @@ namespace HydrosApi.Controllers
             try
             {
                 string userName = User.Identity.Name.Replace("AZWATER0\\", "");
+                string appendCompanyName="";
+
+                if(customer.Customer.COMPANY_LONG_NAME.Length > 60)
+                {
+                    appendCompanyName = customer.Customer.COMPANY_LONG_NAME.Substring(60);
+                    customer.Customer.COMPANY_LONG_NAME = customer.Customer.COMPANY_LONG_NAME.Substring(0, 60);
+                }
                 using (var context = new OracleContext())
                 {
                     //check for required properties
@@ -520,6 +527,18 @@ namespace HydrosApi.Controllers
                     }
                     context.SaveChanges();
 
+                    if(appendCompanyName != "" && customer.Customer.CUST_ID > 0) //insert long name value into 
+                    {
+                        AW_CUST_LONG_NAME.Add(new AW_CUST_LONG_NAME()
+                        {
+                            CREATEBY = userName,
+                            CREATEDT = rgrCustomer.CREATEDT,
+                            CUST_ID= rgrCustomer.ID,
+                            COMPANY_LONG_NAME=appendCompanyName
+                        });
+                        
+
+                    }
                     return Ok(customer);
                 }
             }
