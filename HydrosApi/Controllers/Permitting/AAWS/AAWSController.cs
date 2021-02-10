@@ -493,54 +493,82 @@ namespace HydrosApi.Controllers
             try
             {
                 string userName = User.Identity.Name.Replace("AZWATER0\\", "");
-                string appendCompanyName="";
+                //get Oracle USER_ID if available
 
-                if(customer.Customer.COMPANY_LONG_NAME.Length > 60)
+                string oracleUserID = AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov", "") == userName).USER_ID;
+
+                userName=oracleUserID ?? userName; //Set to Oracle ID if possible
+                var createDt = DateTime.Now;              
+
+                string appendCompanyName="";                
+
+                if(customer.Customer== null || customer.Waterrights==null)
+                {
+                    return BadRequest("Mandatory information for customer was not provided.");
+                }                
+                
+                customer.Waterrights.Select(w => { 
+                    w.WRF_ID = wrf;                  
+                    return w;                 
+                }).ToList();
+
+                var existingCustomers = WRF_CUST.GetList(l => l.WRF_ID == wrf);
+
+                if (customer.Customer != null && customer.Customer.COMPANY_LONG_NAME.Length > 60)
                 {
                     appendCompanyName = customer.Customer.COMPANY_LONG_NAME.Substring(60);
                     customer.Customer.COMPANY_LONG_NAME = customer.Customer.COMPANY_LONG_NAME.Substring(0, 60);
                 }
+              
                 using (var context = new OracleContext())
                 {
                     //check for required properties
                     if (!customer.IsValid())
                     {
-                        return BadRequest();
+                        return BadRequest(String.Format("THE CUSTOMER WAS NOT CREATED BECAUSE THE FOLLOWING INFORMAION IS MISSING: {0}",customer.IsValidMsg()));
                     }
+                    
                     customer.Customer.BAD_ADDRESS_FLAG = customer.Customer.BAD_ADDRESS_FLAG == "false" ? "N" : "Y";
                     var rgrCustomer = new CUSTOMER(customer.Customer, userName);
-                    rgrCustomer.CREATEBY = User.Identity.Name.Replace("AZWATER0\\", "");
-                    rgrCustomer.CREATEDT = DateTime.Now;
+                    rgrCustomer.CREATEBY = userName;
+                    rgrCustomer.CREATEDT = createDt;
                     context.CUSTOMER.Add(rgrCustomer);
                     context.SaveChanges();//need to save and get rgr.customer ID back from DB sequence to use in wrf_cust
-                    customer.Customer.CUST_ID = rgrCustomer.ID;
+                    
+                    var customerID= rgrCustomer.ID;
 
-                    foreach(var waterright in customer.Waterrights)
-                    {
-                        waterright.WRF_ID = wrf;
-                        waterright.CUST_ID = rgrCustomer.ID;
-                        waterright.LINE_NUM = 1;
-                        waterright.CREATEBY = userName;
-                        waterright.CREATEDT = DateTime.Now;
-                        waterright.IS_ACTIVE = "Y";
-                        context.WRF_CUST.Add(waterright);
-                    }
+                    var waterRights = customer.Waterrights.Select(w =>                    {
+                        w.CUST_ID = customerID;                       
+                        w.PRIMARY_MAILING_ADDRESS = w.PRIMARY_MAILING_ADDRESS ?? "Y";
+                        w.IS_ACTIVE = w.IS_ACTIVE ?? "Y";
+                        w.LINE_NUM =(from f in existingCustomers
+                                    where f.PRIMARY_MAILING_ADDRESS == w.PRIMARY_MAILING_ADDRESS && f.CCT_CODE == w.CCT_CODE
+                                    select f).Max(l => (int?)l.LINE_NUM ?? 0) + 1;
+                        w.CREATEBY = userName;
+                        w.CREATEDT = createDt;
+                        return w;
+                    });
+
+                    context.WRF_CUST.AddRange(waterRights);
                     context.SaveChanges();
-
-                    if(appendCompanyName != "" && customer.Customer.CUST_ID > 0) //insert long name value into 
-                    {
-                        AW_CUST_LONG_NAME.Add(new AW_CUST_LONG_NAME()
+                  
+                    if (appendCompanyName != "" && customerID > 0) //insert long name value into 
+                    {  
+                        var customerLongName = new AW_CUST_LONG_NAME()
                         {
+                            CUST_ID = customerID,
+                            COMPANY_LONG_NAME = appendCompanyName,
                             CREATEBY = userName,
-                            CREATEDT = rgrCustomer.CREATEDT,
-                            CUST_ID= rgrCustomer.ID,
-                            COMPANY_LONG_NAME=appendCompanyName
-                        });
-                        
-
+                            CREATEDT = createDt,
+                            UPDATEBY=userName,
+                            UPDATEDT=createDt
+                        };
+                    context.AW_CUST_LONG_NAME.Add(customerLongName);
+                    context.SaveChanges();
+                  
                     }
                     return Ok(customer);
-                }
+               }
             }
             catch (Exception exception)
             {

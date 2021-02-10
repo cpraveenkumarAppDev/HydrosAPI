@@ -101,9 +101,17 @@ using System.Data.Entity.Infrastructure;
             }
         }
 
-        public static void Add(T entity, OracleContext databaseContext)
+        public static List<T> AddAll(List<T> entity, OracleContext databaseContext)
+        {            
+            databaseContext.Set<T>().AddRange(entity);
+            databaseContext.SaveChanges();
+            return entity;
+        }
+
+        public static T Add(T entity, OracleContext databaseContext)
         {
             databaseContext.Set<T>().Add(entity);
+            return entity;
         }
 
         public static void Remove(T entity, OracleContext databaseContext)
