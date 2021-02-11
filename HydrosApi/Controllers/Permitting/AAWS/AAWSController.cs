@@ -313,62 +313,7 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpGet, Route("aws/customer/{wrf}/{custType?}")]
-        public IHttpActionResult GetCustomerByWrf(int wrf, string custType = null)
-        {
-            try
-            {
-                var custIdList = WRF_CUST.GetList(x => x.WRF_ID == wrf).Select(x => x.CUST_ID).ToList().Distinct();
-                List<Aws_customer_wrf_ViewModel> customerList = new List<Aws_customer_wrf_ViewModel>();
-                foreach(var custId in custIdList)
-                {
-                    customerList.Add(new Aws_customer_wrf_ViewModel(custId, wrf, custType));
-                }
-                return Ok(customerList);
-            }
-            catch (Exception exception)
-            {
-                //log error
-                return InternalServerError();
-            }
-        }
-
-        [HttpGet, Route("aws/customer/")]
-        public IHttpActionResult GetCustomerByName(string firstName = null, string lastName = null)
-        {
-            try
-            {
-                using (var context = new OracleContext())
-                {
-                    var customerList = new List<V_AWS_CUSTOMER_LONG_NAME>();
-                    if (firstName != null)
-                    {
-                        var query = context.V_AWS_CUSTOMER_LONG_NAME.Where(x => x.FIRST_NAME.ToLower().Contains(firstName.ToLower()));
-                        if (lastName != null)
-                        {
-                            customerList = query.Where(x => x.LAST_NAME.ToLower().Contains(lastName.ToLower())).ToList();
-                        }
-                        else
-                        {
-                            customerList = query.ToList();
-                        }
-                    }
-                    else if (lastName != null)
-                    {
-                        customerList = context.V_AWS_CUSTOMER_LONG_NAME.Where(x => x.LAST_NAME.ToLower().Contains(lastName.ToLower())).ToList();
-                    }
-
-                    var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x));
-
-                    return Ok(custWrfViewModelList);
-                }
-            }
-            catch (Exception exception)
-            {
-                //log error
-                return InternalServerError();
-            }
-        }
+        
 
         /// <summary>
         /// aws/company/{company} Search for a company (COMPANY_LONG_NAME) field.
@@ -486,89 +431,18 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpPost, Route("aws/customer/{wrf}")]
-        [Authorize]
-        public IHttpActionResult CreateCustomer(int wrf, [FromBody] Aws_customer_wrf_ViewModel customer)
+        [HttpGet, Route("aws/customer/{wrf}/{custType?}")]
+        public IHttpActionResult GetCustomerByWrf(int wrf, string custType = null)
         {
             try
             {
-                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
-                //get Oracle USER_ID if available
-
-                string oracleUserID = AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov", "") == userName).USER_ID;
-
-                userName=oracleUserID ?? userName; //Set to Oracle ID if possible
-                var createDt = DateTime.Now;              
-
-                string appendCompanyName="";                
-
-                if(customer.Customer== null || customer.Waterrights==null)
+                var custIdList = WRF_CUST.GetList(x => x.WRF_ID == wrf).Select(x => x.CUST_ID).ToList().Distinct();
+                List<Aws_customer_wrf_ViewModel> customerList = new List<Aws_customer_wrf_ViewModel>();
+                foreach (var custId in custIdList)
                 {
-                    return BadRequest("Mandatory information for customer was not provided.");
-                }                
-                
-                customer.Waterrights.Select(w => { 
-                    w.WRF_ID = wrf;                  
-                    return w;                 
-                }).ToList();
-
-                var existingCustomers = WRF_CUST.GetList(l => l.WRF_ID == wrf);
-
-                if (customer.Customer != null && customer.Customer.COMPANY_LONG_NAME.Length > 60)
-                {
-                    appendCompanyName = customer.Customer.COMPANY_LONG_NAME.Substring(60);
-                    customer.Customer.COMPANY_LONG_NAME = customer.Customer.COMPANY_LONG_NAME.Substring(0, 60);
+                    customerList.Add(new Aws_customer_wrf_ViewModel(custId, wrf, custType));
                 }
-              
-                using (var context = new OracleContext())
-                {
-                    //check for required properties
-                    if (!customer.IsValid())
-                    {
-                        return BadRequest(String.Format("THE CUSTOMER WAS NOT CREATED BECAUSE THE FOLLOWING INFORMAION IS MISSING: {0}",customer.IsValidMsg()));
-                    }
-                    
-                    customer.Customer.BAD_ADDRESS_FLAG = customer.Customer.BAD_ADDRESS_FLAG == "false" ? "N" : "Y";
-                    var rgrCustomer = new CUSTOMER(customer.Customer, userName);
-                    rgrCustomer.CREATEBY = userName;
-                    rgrCustomer.CREATEDT = createDt;
-                    context.CUSTOMER.Add(rgrCustomer);
-                    context.SaveChanges();//need to save and get rgr.customer ID back from DB sequence to use in wrf_cust
-                    
-                    var customerID= rgrCustomer.ID;
-
-                    var waterRights = customer.Waterrights.Select(w =>                    {
-                        w.CUST_ID = customerID;                       
-                        w.PRIMARY_MAILING_ADDRESS = w.PRIMARY_MAILING_ADDRESS ?? "Y";
-                        w.IS_ACTIVE = w.IS_ACTIVE ?? "Y";
-                        w.LINE_NUM =(from f in existingCustomers
-                                    where f.PRIMARY_MAILING_ADDRESS == w.PRIMARY_MAILING_ADDRESS && f.CCT_CODE == w.CCT_CODE
-                                    select f).Max(l => (int?)l.LINE_NUM ?? 0) + 1;
-                        w.CREATEBY = userName;
-                        w.CREATEDT = createDt;
-                        return w;
-                    });
-
-                    context.WRF_CUST.AddRange(waterRights);
-                    context.SaveChanges();
-                  
-                    if (appendCompanyName != "" && customerID > 0) //insert long name value into 
-                    {  
-                        var customerLongName = new AW_CUST_LONG_NAME()
-                        {
-                            CUST_ID = customerID,
-                            COMPANY_LONG_NAME = appendCompanyName,
-                            CREATEBY = userName,
-                            CREATEDT = createDt,
-                            UPDATEBY=userName,
-                            UPDATEDT=createDt
-                        };
-                    context.AW_CUST_LONG_NAME.Add(customerLongName);
-                    context.SaveChanges();
-                  
-                    }
-                    return Ok(customer);
-               }
+                return Ok(customerList);
             }
             catch (Exception exception)
             {
@@ -577,16 +451,230 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpPut, Route("aws/customer/{custId}"), Authorize]
-        public IHttpActionResult UpdateCustomer(int custId, Aws_customer_wrf_ViewModel customer)
+        [HttpGet, Route("aws/customer/")]
+        public IHttpActionResult GetCustomerByName(string firstName = null, string lastName = null)
+        {
+            try
+            {
+                using (var context = new OracleContext())
+                {
+                    var customerList = new List<V_AWS_CUSTOMER_LONG_NAME>();
+                    if (firstName != null)
+                    {
+                        var query = context.V_AWS_CUSTOMER_LONG_NAME.Where(x => x.FIRST_NAME.ToLower().Contains(firstName.ToLower()));
+                        if (lastName != null)
+                        {
+                            customerList = query.Where(x => x.LAST_NAME.ToLower().Contains(lastName.ToLower())).ToList();
+                        }
+                        else
+                        {
+                            customerList = query.ToList();
+                        }
+                    }
+                    else if (lastName != null)
+                    {
+                        customerList = context.V_AWS_CUSTOMER_LONG_NAME.Where(x => x.LAST_NAME.ToLower().Contains(lastName.ToLower())).ToList();
+                    }
+
+                    var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x));
+
+                    return Ok(custWrfViewModelList);
+                }
+            }
+            catch (Exception exception)
+            {
+                //log error
+                return InternalServerError();
+            }
+        }
+
+        [HttpPost, Route("aws/customer/{wrf}")]
+        [Authorize]
+        public IHttpActionResult CreateCustomer(int wrf, [FromBody] Aws_customer_wrf_ViewModel customer) //Create a customer or associated the customer with a wrf_id
         {
             try
             {
                 string userName = User.Identity.Name.Replace("AZWATER0\\", "");
+                //get Oracle USER_ID if available
+                string oracleUserID = AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov", "") == userName).USER_ID;
+                var createDt = DateTime.Now;
+                string appendCompanyName = "";
+
+                userName =oracleUserID ?? userName; //Set to Oracle ID if possible
+                          
+                if(customer.Customer== null || customer.Waterrights==null)
+                {
+                    return BadRequest("Mandatory information for customer was not provided.");
+                }   
+                
+                var existingCustomers = WRF_CUST.GetList(l => l.WRF_ID == wrf);
+
+                if(existingCustomers==null)
+                {
+                   if(WTR_RIGHT_FACILITY.Get(l => l.ID == wrf)==null)
+                    {
+                        return BadRequest("The water right facility ID submitted is incorrect or doesn't exist.");
+                    }                     
+                }
+                using (var context = new OracleContext())
+                {
+                    int? customerID = (int?)customer.Customer.CUST_ID ?? -1;
+
+                    customer.Waterrights.Select(w => {
+                        w.WRF_ID = wrf;
+                        return w;
+                    }).ToList();
+                
+                    //Customer is new, ensure required data is provided
+                    if (!customer.IsValid() && customerID < 1) //if the customer doesn't exist, ensure that the appropriate data is being submitted
+                    {
+                        return BadRequest(String.Format("THE CUSTOMER WAS NOT CREATED BECAUSE THE FOLLOWING INFORMAION IS MISSING: {0}",customer.IsValidMsg()));
+                    }
+                    //Customer exists, verify the CCT_CODE is provided
+                    else if(customerID > 0 && customer.Waterrights.Count()!=customer.Waterrights.Count(w=>w.CCT_CODE !=null))
+                    {
+                        return BadRequest("COULD NOT CREATE AN ASSOCIATION BECAUSE THE CCT CODE MUST BE PROVIDED");
+                    }
+                    
+                    //Customer is new, create customer
+                    if (customerID < 1) 
+                    {
+                        if (customer.Customer.COMPANY_LONG_NAME.Length > 60)
+                        {
+                            appendCompanyName = customer.Customer.COMPANY_LONG_NAME.Substring(60);
+                            customer.Customer.COMPANY_LONG_NAME = customer.Customer.COMPANY_LONG_NAME.Substring(0, 60);
+                        }
+
+                        customer.Customer.BAD_ADDRESS_FLAG = customer.Customer.BAD_ADDRESS_FLAG == "false" ? "N" : "Y";
+                        var rgrCustomer = new CUSTOMER(customer.Customer, userName);
+                        rgrCustomer.CREATEBY = userName;
+                        rgrCustomer.CREATEDT = createDt;
+                        context.CUSTOMER.Add(rgrCustomer);
+                        context.SaveChanges();//need to save and get rgr.customer ID back from DB sequence to use in wrf_cust
+                    
+                        customerID= rgrCustomer.ID;
+                        
+                        if (customerID < 1)
+                        {
+                            return BadRequest("ERROR CREATING CUSTOMER");
+                        }
+
+                        if (appendCompanyName != "" && customerID > 0) //insert long name value into 
+                        {
+                            var customerLongName = new AW_CUST_LONG_NAME()
+                            {
+                                CUST_ID = customerID ?? -1,
+                                COMPANY_LONG_NAME = appendCompanyName,
+                                CREATEBY = userName,
+                                CREATEDT = createDt
+                            };
+                            context.AW_CUST_LONG_NAME.Add(customerLongName);
+                            context.SaveChanges();
+                        }
+                    }  //customer exists              
+                   else
+                    {
+                        var findCust=CUSTOMER.Get(c => c.ID == customer.Customer.CUST_ID, context);
+                        if(findCust==null)
+                        {
+                            BadRequest("COULD NOT FIND A MATCHING CUSTOMER FOR THE ID ENTERED");
+                        }
+                        else
+                        {
+                            customer.Customer=V_AWS_CUSTOMER_LONG_NAME.Get(c => c.CUST_ID == customer.Customer.CUST_ID, context);
+                        }
+                    }
+
+                    var waterRights = new List<WRF_CUST>();
+                    
+                    waterRights=customer.Waterrights.Select(w =>
+                    {
+                        w.CUST_ID = customerID ?? -1;
+                        w.PRIMARY_MAILING_ADDRESS = w.PRIMARY_MAILING_ADDRESS ?? "Y";
+                        w.IS_ACTIVE = w.IS_ACTIVE ?? "Y";                      
+                        w.LINE_NUM = ((from f in existingCustomers
+                                       where f.PRIMARY_MAILING_ADDRESS == w.PRIMARY_MAILING_ADDRESS && f.CCT_CODE == w.CCT_CODE && f.WRF_ID==w.WRF_ID
+                                       select f).Max(l => (int?)l.LINE_NUM) ?? 0) + 1; // Set line num 
+                        w.CREATEBY = userName;
+                        w.CREATEDT = createDt;
+                        return w;
+                    }).ToList();
+
+                    context.WRF_CUST.AddRange(waterRights);                   
+                    context.SaveChanges();                  
+                    
+                    return Ok(customer);
+               }
+           }
+            catch (Exception exception)
+            {
+                //return BadRequest(string.Format("Message {0}, Internal {1}, Stack {2}",exception.Message,exception.InnerException.Message ?? "",exception.StackTrace));
+                //log error
+                return InternalServerError();
+            }
+        }
+       
+        [HttpPut,HttpDelete, Route("aws/customer/{custId}"), Authorize]
+        public IHttpActionResult UpdateCustomer(int custId, Aws_customer_wrf_ViewModel customer)
+        {
+            try
+            {               
+                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
+                //get Oracle USER_ID if available
+                string oracleUserID = AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov", "") == userName).USER_ID;
+                var currentDt = DateTime.Now;
+                var requestMethod = ActionContext.Request.Method.ToString().ToUpper(); //POST, DELETE ETC.
+
+                userName = oracleUserID ?? userName; //Set to Oracle ID if possible
+
                 using (var context = new OracleContext())
                 {
                     var foundUser = V_AWS_CUSTOMER_LONG_NAME.Get(x => x.CUST_ID == custId, context);
-                    var foundWaterRights = WRF_CUST.Get(x => x.CUST_ID == custId, context);
+                    var allWaterRights = WRF_CUST.GetList(x => x.CUST_ID == custId, context);
+                    var foundWaterRights =allWaterRights.FirstOrDefault();
+
+                    if (requestMethod == "DELETE")
+                    {
+                        var deleteMsg = "";
+                        var wrfCust = customer.Waterrights.FirstOrDefault(); //<-- only one record should be here for delete
+                                                                            
+                        if (wrfCust != null && wrfCust.IS_ACTIVE == "N")
+                        {
+                            var custCount = allWaterRights.Count();
+
+                            var deleteWrfCust = WRF_CUST.Get(w => w.CUST_ID == custId && w.WRF_ID == wrfCust.WRF_ID && w.CCT_CODE == wrfCust.CCT_CODE && w.LINE_NUM == wrfCust.LINE_NUM, context);
+
+                            if(deleteWrfCust==null)  
+                            {
+                                return BadRequest(string.Format("CUSTOMER RECORD WITH THE MATCHING PROPERTIES CUST_ID:{0} WRF_ID:{1}, CUSTOMER TYPE (CCT_CODE):{2} AND LINE_NUM:{3} COULD NOT BE FOUND"
+                                    ,custId,wrfCust.WRF_ID, wrfCust.CCT_CODE, wrfCust.LINE_NUM));
+                            }                            
+
+                            context.WRF_CUST.Remove(deleteWrfCust); //Delete a customer association from the wrf_cust table
+                            context.SaveChanges();
+                            deleteMsg = "WRF_CUST RECORD DELETED";
+
+                            //When there is only one record for customer, delete the customer record and customer long name record (if it exists)
+                            if (custCount == 1)
+                            {
+                                var deleteCust = CUSTOMER.Get(c => c.ID == custId, context);
+                                context.CUSTOMER.Remove(deleteCust);
+                                context.SaveChanges();
+                                deleteMsg = "WRF_CUST AND CUSTOMER RECORDS DELETED";
+                            
+                                var deleteCustLongName = AW_CUST_LONG_NAME.Get(c => c.CUST_ID == custId, context);
+                                if (deleteCustLongName != null)
+                                {
+                                    context.AW_CUST_LONG_NAME.Remove(deleteCustLongName);
+                                    context.SaveChanges();
+                                    deleteMsg = "WRF_CUST, CUSTOMER AND LONG_NAME RECORDS DELETED";
+                                }
+                            }
+                            return Ok(new { message = deleteMsg });
+                        }                        
+                        return BadRequest("CUSTOMER RECORD COULD NOT BE DELETED BECAUSE " + (wrfCust == null ? "THE SPECIFIED ID WAS NOT FOUND" : "THE ACTIVE STATUS MUST BE SET TO N"));
+                    }
+
                     //get customer properties
                     var custPropList = customer.Customer.GetType().GetProperties().ToList();
                     foreach (var prop in custPropList)
@@ -621,14 +709,14 @@ namespace HydrosApi.Controllers
                         if (changesOccurred)
                         {
                             waterRight.UPDATEBY = userName;
-                            waterRight.UPDATEDT = DateTime.Now;
+                            waterRight.UPDATEDT = currentDt;
                         }
                     }
 
                     context.SaveChanges();
                     var rgrCustomer = context.CUSTOMER.Where(x => x.ID == foundUser.CUST_ID).FirstOrDefault();
                     rgrCustomer.UPDATEBY = userName;
-                    rgrCustomer.UPDATEDT = DateTime.Now;
+                    rgrCustomer.UPDATEDT = currentDt;
                     context.SaveChanges();
                     return Ok(customer);
                 }
@@ -640,7 +728,7 @@ namespace HydrosApi.Controllers
             }
         }
 
-        [HttpPost, Route("aws/customer/wrf")]
+        /*[HttpPost, Route("aws/customer/wrf")]
         public IHttpActionResult CreateWrfcust([FromBody] List<WRF_CUST> wrfcustList)
         {
             try
@@ -677,7 +765,7 @@ namespace HydrosApi.Controllers
             {
                 return InternalServerError();
             }
-        }
+        }*/
 
         [HttpGet, Route("aws/customer/types/")]
         public IHttpActionResult GetCustomerTypeCodes()
