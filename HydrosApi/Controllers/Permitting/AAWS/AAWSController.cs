@@ -589,12 +589,10 @@ namespace HydrosApi.Controllers
                     
                     waterRights=customer.Waterrights.Select(w =>
                     {
-                        w.CUST_ID = customerID ?? -1;
-                        w.PRIMARY_MAILING_ADDRESS = w.PRIMARY_MAILING_ADDRESS ?? "Y";
+                        w.CUST_ID = customerID ?? -1;                        
                         w.IS_ACTIVE = w.IS_ACTIVE ?? "Y";                      
                         w.LINE_NUM = ((from f in existingCustomers
-                                       where f.PRIMARY_MAILING_ADDRESS == w.PRIMARY_MAILING_ADDRESS && f.CCT_CODE == w.CCT_CODE && f.WRF_ID==w.WRF_ID
-                                       select f).Max(l => (int?)l.LINE_NUM) ?? 0) + 1; // Set line num 
+                                       where  f.CCT_CODE == w.CCT_CODE && f.WRF_ID==w.WRF_ID select f).Max(l => (int?)l.LINE_NUM) ?? 0) + 1; // Set line num 
                         w.CREATEBY = userName;
                         w.CREATEDT = createDt;
                         return w;
