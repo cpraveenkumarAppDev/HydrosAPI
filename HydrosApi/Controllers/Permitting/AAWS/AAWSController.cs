@@ -59,7 +59,7 @@ namespace HydrosApi.Controllers
         /// <summary>
         /// aws/getAmaCountyBasin/{ama?}
         /// </summary>
-        /// <param name="ama">ama</param>
+        /// <param name="amacode">ama</param>
         /// <returns>AMA, County, Basin, Subbasin list in a Hierarchy (in that order)</returns>
         /// <remarks>
         /// <para>When an ama is not provided, the entire list of all amas are returned</para>   
@@ -68,19 +68,24 @@ namespace HydrosApi.Controllers
         /// </remarks>
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [HttpGet,Route("aws/getAmaCountyBasin/{ama?}")]      
-        public IHttpActionResult GetAMACountyBasin(string ama=null)
+        [HttpGet,Route("aws/getAmaCountyBasin/{amacode?}")]      
+        public IHttpActionResult GetAMACountyBasin(string amacode=null)
         {
-            var infoList = ama == null ? AW_AMA_COUNTY_BASIN_SUBBAS.GetAll() :
-                AW_AMA_COUNTY_BASIN_SUBBAS.GetList(a => a.AMA.ToUpper() == ama.ToUpper());
+            var infoList = amacode == null ? AW_AMA_COUNTY_BASIN_SUBBAS.GetAll() :
+                AW_AMA_COUNTY_BASIN_SUBBAS.GetList(a => a.Cama_code== amacode.ToUpper());
 
-            return Ok(infoList.GroupBy(g=> new {g.AMA, g.CAMA_CODE, g.AMA_INA_TYPE})
-              .Select(a => new { a.Key.AMA, a.Key.CAMA_CODE, a.Key.AMA_INA_TYPE, AMAInfo = a.GroupBy(g => new { g.County_Descr, g.County_Code }) 
-              .Select(c => new {c.Key.County_Descr, c.Key.County_Code, Subbasin = c
-              .Select(i => new { BasinAbbr = i.BASIN_ABBR, BasinName = i.BASIN_NAME,SubbasinCode=i.SubbasinCode, SubbasinName=i.SUBBASIN_NAME
-                   
-              }).OrderBy(o=>o.SubbasinName)}).Distinct().OrderBy(o=>o.County_Descr)
-                  }).OrderBy(o=>o.AMA != "OUTSIDE OF AMA OR INA" ? "_"+o.AMA : o.AMA).ToList());           
+            return Ok(infoList.GroupBy(g=> new {g.AMA, g.Cama_code, g.AMA_INA_TYPE
+                , DefaultBasinCode=g.Cama_code.Replace("X","0") != "0" ? g.BasinCode : null //When AMA/INA already has basin/subbasin assigned
+                , DefaultBasinName = g.Cama_code.Replace("X", "0") != "0" ? g.BasinName : null})
+              .Select(a => new { a.Key.AMA, a.Key.Cama_code, a.Key.AMA_INA_TYPE, a.Key.DefaultBasinCode, a.Key.DefaultBasinName,
+                  AMAInfo = a.GroupBy(g => new { g.County_Descr, g.County_Code })
+              .Select(c => new { c.Key.County_Descr, c.Key.County_Code,
+                  Basin = c.GroupBy(g => new { g.BasinCode, g.BasinName, HasSubbasin = g.SubbasinCode != g.BasinCode ? true : false }).OrderBy(o=>o.Key.BasinName)
+                .Select(i => new { i.Key.BasinCode, i.Key.BasinName, i.Key.HasSubbasin 
+                , Subbasin = i.Select(s => new { s.BasinCode, s.BasinName, s.SubbasinCode, s.SubbasinName }).OrderBy(o => o.SubbasinName)
+              }).Distinct()
+              }).OrderBy(o => o.County_Descr)
+              }).OrderBy(o=>o.AMA != "OUTSIDE OF AMA OR INA" ? "_"+o.AMA : o.AMA).ToList());           
         }
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
@@ -583,20 +588,22 @@ namespace HydrosApi.Controllers
                         {
                             customer.Customer=V_AWS_CUSTOMER_LONG_NAME.Get(c => c.CUST_ID == customer.Customer.CUST_ID, context);
                         }
-                    }
-
-                    var waterRights = new List<WRF_CUST>();
+                    }               
                     
-                    waterRights=customer.Waterrights.Select(w =>
+                    var waterRights=customer.Waterrights.Select(w =>
                     {
                         w.CUST_ID = customerID ?? -1;                        
                         w.IS_ACTIVE = w.IS_ACTIVE ?? "Y";                      
-                        w.LINE_NUM = ((from f in existingCustomers
-                                       where  f.CCT_CODE == w.CCT_CODE && f.WRF_ID==w.WRF_ID select f).Max(l => (int?)l.LINE_NUM) ?? 0) + 1; // Set line num 
+                        w.LINE_NUM = ((from f in existingCustomers where f.CCT_CODE == w.CCT_CODE && f.WRF_ID==w.WRF_ID select f).Max(l => (int?)l.LINE_NUM) ?? 0) + 1; // Set line num 
                         w.CREATEBY = userName;
                         w.CREATEDT = createDt;
                         return w;
                     }).ToList();
+
+                    if(waterRights==null)
+                    {
+                        BadRequest("THERE WAS AN UNKNOWN ERROR ADDING THE CUSTOMER");
+                    }
 
                     context.WRF_CUST.AddRange(waterRights);                   
                     context.SaveChanges();                  
@@ -610,7 +617,7 @@ namespace HydrosApi.Controllers
                 //log error
                 return InternalServerError();
             }
-        }
+        }        
 
         [HttpPut, Route("aws/customer/{custId}"), Authorize]
         public IHttpActionResult UpdateCustomer(int custId, Aws_customer_wrf_ViewModel customer)
@@ -622,7 +629,7 @@ namespace HydrosApi.Controllers
                 string oracleUserID = AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov", "") == userName).USER_ID;
                 var currentDt = DateTime.Now;
                 var requestMethod = ActionContext.Request.Method.ToString().ToUpper(); //POST, DELETE ETC.
-
+               
                 userName = oracleUserID ?? userName; //Set to Oracle ID if possible
 
                 using (var context = new OracleContext())

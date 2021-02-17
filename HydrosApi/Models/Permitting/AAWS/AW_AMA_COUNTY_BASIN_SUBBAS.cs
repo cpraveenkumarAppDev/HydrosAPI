@@ -17,8 +17,9 @@ namespace HydrosApi.Models.Permitting.AAWS
         public int ID { get; set; }
        
         public string AMA { get; set; }
-        
-        public string CAMA_CODE { get; set; }
+
+        [Column("CAMA_CODE")]
+        public string Cama_code { get; set; }
 
         public string AMA_INA_TYPE { get; set; }
 
@@ -28,16 +29,19 @@ namespace HydrosApi.Models.Permitting.AAWS
         [Column("COUNTY_CODE")]
         public string County_Code { get; set; }
 
+        [Column("BASIN_ABBR")]
+        public string BasinCode { get; set; }
 
-        public string BASIN_ABBR { get; set; }
-         
-        public string BASIN_NAME { get; set; }
+        [Column("BASIN_NAME")]
+        public string BasinName { get; set; }
       
         
         [Column("SUBBASIN_ABBR")]
         public string SubbasinCode { get; set; }
 
-        public string SUBBASIN_NAME { get; set; }       
+
+        [Column("SUBBASIN_NAME")]
+        public string SubbasinName { get; set; }       
       
     }
 }
