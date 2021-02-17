@@ -59,7 +59,7 @@ namespace HydrosApi.Controllers
         /// <summary>
         /// aws/getAmaCountyBasin/{ama?}
         /// </summary>
-        /// <param name="ama">ama</param>
+        /// <param name="amacode">ama</param>
         /// <returns>AMA, County, Basin, Subbasin list in a Hierarchy (in that order)</returns>
         /// <remarks>
         /// <para>When an ama is not provided, the entire list of all amas are returned</para>   
@@ -68,19 +68,24 @@ namespace HydrosApi.Controllers
         /// </remarks>
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [HttpGet,Route("aws/getAmaCountyBasin/{ama?}")]      
-        public IHttpActionResult GetAMACountyBasin(string ama=null)
+        [HttpGet,Route("aws/getAmaCountyBasin/{amacode?}")]      
+        public IHttpActionResult GetAMACountyBasin(string amacode=null)
         {
-            var infoList = ama == null ? AW_AMA_COUNTY_BASIN_SUBBAS.GetAll() :
-                AW_AMA_COUNTY_BASIN_SUBBAS.GetList(a => a.AMA.ToUpper() == ama.ToUpper());
+            var infoList = amacode == null ? AW_AMA_COUNTY_BASIN_SUBBAS.GetAll() :
+                AW_AMA_COUNTY_BASIN_SUBBAS.GetList(a => a.Cama_code== amacode.ToUpper());
 
-            return Ok(infoList.GroupBy(g=> new {g.AMA, g.CAMA_CODE, g.AMA_INA_TYPE})
-              .Select(a => new { a.Key.AMA, a.Key.CAMA_CODE, a.Key.AMA_INA_TYPE, AMAInfo = a.GroupBy(g => new { g.County_Descr, g.County_Code }) 
-              .Select(c => new {c.Key.County_Descr, c.Key.County_Code, Subbasin = c
-              .Select(i => new { BasinAbbr = i.BASIN_ABBR, BasinName = i.BASIN_NAME,SubbasinCode=i.SubbasinCode, SubbasinName=i.SUBBASIN_NAME
-                   
-              }).OrderBy(o=>o.SubbasinName)}).Distinct().OrderBy(o=>o.County_Descr)
-                  }).OrderBy(o=>o.AMA != "OUTSIDE OF AMA OR INA" ? "_"+o.AMA : o.AMA).ToList());           
+            return Ok(infoList.GroupBy(g=> new {g.AMA, g.Cama_code, g.AMA_INA_TYPE
+                , DefaultBasinCode=g.Cama_code.Replace("X","0") != "0" ? g.BasinCode : null //When AMA/INA already has basin/subbasin assigned
+                , DefaultBasinName = g.Cama_code.Replace("X", "0") != "0" ? g.BasinName : null})
+              .Select(a => new { a.Key.AMA, a.Key.Cama_code, a.Key.AMA_INA_TYPE, a.Key.DefaultBasinCode, a.Key.DefaultBasinName,
+                  AMAInfo = a.GroupBy(g => new { g.County_Descr, g.County_Code })
+              .Select(c => new { c.Key.County_Descr, c.Key.County_Code,
+                  Basin = c.GroupBy(g => new { g.BasinCode, g.BasinName, HasSubbasin = g.SubbasinCode != g.BasinCode ? true : false }).OrderBy(o=>o.Key.BasinName)
+                .Select(i => new { i.Key.BasinCode, i.Key.BasinName, i.Key.HasSubbasin 
+                , Subbasin = i.Select(s => new { s.BasinCode, s.BasinName, s.SubbasinCode, s.SubbasinName }).OrderBy(o => o.SubbasinName)
+              }).Distinct()
+              }).OrderBy(o => o.County_Descr)
+              }).OrderBy(o=>o.AMA != "OUTSIDE OF AMA OR INA" ? "_"+o.AMA : o.AMA).ToList());           
         }
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
@@ -583,20 +588,22 @@ namespace HydrosApi.Controllers
                         {
                             customer.Customer=V_AWS_CUSTOMER_LONG_NAME.Get(c => c.CUST_ID == customer.Customer.CUST_ID, context);
                         }
-                    }
-
-                    var waterRights = new List<WRF_CUST>();
+                    }               
                     
-                    waterRights=customer.Waterrights.Select(w =>
+                    var waterRights=customer.Waterrights.Select(w =>
                     {
                         w.CUST_ID = customerID ?? -1;                        
                         w.IS_ACTIVE = w.IS_ACTIVE ?? "Y";                      
-                        w.LINE_NUM = ((from f in existingCustomers
-                                       where  f.CCT_CODE == w.CCT_CODE && f.WRF_ID==w.WRF_ID select f).Max(l => (int?)l.LINE_NUM) ?? 0) + 1; // Set line num 
+                        w.LINE_NUM = ((from f in existingCustomers where f.CCT_CODE == w.CCT_CODE && f.WRF_ID==w.WRF_ID select f).Max(l => (int?)l.LINE_NUM) ?? 0) + 1; // Set line num 
                         w.CREATEBY = userName;
                         w.CREATEDT = createDt;
                         return w;
                     }).ToList();
+
+                    if(waterRights==null)
+                    {
+                        BadRequest("THERE WAS AN UNKNOWN ERROR ADDING THE CUSTOMER");
+                    }
 
                     context.WRF_CUST.AddRange(waterRights);                   
                     context.SaveChanges();                  
@@ -610,9 +617,9 @@ namespace HydrosApi.Controllers
                 //log error
                 return InternalServerError();
             }
-        }
-       
-        [HttpPut,HttpDelete, Route("aws/customer/{custId}"), Authorize]
+        }        
+
+        [HttpPut, Route("aws/customer/{custId}"), Authorize]
         public IHttpActionResult UpdateCustomer(int custId, Aws_customer_wrf_ViewModel customer)
         {
             try
@@ -622,7 +629,7 @@ namespace HydrosApi.Controllers
                 string oracleUserID = AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov", "") == userName).USER_ID;
                 var currentDt = DateTime.Now;
                 var requestMethod = ActionContext.Request.Method.ToString().ToUpper(); //POST, DELETE ETC.
-
+               
                 userName = oracleUserID ?? userName; //Set to Oracle ID if possible
 
                 using (var context = new OracleContext())
@@ -631,29 +638,32 @@ namespace HydrosApi.Controllers
                     var allWaterRights = WRF_CUST.GetList(x => x.CUST_ID == custId, context);
                     var foundWaterRights =allWaterRights.FirstOrDefault();
 
-                    if (requestMethod == "DELETE")
-                    {
+                    //if (requestMethod == "DELETE")
+                    //{
                         var deleteMsg = "";
-                        var wrfCust = customer.Waterrights.FirstOrDefault(); //<-- only one record should be here for delete
-                                                                            
-                        if (wrfCust != null && wrfCust.IS_ACTIVE == "N")
-                        {
-                            var custCount = allWaterRights.Count();
+                        
+                        //Ensure IS_ACTIVE is "N". Set the CUST_ID value 
+                        var wrfCust = customer.Waterrights.Where(w => w.IS_ACTIVE == "N").Select(w => { w.CUST_ID = custId; return w; });
 
-                            var deleteWrfCust = WRF_CUST.Get(w => w.CUST_ID == custId && w.WRF_ID == wrfCust.WRF_ID && w.CCT_CODE == wrfCust.CCT_CODE && w.LINE_NUM == wrfCust.LINE_NUM, context);
-
-                            if(deleteWrfCust==null)  
+                        if (wrfCust != null)
+                        {                          
+                            var deleteWrfCust = (from w in allWaterRights
+                                    join c in wrfCust on new  { w.WRF_ID, w.CUST_ID, w.CCT_CODE, w.LINE_NUM } 
+                                    equals new { c.WRF_ID, c.CUST_ID, c.CCT_CODE, c.LINE_NUM } select w).ToList();
+                           
+                            if(deleteWrfCust==null || deleteWrfCust.Count()==0)  
                             {
-                                return BadRequest(string.Format("CUSTOMER RECORD WITH THE MATCHING PROPERTIES CUST_ID:{0} WRF_ID:{1}, CUSTOMER TYPE (CCT_CODE):{2} AND LINE_NUM:{3} COULD NOT BE FOUND"
-                                    ,custId,wrfCust.WRF_ID, wrfCust.CCT_CODE, wrfCust.LINE_NUM));
+                                return BadRequest("CUSTOMER RECORDS COULD NOT BE FOUND");
                             }                            
-
-                            context.WRF_CUST.Remove(deleteWrfCust); //Delete a customer association from the wrf_cust table
+                             
+                            context.WRF_CUST.RemoveRange(deleteWrfCust); //Delete a customer association from the wrf_cust table
                             context.SaveChanges();
-                            deleteMsg = "WRF_CUST RECORD DELETED";
+                            deleteMsg = string.Format("DELETED {0} WRF_CUST RECORD(S)",deleteWrfCust.Count());
 
-                            //When there is only one record for customer, delete the customer record and customer long name record (if it exists)
-                            if (custCount == 1)
+                            var custCount = WRF_CUST.GetList(x => x.CUST_ID == custId, context).Count();                            
+
+                            //When all the records have been deleted in WRF_CUST, remove corresponding customer records
+                            if (custCount == 0)
                             {
                                 var deleteCust = CUSTOMER.Get(c => c.ID == custId, context);
                                 context.CUSTOMER.Remove(deleteCust);
@@ -670,8 +680,8 @@ namespace HydrosApi.Controllers
                             }
                             return Ok(new { message = deleteMsg });
                         }                        
-                        return BadRequest("CUSTOMER RECORD COULD NOT BE DELETED BECAUSE " + (wrfCust == null ? "THE SPECIFIED ID WAS NOT FOUND" : "THE ACTIVE STATUS MUST BE SET TO N"));
-                    }
+                        //return BadRequest("CUSTOMER RECORD COULD NOT BE DELETED BECAUSE " + (wrfCust == null ? "THE SPECIFIED ID WAS NOT FOUND" : "THE ACTIVE STATUS MUST BE SET TO N"));
+                   // }
 
                     //get customer properties
                     var custPropList = customer.Customer.GetType().GetProperties().ToList();
