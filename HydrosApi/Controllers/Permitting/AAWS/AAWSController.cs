@@ -21,6 +21,16 @@ namespace HydrosApi.Controllers
     public class AAWSController : ApiController
     {
         //subset approved by aaws team
+        private static string BundleExceptions(Exception exception)
+        {
+            string fullException = exception.Message;
+            if (exception.InnerException != null)
+            {
+                fullException += BundleExceptions(exception.InnerException);
+            }
+
+            return fullException;
+        }
 
         private readonly Dictionary<string, string> AwsCustomerCodes = new Dictionary<string, string> { { "AS", "ASSIGNEE" }, { "BY", "BUYER" }, { "C", "CONTACT PARTY" }, { "CH", "CERTIFICATE HOLDER" }, { "CN", "CONSULTANT" }, { "MR", "MUNICIPAL REPRESENTATIVE" }, { "O", "OWNER" }, { "AP", "APPLICANT" } }; 
 
@@ -80,9 +90,9 @@ namespace HydrosApi.Controllers
               .Select(a => new { a.Key.AMA, a.Key.Cama_code, a.Key.AMA_INA_TYPE, a.Key.DefaultBasinCode, a.Key.DefaultBasinName,
                   AMAInfo = a.GroupBy(g => new { g.County_Descr, g.County_Code })
               .Select(c => new { c.Key.County_Descr, c.Key.County_Code,
-                  Basin = c.GroupBy(g => new { g.BasinCode, g.BasinName, HasSubbasin = g.SubbasinCode != g.BasinCode ? true : false }).OrderBy(o=>o.Key.BasinName)
+                  Basin = c.GroupBy(g => new { g.BasinCode, g.BasinName, HasSubbasin = g.SubbasinCode != g.BasinCode ? true : false }).Distinct().OrderBy(o=>o.Key.BasinName)
                 .Select(i => new { i.Key.BasinCode, i.Key.BasinName, i.Key.HasSubbasin 
-                , Subbasin = i.Select(s => new { s.BasinCode, s.BasinName, s.SubbasinCode, s.SubbasinName }).OrderBy(o => o.SubbasinName)
+                , Subbasin = i.Select(s => new { s.BasinCode, s.BasinName, s.SubbasinCode, s.SubbasinName }).Distinct().OrderBy(o => o.SubbasinName)
               }).Distinct()
               }).OrderBy(o => o.County_Descr)
               }).OrderBy(o=>o.AMA != "OUTSIDE OF AMA OR INA" ? "_"+o.AMA : o.AMA).ToList());           
@@ -613,9 +623,10 @@ namespace HydrosApi.Controllers
            }
             catch (Exception exception)
             {
-                //return BadRequest(string.Format("Message {0}, Internal {1}, Stack {2}",exception.Message,exception.InnerException.Message ?? "",exception.StackTrace));
+                
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
                 //log error
-                return InternalServerError();
+                //return InternalServerError();
             }
         }        
 
@@ -732,8 +743,9 @@ namespace HydrosApi.Controllers
             }
             catch (Exception exception)
             {
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
                 //log error
-                return InternalServerError(exception);
+                //return InternalServerError(exception);
             }
         }
 
