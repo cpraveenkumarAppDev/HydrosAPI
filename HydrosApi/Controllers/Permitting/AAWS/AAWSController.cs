@@ -643,9 +643,9 @@ namespace HydrosApi.Controllers
                     var deleteMsg = "";
 
                     //Ensure IS_ACTIVE is "N". Set the CUST_ID value
-                    var wrfCust = customer.Waterrights.Where(w => w.IS_ACTIVE == "N").Select(w => { w.CUST_ID = custId; return w; });
+                    var wrfCust = customer.Waterrights.Where(w => w.IS_ACTIVE == "N" && w.CUST_ID == custId);
 
-                    if (wrfCust != null)
+                    if (wrfCust != null && wrfCust.Count()>0)
                     {
                         var deleteWrfCust = (from w in allWaterRights
                                              join c in wrfCust on new { w.WRF_ID, w.CUST_ID, w.CCT_CODE, w.LINE_NUM }
@@ -737,7 +737,7 @@ namespace HydrosApi.Controllers
             }
         }
 
-        /*[HttpPost, Route("aws/customer/wrf")]
+        [HttpPost, Route("aws/customer/wrf")]
         public IHttpActionResult CreateWrfcust([FromBody] List<WRF_CUST> wrfcustList)
         {
             try
@@ -770,11 +770,11 @@ namespace HydrosApi.Controllers
                 }
 
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 return InternalServerError();
             }
-        }*/
+        }
 
         [HttpGet, Route("aws/customer/types/")]
         public IHttpActionResult GetCustomerTypeCodes()

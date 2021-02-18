@@ -38,8 +38,14 @@ namespace HydrosApi
                 pages.Add(page1);
                 pages.Add(page2);
                 pages.Add(page3);
-                var validUser = new { appEnv = environment, user = user, role = "PG-APPDEV", activeApps = pages };
+                using (PrincipalContext ctx = new PrincipalContext(ContextType.Domain, "AZWATER0"))
+                {
+                    UserPrincipal foundUsername = UserPrincipal.FindByIdentity(ctx, User.Identity.Name);
+                    GroupPrincipal appDevGroup = GroupPrincipal.FindByIdentity(ctx, "PG-APPDEV");
+                    bool foundUserInAppDevGroup = foundUsername.IsMemberOf(appDevGroup);
+                    var validUser = new { appEnv = environment, user = user, admin = foundUserInAppDevGroup, activeApps = pages };
                 return Ok(validUser);
+                }
             }
         }
 
