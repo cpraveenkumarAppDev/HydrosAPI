@@ -31,48 +31,55 @@ namespace HydrosApi
             }
             else
             {
-                var validUser = new { appEnv = environment, user = user };
+                var pages = new List<ActivePage>();
+                var page1 = new ActivePage() { Page = "adjudications", Online=true};
+                var page2 = new ActivePage() { Page = "aaws", Online = true };
+                var page3 = new ActivePage() { Page = "logs", Online = false };
+                pages.Add(page1);
+                pages.Add(page2);
+                pages.Add(page3);
+                var validUser = new { appEnv = environment, user = user, role = "PG-APPDEV", activeApps = pages };
                 return Ok(validUser);
+            }
         }
-    }
 
-    [HttpGet]
-    [Route("adwr/windowsgroup/{groupId}")]
-    [Authorize]
-    public IHttpActionResult WindowsGroup(string groupId)
-    {
-        using (PrincipalContext ctx = new PrincipalContext(ContextType.Domain, "AZWATER0"))
+        [HttpGet]
+        [Route("adwr/windowsgroup/{groupId}")]
+        [Authorize]
+        public IHttpActionResult WindowsGroup(string groupId)
         {
-            // find a user
-            UserPrincipal foundUsername = UserPrincipal.FindByIdentity(ctx, User.Identity.Name);
-            var unformattedGroupId = groupId.Replace("~AND~", " & "); //cannot pass & sign through url query
-            GroupPrincipal group = GroupPrincipal.FindByIdentity(ctx, unformattedGroupId);
-            GroupPrincipal appDevGroup = GroupPrincipal.FindByIdentity(ctx, "PG-APPDEV");
-            bool foundUserInGroup = foundUsername.IsMemberOf(group);
-            bool foundUserInAppDevGroup = foundUsername.IsMemberOf(appDevGroup);
-            // if found....
-            if (group != null && foundUserInGroup || foundUserInAppDevGroup)
+            using (PrincipalContext ctx = new PrincipalContext(ContextType.Domain, "AZWATER0"))
             {
-
-                var groupList = new List<object>();
-                foreach (UserPrincipal p in group.GetMembers())
+                // find a user
+                UserPrincipal foundUsername = UserPrincipal.FindByIdentity(ctx, User.Identity.Name);
+                var unformattedGroupId = groupId.Replace("~AND~", " & "); //cannot pass & sign through url query
+                GroupPrincipal group = GroupPrincipal.FindByIdentity(ctx, unformattedGroupId);
+                GroupPrincipal appDevGroup = GroupPrincipal.FindByIdentity(ctx, "PG-APPDEV");
+                bool foundUserInGroup = foundUsername.IsMemberOf(group);
+                bool foundUserInAppDevGroup = foundUsername.IsMemberOf(appDevGroup);
+                // if found....
+                if (group != null && foundUserInGroup || foundUserInAppDevGroup)
                 {
 
-                    var user = new WindowsUser
+                    var groupList = new List<object>();
+                    foreach (UserPrincipal p in group.GetMembers())
                     {
-                        UserName = p.DisplayName,
-                        UserEmail = p.EmailAddress
-                    };
-                    groupList.Add(user);
+
+                        var user = new WindowsUser
+                        {
+                            UserName = p.DisplayName,
+                            UserEmail = p.EmailAddress
+                        };
+                        groupList.Add(user);
+                    }
+                    return Ok(groupList);
                 }
-                return Ok(groupList);
-            }
-            else
-            {
-                return BadRequest("Invalid User");
+                else
+                {
+                    return BadRequest("Invalid User");
+                }
             }
         }
-    }
 
         [HttpPost, Route("adwr/error")]
         [Authorize]
@@ -81,7 +88,7 @@ namespace HydrosApi
             try
             {
                 string content = Request.Content.ReadAsStringAsync().Result;
-                if(content != null)
+                if (content != null)
                 {
                     var sentOkay = EmailService.Message("appdev@azwater.gov", $"{Environment.MachineName}: {User.Identity.Name} - HydrosAPI", content);
                     return Ok($"Message sent: {sentOkay}");
@@ -104,7 +111,7 @@ namespace HydrosApi
             WTR_RIGHT_FACILITY found;
             try
             {
-            found = WTR_RIGHT_FACILITY.Get(x => x.ID == wrf);
+                found = WTR_RIGHT_FACILITY.Get(x => x.ID == wrf);
             }
             catch (Exception exception)
             {
@@ -142,7 +149,7 @@ namespace HydrosApi
                 var info = new GeoBoundaryViewModel();
                 return Ok(info);
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 //log error
                 return InternalServerError();
@@ -150,10 +157,19 @@ namespace HydrosApi
         }
     }
 
-public class WindowsUser
-{
-    public string UserName { get; set; }
-    public string UserEmail { get; set; }
-}
+
+
+
+
+    public class ActivePage
+    {
+        public string Page { get; set; }
+        public bool Online { get; set; }
+    }
+    public class WindowsUser
+    {
+        public string UserName { get; set; }
+        public string UserEmail { get; set; }
+    }
 
 }

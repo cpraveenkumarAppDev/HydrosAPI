@@ -623,7 +623,7 @@ namespace HydrosApi.Controllers
         public IHttpActionResult UpdateCustomer(int custId, Aws_customer_wrf_ViewModel customer)
         {
             try
-            {               
+            {
                 string userName = User.Identity.Name.Replace("AZWATER0\\", "");
                 //get Oracle USER_ID if available
                 string oracleUserID = AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov", "") == userName).USER_ID;
@@ -636,52 +636,53 @@ namespace HydrosApi.Controllers
                 {
                     var foundUser = V_AWS_CUSTOMER_LONG_NAME.Get(x => x.CUST_ID == custId, context);
                     var allWaterRights = WRF_CUST.GetList(x => x.CUST_ID == custId, context);
-                    var foundWaterRights =allWaterRights.FirstOrDefault();
+                    var foundWaterRights = allWaterRights.FirstOrDefault();
 
                     //if (requestMethod == "DELETE")
                     //{
-                        var deleteMsg = "";
-                        
-                        //Ensure IS_ACTIVE is "N". Set the CUST_ID value 
-                        var wrfCust = customer.Waterrights.Where(w => w.IS_ACTIVE == "N").Select(w => { w.CUST_ID = custId; return w; });
+                    var deleteMsg = "";
 
-                        if (wrfCust != null)
-                        {                          
-                            var deleteWrfCust = (from w in allWaterRights
-                                    join c in wrfCust on new  { w.WRF_ID, w.CUST_ID, w.CCT_CODE, w.LINE_NUM } 
-                                    equals new { c.WRF_ID, c.CUST_ID, c.CCT_CODE, c.LINE_NUM } select w).ToList();
-                           
-                            if(deleteWrfCust==null || deleteWrfCust.Count()==0)  
-                            {
-                                return BadRequest("CUSTOMER RECORDS COULD NOT BE FOUND");
-                            }                            
-                             
-                            context.WRF_CUST.RemoveRange(deleteWrfCust); //Delete a customer association from the wrf_cust table
+                    //Ensure IS_ACTIVE is "N". Set the CUST_ID value
+                    var wrfCust = customer.Waterrights.Where(w => w.IS_ACTIVE == "N").Select(w => { w.CUST_ID = custId; return w; });
+
+                    if (wrfCust != null)
+                    {
+                        var deleteWrfCust = (from w in allWaterRights
+                                             join c in wrfCust on new { w.WRF_ID, w.CUST_ID, w.CCT_CODE, w.LINE_NUM }
+                                             equals new { c.WRF_ID, c.CUST_ID, c.CCT_CODE, c.LINE_NUM }
+                                             select w).ToList();
+
+                        if (deleteWrfCust == null || deleteWrfCust.Count() == 0)
+                        {
+                            return BadRequest("CUSTOMER RECORDS COULD NOT BE FOUND");
+                        }
+
+                        context.WRF_CUST.RemoveRange(deleteWrfCust); //Delete a customer association from the wrf_cust table
+                        context.SaveChanges();
+                        deleteMsg = string.Format("DELETED {0} WRF_CUST RECORD(S)", deleteWrfCust.Count());
+
+                        var custCount = WRF_CUST.GetList(x => x.CUST_ID == custId, context).Count();
+
+                        //When all the records have been deleted in WRF_CUST, remove corresponding customer records
+                        if (custCount == 0)
+                        {
+                            var deleteCust = CUSTOMER.Get(c => c.ID == custId, context);
+                            context.CUSTOMER.Remove(deleteCust);
                             context.SaveChanges();
-                            deleteMsg = string.Format("DELETED {0} WRF_CUST RECORD(S)",deleteWrfCust.Count());
+                            deleteMsg = "WRF_CUST AND CUSTOMER RECORDS DELETED";
 
-                            var custCount = WRF_CUST.GetList(x => x.CUST_ID == custId, context).Count();                            
-
-                            //When all the records have been deleted in WRF_CUST, remove corresponding customer records
-                            if (custCount == 0)
+                            var deleteCustLongName = AW_CUST_LONG_NAME.Get(c => c.CUST_ID == custId, context);
+                            if (deleteCustLongName != null)
                             {
-                                var deleteCust = CUSTOMER.Get(c => c.ID == custId, context);
-                                context.CUSTOMER.Remove(deleteCust);
+                                context.AW_CUST_LONG_NAME.Remove(deleteCustLongName);
                                 context.SaveChanges();
-                                deleteMsg = "WRF_CUST AND CUSTOMER RECORDS DELETED";
-                            
-                                var deleteCustLongName = AW_CUST_LONG_NAME.Get(c => c.CUST_ID == custId, context);
-                                if (deleteCustLongName != null)
-                                {
-                                    context.AW_CUST_LONG_NAME.Remove(deleteCustLongName);
-                                    context.SaveChanges();
-                                    deleteMsg = "WRF_CUST, CUSTOMER AND LONG_NAME RECORDS DELETED";
-                                }
+                                deleteMsg = "WRF_CUST, CUSTOMER AND LONG_NAME RECORDS DELETED";
                             }
-                            return Ok(new { message = deleteMsg });
-                        }                        
-                        //return BadRequest("CUSTOMER RECORD COULD NOT BE DELETED BECAUSE " + (wrfCust == null ? "THE SPECIFIED ID WAS NOT FOUND" : "THE ACTIVE STATUS MUST BE SET TO N"));
-                   // }
+                        }
+                        return Ok(new { message = deleteMsg });
+                    }
+                    //return BadRequest("CUSTOMER RECORD COULD NOT BE DELETED BECAUSE " + (wrfCust == null ? "THE SPECIFIED ID WAS NOT FOUND" : "THE ACTIVE STATUS MUST BE SET TO N"));
+                    // }
 
                     //get customer properties
                     var custPropList = customer.Customer.GetType().GetProperties().ToList();
