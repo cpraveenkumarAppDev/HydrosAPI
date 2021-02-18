@@ -80,9 +80,9 @@ namespace HydrosApi.Controllers
               .Select(a => new { a.Key.AMA, a.Key.Cama_code, a.Key.AMA_INA_TYPE, a.Key.DefaultBasinCode, a.Key.DefaultBasinName,
                   AMAInfo = a.GroupBy(g => new { g.County_Descr, g.County_Code })
               .Select(c => new { c.Key.County_Descr, c.Key.County_Code,
-                  Basin = c.GroupBy(g => new { g.BasinCode, g.BasinName, HasSubbasin = g.SubbasinCode != g.BasinCode ? true : false }).OrderBy(o=>o.Key.BasinName)
+                  Basin = c.GroupBy(g => new { g.BasinCode, g.BasinName, HasSubbasin = g.SubbasinCode != g.BasinCode ? true : false }).Distinct().OrderBy(o=>o.Key.BasinName)
                 .Select(i => new { i.Key.BasinCode, i.Key.BasinName, i.Key.HasSubbasin 
-                , Subbasin = i.Select(s => new { s.BasinCode, s.BasinName, s.SubbasinCode, s.SubbasinName }).OrderBy(o => o.SubbasinName)
+                , Subbasin = i.Select(s => new { s.BasinCode, s.BasinName, s.SubbasinCode, s.SubbasinName }).Distinct().OrderBy(o => o.SubbasinName)
               }).Distinct()
               }).OrderBy(o => o.County_Descr)
               }).OrderBy(o=>o.AMA != "OUTSIDE OF AMA OR INA" ? "_"+o.AMA : o.AMA).ToList());           
