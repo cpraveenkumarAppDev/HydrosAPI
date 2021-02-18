@@ -21,6 +21,16 @@ namespace HydrosApi.Controllers
     public class AAWSController : ApiController
     {
         //subset approved by aaws team
+        private static string BundleExceptions(Exception exception)
+        {
+            string fullException = exception.Message;
+            if (exception.InnerException != null)
+            {
+                fullException += BundleExceptions(exception.InnerException);
+            }
+
+            return fullException;
+        }
 
         private readonly Dictionary<string, string> AwsCustomerCodes = new Dictionary<string, string> { { "AS", "ASSIGNEE" }, { "BY", "BUYER" }, { "C", "CONTACT PARTY" }, { "CH", "CERTIFICATE HOLDER" }, { "CN", "CONSULTANT" }, { "MR", "MUNICIPAL REPRESENTATIVE" }, { "O", "OWNER" }, { "AP", "APPLICANT" } }; 
 
@@ -613,9 +623,10 @@ namespace HydrosApi.Controllers
            }
             catch (Exception exception)
             {
-                //return BadRequest(string.Format("Message {0}, Internal {1}, Stack {2}",exception.Message,exception.InnerException.Message ?? "",exception.StackTrace));
+                
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
                 //log error
-                return InternalServerError();
+                //return InternalServerError();
             }
         }        
 
@@ -732,8 +743,9 @@ namespace HydrosApi.Controllers
             }
             catch (Exception exception)
             {
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
                 //log error
-                return InternalServerError(exception);
+                //return InternalServerError(exception);
             }
         }
 
