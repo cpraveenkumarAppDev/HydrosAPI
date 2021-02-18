@@ -511,7 +511,8 @@ namespace HydrosApi.Controllers
             {
                 string userName = User.Identity.Name.Replace("AZWATER0\\", "");
                 //get Oracle USER_ID if available
-                string oracleUserID = AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov", "") == userName).USER_ID;
+                var foundUser = AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov", "") == userName);
+                string oracleUserID = foundUser != null ? foundUser.USER_ID : null;
                 var createDt = DateTime.Now;
                 string appendCompanyName = "";
 
@@ -637,7 +638,8 @@ namespace HydrosApi.Controllers
             {
                 string userName = User.Identity.Name.Replace("AZWATER0\\", "");
                 //get Oracle USER_ID if available
-                string oracleUserID = AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov", "") == userName).USER_ID;
+                var foundAwUser = AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov", "") == userName);
+                string oracleUserID = foundAwUser != null ? foundAwUser.USER_ID : null;
                 var currentDt = DateTime.Now;
                 var requestMethod = ActionContext.Request.Method.ToString().ToUpper(); //POST, DELETE ETC.
                
