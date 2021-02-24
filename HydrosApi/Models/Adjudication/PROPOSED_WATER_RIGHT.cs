@@ -38,7 +38,17 @@ namespace HydrosApi.Models
 
         [StringLength(50)]
         public string POU_ID { get; set; }
+        [StringLength(50)]
+        public string POU_NAME { get; set; }
+        [StringLength(50)]
+        public string POU_CODE { get; set; }
        
+        public int? POU_SEQ { get; set; }
+        [StringLength(50)]
+        public string QUANTITY { get; set; }
+        [StringLength(50)]
+        public string WILDLIFE { get; set; }
+
         [NotMapped]
         public string StatusMessage { get; set; }
 

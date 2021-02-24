@@ -101,9 +101,9 @@
 
         public Decimal? UTM_Y { get; set; }
 
-        [StringLength(100)]
-        [Column("WATERSHED")]
-        public string Watershed { get; set; }
+        //[StringLength(100)]
+        //[Column("WATERSHED")]
+        //public string Watershed { get; set; }
 
         [StringLength(300)]
         public string WTR_SOURCE { get; set; }

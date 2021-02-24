@@ -40,11 +40,26 @@ namespace HydrosApi
                 pages.Add(page3);
                 using (PrincipalContext ctx = new PrincipalContext(ContextType.Domain, "AZWATER0"))
                 {
+                    List<string> roles = new List<string>();
                     UserPrincipal foundUsername = UserPrincipal.FindByIdentity(ctx, User.Identity.Name);
+                    if (foundUsername != null)
+                    {
+                        PrincipalSearchResult<Principal> groups = foundUsername.GetAuthorizationGroups();
+
+                        // iterate over all groups
+                        foreach (Principal p in groups)
+                        {
+                            // make sure to add only group principals
+                            if (p is GroupPrincipal)
+                            {
+                                roles.Add(p.Name);
+                            }
+                        }
+                    }
                     GroupPrincipal appDevGroup = GroupPrincipal.FindByIdentity(ctx, "PG-APPDEV");
                     bool foundUserInAppDevGroup = foundUsername.IsMemberOf(appDevGroup);
-                    var validUser = new { appEnv = environment, user = user, admin = foundUserInAppDevGroup, activeApps = pages };
-                return Ok(validUser);
+                    var validUser = new { appEnv = environment, user = user, roles = roles, activeApps = pages };
+                    return Ok(validUser);
                 }
             }
         }
