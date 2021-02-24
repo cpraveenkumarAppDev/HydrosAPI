@@ -699,6 +699,13 @@ namespace HydrosApi.Controllers
                     //return BadRequest("CUSTOMER RECORD COULD NOT BE DELETED BECAUSE " + (wrfCust == null ? "THE SPECIFIED ID WAS NOT FOUND" : "THE ACTIVE STATUS MUST BE SET TO N"));
                     // }
 
+                    var rightsCount = allWaterRights != null ? allWaterRights.Select(w => w.WRF_ID).Distinct().Count() : 0;
+
+                    if(rightsCount > 1)
+                    {
+                        return BadRequest(string.Format("THIS CUSTOMER IS ASSOCIATED WITH {0} RIGHTS AND CANNOT BE UPDATED",rightsCount));
+                    }
+
                     //get customer properties
                     var custPropList = customer.Customer.GetType().GetProperties().ToList();
                     foreach (var prop in custPropList)
