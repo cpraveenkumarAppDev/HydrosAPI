@@ -384,7 +384,7 @@ namespace HydrosApi.Controllers
         /// Order by the ranking of the found results
         /// </remarks>
 
-        [HttpPost, Route("aws/customerbyany/")]
+        [HttpGet, Route("aws/customerbyany/")]
         public IHttpActionResult GetCustomerByAny([FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
         {            
             try
@@ -422,27 +422,29 @@ namespace HydrosApi.Controllers
 
                           addressRank = address1 != null && result.ADDRESS1 != null ?
                           result.ADDRESS1.ToLower() == address1.ToLower() ? new string(' ', 3) + result.ADDRESS1.ToLower()
-                          : String.Format("{0:D20}{1}", result.ADDRESS1.ToLower().IndexOf(address1.ToLower()), result.ADDRESS1.ToLower()) : null,   
+                          : String.Format("{0:D20}{1}", result.ADDRESS1.ToLower().IndexOf(address1.ToLower()), result.ADDRESS1.ToLower()) : null,
 
                           result
-                     })                    
-                    .OrderBy(o => o.companyRank)
-                    .ThenBy(o => o.addressRank)
-                    .ThenBy(o => o.firstNameRank)
-                    .ThenBy(o => o.lastNameRank)
-                    .Select(s=>s.result).Take(20);                    
+                      }).OrderBy(o => o.companyRank)
+                            .ThenBy(o => o.addressRank)
+                            .ThenBy(o => o.firstNameRank)
+                            .ThenBy(o => o.lastNameRank)
+                            .Select(s => new { s.result });
 
                 if (!(customerList != null && customerList.Count() > 0))
                 {
                     return Ok(new { Message = "No results were found for " + searchString });
                 }
-                var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x));
+               
+                var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x.result)).Take(20);
+              
                 return Ok(custWrfViewModelList);
             }
-            catch //(Exception exception)
-            {
+            catch (Exception exception)
+            {                
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
                 //log error
-                return InternalServerError();
+                //return InternalServerError();
             }
         }
 

@@ -13,6 +13,8 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         public V_AWS_CUSTOMER_LONG_NAME Customer { get; set; }
         public List<WRF_CUST> Waterrights { get; set; }
 
+       public int WaterRightsCount { get; set; }
+
         public Aws_customer_wrf_ViewModel()
         {
 
@@ -46,6 +48,8 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
                 {
                     this.Waterrights = WRF_CUST.GetList(x => x.WRF_ID == wrf && x.CUST_ID == custId && x.CCT_CODE.ToLower() == custType.ToLower());
                 }
+
+                this.WaterRightsCount = this.Waterrights != null ? this.Waterrights.Count() : 0;
             }
             catch(Exception exception)
             {
@@ -60,8 +64,9 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         {
             this.Customer = customer;
             this.Waterrights = WRF_CUST.GetList(x => x.CUST_ID == customer.CUST_ID).OrderBy(x => x.WRF_ID).ToList();
+            this.WaterRightsCount = this.Waterrights != null ? this.Waterrights.Count() : 0;
         }
-
+               
         public string IsValidMsg()
         {
             var msg = "";
