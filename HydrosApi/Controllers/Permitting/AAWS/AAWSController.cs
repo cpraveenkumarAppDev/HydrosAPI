@@ -304,7 +304,7 @@ namespace HydrosApi.Controllers
             List<CD_AW_APP_ACTIVITY> codes;
             try
             {
-                codes = CD_AW_APP_ACTIVITY.GetAll();
+                codes = CD_AW_APP_ACTIVITY.GetList(x => x.ALSO_FILE_STATUS == "Y");
             }
             catch (Exception exception)
             {
