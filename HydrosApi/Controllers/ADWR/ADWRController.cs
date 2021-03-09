@@ -176,6 +176,67 @@ namespace HydrosApi
                 return InternalServerError();
             }
         }
+
+        [HttpGet, Route("adwr/locationByWrf/{wrf}")]
+        public IHttpActionResult LocationByWrf(int wrf)
+        {
+            try
+            {
+                var locationList = LOCATION.GetList(x => x.WRF_ID == wrf);
+                ////List<Aws_customer_wrf_ViewModel> customerList = new List<Aws_customer_wrf_ViewModel>();
+                //foreach (var custId in custIdList)
+                //{
+                //    customerList.Add(new Aws_customer_wrf_ViewModel(custId, wrf, custType));
+                //}
+                return Ok(locationList);
+            }
+            catch (Exception exception)
+            {
+                //log error
+                return InternalServerError();
+            }
+        }
+
+        [HttpPost, Route("adwr/addCadastralByWrf/{wrf}")]
+        public IHttpActionResult AddCadastralByWrf([FromBody] List<LOCATION> LocationList, int wrf)
+        {
+            try
+            {
+                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
+                using (var context = new OracleContext())
+                {
+                    foreach (var location in LocationList)
+                    {
+                        //TO DO check for dups
+                        //var locationExists = context.LOCATION.Where(x => x.ID == wrfcust.CUST_ID).FirstOrDefault() != null ? true : false;
+                        //var wrfExists = context.WRF_CUST.Where(x => x.WRF_ID == wrfcust.WRF_ID).FirstOrDefault() != null ? true : false;
+                        //var count = LOCATION.GetList(x => x.WRF_ID == wrfcust.WRF_ID && x.CUST_ID == wrfcust.CUST_ID && x.CCT_CODE == wrfcust.CCT_CODE).Count();
+                        //if (!customerExists || !wrfExists)
+                        //{
+                        //    return BadRequest("location wrf does not exist");
+                        //}
+                        //if (count > -1)
+                        //{
+                            location.CREATEBY = userName;
+                            location.CREATEDT = DateTime.Now;
+                            context.LOCATION.Add(location);
+                        //}
+                        //else
+                        // {
+                        //    return BadRequest("wrf, cust, custType record already exists");
+                        // }
+                    }
+                    context.SaveChanges();
+                    return Ok(LocationList);
+                }
+
+            }
+            catch (Exception exception)
+            {
+                return InternalServerError();
+            }
+        }
+
     }
 
 
