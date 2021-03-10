@@ -9,6 +9,7 @@ using HydrosApi.Models.ADWR;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HydrosApi.ViewModel.ADWR;
+using System.Threading.Tasks;
 
 namespace HydrosApi
 {
@@ -126,6 +127,41 @@ namespace HydrosApi
 
         }
 
+        [HttpGet, Route("adwr/GetAppAvailability")]
+        public IHttpActionResult GetAppAvailability()
+        {
+            try
+            {
+                var applicationList = HYDROS_MANAGER.GetAll();
+                return Ok(applicationList);
+            }
+            catch (Exception exception)
+            {
+                //log error
+                return InternalServerError();
+            }
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV")]
+        [HttpPut, Route("adwr/SetAppAvailability/{id}")]
+        public async Task<IHttpActionResult> SetAppAvailability([FromBody] HYDROS_MANAGER man, int id)
+        {
+            var user = User.Identity.Name.Replace("AZWATER0\\", "");
+            HYDROS_MANAGER hydrosManager;
+            using (var context = new OracleContext())
+            {
+                hydrosManager = context.HYDROS_MANAGER.Where(x => x.ID == id).FirstOrDefault();
+                if (hydrosManager != null)
+                { 
+                    hydrosManager.STATUS = man.STATUS;
+                    hydrosManager.USERNAME = user;
+                    hydrosManager.STATUS_DT = DateTime.Now;
+                    await context.SaveChangesAsync();
+                }
+                return Ok(hydrosManager);
+            }
+        }
+
         [HttpGet, Route("adwr/pcc/{wrf}")]
         public IHttpActionResult GetPcc(int wrf)
         {
@@ -238,9 +274,6 @@ namespace HydrosApi
         }
 
     }
-
-
-
 
 
     public class ActivePage
