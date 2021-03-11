@@ -241,18 +241,18 @@
         {
             Dictionary<string, bool> setCriteria = new Dictionary<string, bool>();
             generalInfo.Diagram = SP_AW_CONV_DIAGRAM.ConveyanceDiagram(generalInfo.ProgramCertificateConveyance);
-            setCriteria.Add("Physical_Availability", generalInfo.Physical_Availability == "Y" ? true : false);
-            setCriteria.Add("Hydrology", generalInfo.Hydrology == "Y" ? true : false);
-            setCriteria.Add("Continuous_Availability", generalInfo.Continuous_Availability == "Y" ? true : false);
-            setCriteria.Add("Legal_Availability", generalInfo.Legal_Availability == "Y" ? true : false);
-            setCriteria.Add("Consistency_With_Mgmt_Plan", generalInfo.Consistency_With_Mgmt_Plan == "Y" ? true : false);
-            setCriteria.Add("Consistency_With_Mgmt_Goal", generalInfo.Consistency_With_Mgmt_Goal == "Y" ? true : false);
-            setCriteria.Add("Water_Quality", generalInfo.Water_Quality == "Y" ? true : false);
-            setCriteria.Add("Financial_Capability", generalInfo.Financial_Capability == "Y" ? true : false);
-            setCriteria.Add("Demand_Calculator", generalInfo.Demand_Calculator == "Y" ? true : false);
-            setCriteria.Add("Review_Plat_for_MPC", generalInfo.Demand_Calculator == "Y" ? true : false);
-            setCriteria.Add("Check_Plat_Recorded", generalInfo.Demand_Calculator == "Y" ? true : false);
-            setCriteria.Add("Verify_Water_Provider_Letter_Received", generalInfo.Demand_Calculator == "Y" ? true : false);
+            setCriteria.Add("Physical_Availability", generalInfo.Physical_Availability == "Y" && true);
+            setCriteria.Add("Hydrology", generalInfo.Hydrology == "Y" && true);
+            setCriteria.Add("Continuous_Availability", generalInfo.Continuous_Availability == "Y" && true);
+            setCriteria.Add("Legal_Availability", generalInfo.Legal_Availability == "Y" && true);
+            setCriteria.Add("Consistency_With_Mgmt_Plan", generalInfo.Consistency_With_Mgmt_Plan == "Y" && true);
+            setCriteria.Add("Consistency_With_Mgmt_Goal", generalInfo.Consistency_With_Mgmt_Goal == "Y" && true);
+            setCriteria.Add("Water_Quality", generalInfo.Water_Quality == "Y" && true);
+            setCriteria.Add("Financial_Capability", generalInfo.Financial_Capability == "Y" && true);
+            setCriteria.Add("Demand_Calculator", generalInfo.Demand_Calculator == "Y" && true);
+            setCriteria.Add("Review_Plat_for_MPC", generalInfo.Demand_Calculator == "Y" && true);
+            setCriteria.Add("Check_Plat_Recorded", generalInfo.Demand_Calculator == "Y" && true);
+            setCriteria.Add("Verify_Water_Provider_Letter_Received", generalInfo.Demand_Calculator == "Y" && true);
             //generalInfo.Overview = setCriteria;
 
             generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? V_AWS_PROVIDER.Get(p => p.PROVIDER_WRF_ID == generalInfo.PrimaryProviderWrfId).PWS_ID_Number : null;

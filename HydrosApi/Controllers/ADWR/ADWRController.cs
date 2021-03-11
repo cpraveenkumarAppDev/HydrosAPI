@@ -58,7 +58,7 @@ namespace HydrosApi
                     }
                     GroupPrincipal appDevGroup = GroupPrincipal.FindByIdentity(ctx, "PG-APPDEV");
                     bool foundUserInAppDevGroup = foundUsername.IsMemberOf(appDevGroup);
-                    var validUser = new { appEnv = environment, user = user, roles = roles, activeApps = pages };
+                    var validUser = new { appEnv = environment, user, roles, activeApps = pages };
                     return Ok(validUser);
                 }
             }
@@ -119,7 +119,7 @@ namespace HydrosApi
                     return BadRequest("no content in the body of the request");
                 }
             }
-            catch (Exception exception)
+            catch 
             {
                 return Ok("Failed to send noticiation");
             }
@@ -134,7 +134,7 @@ namespace HydrosApi
             {
                 found = WTR_RIGHT_FACILITY.Get(x => x.ID == wrf);
             }
-            catch (Exception exception)
+            catch 
             {
                 //log exception
                 return InternalServerError();
@@ -151,7 +151,7 @@ namespace HydrosApi
                 PCC validPCC = new PCC(inputPcc);
                 found = WTR_RIGHT_FACILITY.Get(x => x.Program == validPCC.Program && x.Certificate == validPCC.Certificate && x.Conveyance == validPCC.Conveyance);
             }
-            catch (Exception exception)
+            catch 
             {
                 //log exception
                 return InternalServerError();
@@ -159,7 +159,7 @@ namespace HydrosApi
             return Ok(found.PCC);
         }
         /// <summary>
-        /// Returns object for Counties, AMA & INA, and Basins
+        /// Returns object for Counties, AMA and INA, and Basins
         /// </summary>
         /// <returns></returns>
         [HttpGet, Route("adwr/geoBoundaries")]
@@ -170,7 +170,7 @@ namespace HydrosApi
                 var info = new GeoBoundaryViewModel();
                 return Ok(info);
             }
-            catch (Exception exception)
+            catch
             {
                 //log error
                 return InternalServerError();

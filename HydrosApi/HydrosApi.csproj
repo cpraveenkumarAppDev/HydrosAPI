@@ -336,6 +336,7 @@
     <Compile Include="Models\Permitting\AAWS\CD_AW_COMMENT_TYPE.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_COUNTY_BASIN.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_CUSTOMER.cs" />
+    <Compile Include="Models\Permitting\AAWS\V_AWS_CUSTOMER_LONG_NAME.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_HYDRO.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_PROVIDER.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_SUBBAS.cs" />

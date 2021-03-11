@@ -19,7 +19,7 @@ namespace HydrosApi.Services
                 smtp.Send(message);
                 return true;
             }
-            catch (Exception exception)
+            catch  
             {
                 //log error
                 return false;
@@ -38,7 +38,7 @@ namespace HydrosApi.Services
                 smtp.Send(message);
                 return true;
             }
-            catch (Exception exception)
+            catch 
             {
                 //log error
                 return false;
@@ -59,7 +59,7 @@ namespace HydrosApi.Services
                 smtp.Send(message);
                 return true;
             }
-            catch (Exception exception)
+            catch
             {
                 //log error
                 return false;
@@ -77,7 +77,7 @@ namespace HydrosApi.Services
                 smtp.Send(message);
                 return true;
             }
-            catch (Exception exception)
+            catch  
             {
                 //log error
                 return false;

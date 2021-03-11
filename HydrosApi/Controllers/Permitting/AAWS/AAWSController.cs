@@ -90,7 +90,7 @@ namespace HydrosApi.Controllers
               .Select(a => new { a.Key.AMA, a.Key.Cama_code, a.Key.AMA_INA_TYPE, a.Key.DefaultBasinCode, a.Key.DefaultBasinName,
                   AMAInfo = a.GroupBy(g => new { g.County_Descr, g.County_Code })
               .Select(c => new { c.Key.County_Descr, c.Key.County_Code,
-                  Basin = c.GroupBy(g => new { g.BasinCode, g.BasinName, HasSubbasin = g.SubbasinCode != g.BasinCode ? true : false }).Distinct().OrderBy(o=>o.Key.BasinName)
+                  Basin = c.GroupBy(g => new { g.BasinCode, g.BasinName, HasSubbasin = g.SubbasinCode != g.BasinCode && true }).Distinct().OrderBy(o=>o.Key.BasinName)
                 .Select(i => new { i.Key.BasinCode, i.Key.BasinName, i.Key.HasSubbasin 
                 , Subbasin = i.Select(s => new { s.BasinCode, s.BasinName, s.SubbasinCode, s.SubbasinName }).Distinct().OrderBy(o => o.SubbasinName)
               }).Distinct()
@@ -224,7 +224,7 @@ namespace HydrosApi.Controllers
             {
                 activities = AW_APP_ACTIVITY_TRK.GetList(x => x.WRF_ID == wrf && x.ActivityCode == activity).FirstOrDefault();
             }
-            catch (Exception exception)
+            catch  
             {
                 //log exception
                 return InternalServerError();
@@ -241,7 +241,7 @@ namespace HydrosApi.Controllers
             {
                 activities = AW_APP_ACTIVITY_TRK.GetList(x => x.WRF_ID == wrf && new List<string>{"ISSD", "IADQ", "IIAD"}.Contains(x.ActivityCode)).OrderByDescending(x => x.CREATEDT).ToList();
             }
-            catch (Exception exception)
+            catch 
             {
                 //log exception
                 return InternalServerError();
@@ -253,17 +253,20 @@ namespace HydrosApi.Controllers
         [HttpPost, Route("aws/activity/{wrf}/{activityCode}")]
         public IHttpActionResult UpdateActivity(int wrf, string activityCode)
         {
-            var record = new AW_APP_ACTIVITY_TRK();
-            record.ACT_TRK_DT_TIME = DateTime.Now;
-            record.WRF_ID = wrf;
-            record.ActivityCode = "ISSD";
-            record.CREATEBY = User.Identity.Name.Replace(@"AZWATER0\", "");
+            var record = new AW_APP_ACTIVITY_TRK
+            {
+                ACT_TRK_DT_TIME = DateTime.Now,
+                WRF_ID = wrf,
+                ActivityCode = "ISSD",
+                CREATEBY = User.Identity.Name.Replace(@"AZWATER0\", "")
+            };
+
             try
             {
                 AW_APP_ACTIVITY_TRK.Add(record);
                 return Ok("Created");
             }
-            catch (Exception exception)
+            catch 
             {
                 //log exception
                 return InternalServerError();
@@ -289,7 +292,7 @@ namespace HydrosApi.Controllers
                         Date = act.CREATEDT
                     });
             }
-            catch (Exception exception)
+            catch
             {
                 //log exception
                 return InternalServerError();
@@ -306,7 +309,7 @@ namespace HydrosApi.Controllers
             {
                 codes = CD_AW_APP_ACTIVITY.GetAll();
             }
-            catch (Exception exception)
+            catch 
             {
                 //log exception
                 return InternalServerError();
@@ -321,7 +324,7 @@ namespace HydrosApi.Controllers
                 var info = new Common_ViewModel();
                 return Ok(info);
             }
-            catch (Exception exception)
+            catch  
             {
                 //log error
                 return InternalServerError();
@@ -384,7 +387,7 @@ namespace HydrosApi.Controllers
         /// Order by the ranking of the found results
         /// </remarks>
 
-        [HttpGet, Route("aws/customerbyany/")]
+        [HttpPost, Route("aws/customerbyany/")]
         public IHttpActionResult GetCustomerByAny([FromBody] V_AWS_CUSTOMER_LONG_NAME customer)
         {            
             try
@@ -461,7 +464,7 @@ namespace HydrosApi.Controllers
                 }
                 return Ok(customerList);
             }
-            catch (Exception exception)
+            catch
             {
                 //log error
                 return InternalServerError();
@@ -498,7 +501,7 @@ namespace HydrosApi.Controllers
                     return Ok(custWrfViewModelList);
                 }
             }
-            catch (Exception exception)
+            catch
             {
                 //log error
                 return InternalServerError();
@@ -514,7 +517,7 @@ namespace HydrosApi.Controllers
                 string userName = User.Identity.Name.Replace("AZWATER0\\", "");
                 //get Oracle USER_ID if available
                 var foundUser = AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov", "") == userName);
-                string oracleUserID = foundUser != null ? foundUser.USER_ID : null;
+                string oracleUserID =  foundUser.USER_ID ?? null;
                 var createDt = DateTime.Now;
                 string appendCompanyName = "";
 
@@ -564,9 +567,11 @@ namespace HydrosApi.Controllers
                         }
 
                         customer.Customer.BAD_ADDRESS_FLAG = customer.Customer.BAD_ADDRESS_FLAG == "false" ? "N" : "Y";
-                        var rgrCustomer = new CUSTOMER(customer.Customer, userName);
-                        rgrCustomer.CREATEBY = userName;
-                        rgrCustomer.CREATEDT = createDt;
+                        var rgrCustomer = new CUSTOMER(customer.Customer, userName)
+                        {
+                            CREATEBY = userName,
+                            CREATEDT = createDt
+                        };
                         context.CUSTOMER.Add(rgrCustomer);
                         context.SaveChanges();//need to save and get rgr.customer ID back from DB sequence to use in wrf_cust
                     
@@ -641,7 +646,7 @@ namespace HydrosApi.Controllers
                 string userName = User.Identity.Name.Replace("AZWATER0\\", "");
                 //get Oracle USER_ID if available
                 var foundAwUser = AW_USERS.Get(u => u.EMAIL.ToLower().Replace("@azwater.gov", "") == userName);
-                string oracleUserID = foundAwUser != null ? foundAwUser.USER_ID : null;
+                string oracleUserID = foundAwUser.USER_ID ?? null;
                 var currentDt = DateTime.Now;
                 var requestMethod = ActionContext.Request.Method.ToString().ToUpper(); //POST, DELETE ETC.
                
@@ -770,8 +775,8 @@ namespace HydrosApi.Controllers
                 {
                     foreach (var wrfcust in wrfcustList)
                     {
-                        var customerExists = context.CUSTOMER.Where(x => x.ID == wrfcust.CUST_ID).FirstOrDefault() != null ? true : false;
-                        var wrfExists = context.WRF_CUST.Where(x => x.WRF_ID == wrfcust.WRF_ID).FirstOrDefault() != null ? true : false;
+                        var customerExists = context.CUSTOMER.Where(x => x.ID == wrfcust.CUST_ID).FirstOrDefault() != null;
+                        var wrfExists = context.WRF_CUST.Where(x => x.WRF_ID == wrfcust.WRF_ID).FirstOrDefault() != null;
                         var count = WRF_CUST.GetList(x => x.WRF_ID == wrfcust.WRF_ID && x.CUST_ID == wrfcust.CUST_ID && x.CCT_CODE == wrfcust.CCT_CODE).Count();
                         if (!customerExists || !wrfExists)
                         {
@@ -793,7 +798,7 @@ namespace HydrosApi.Controllers
                 }
 
             }
-            catch (Exception exception)
+            catch
             {
                 return InternalServerError();
             }

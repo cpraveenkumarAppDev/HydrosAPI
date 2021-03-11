@@ -59,7 +59,7 @@ namespace HydrosApi.Models
                          
             var fileInfo = new FILE();            
             string fieldName;
-            string newFileName="";            
+            //string newFileName="";            
 
             var form = provider.FormData;
 

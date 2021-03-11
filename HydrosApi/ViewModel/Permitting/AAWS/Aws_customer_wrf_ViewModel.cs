@@ -11,25 +11,27 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
     public class Aws_customer_wrf_ViewModel
     {
         public V_AWS_CUSTOMER_LONG_NAME Customer { get; set; }
-        public List<WRF_CUST> Waterrights { get; set; }     
-        
+        public List<WRF_CUST> Waterrights { get; set; }
+        public List<string> PccList { get; set; }
         /// <summary>
         /// Get all PCCs associated with the customer id
         /// </summary>
-        public List<string> PccList
+        /*public List<string> PccListx
         {
             get
             {
                 if (Customer == null)
                     return null;
-                var allWrfId = WRF_CUST.GetList(w => w.CUST_ID == Customer.CUST_ID).Select(w => w.WRF_ID).ToList();
-                return WTR_RIGHT_FACILITY.GetList(f => allWrfId.Contains(f.ID)).Select(f => f.PCC).Distinct().ToList();
+                //var allWrfId = WRF_CUST.GetList(w => w.CUST_ID == Customer.CUST_ID).Select(w => w.WRF_ID).ToList();
+                //return WTR_RIGHT_FACILITY.GetList(f => allWrfId.Contains(f.ID)).Select(f => f.PCC).Distinct().ToList();
+
+                return V_AWS_CUSTOMER_PCC.GetList(w => w.CUST_ID == Customer.CUST_ID).Select(w => w.PCC).ToList();
             }
             set
             {
                 value = this.PccList;
             }
-        }
+        }*/
 
         public int WaterRightsCount {
             get {
@@ -37,7 +39,7 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
             }
             set
             {
-                value = this.WaterRightsCount;
+                this.WaterRightsCount = value;
             }
         }
 
@@ -66,15 +68,31 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
             try
             {
                 this.Customer = V_AWS_CUSTOMER_LONG_NAME.Get(x => x.CUST_ID == custId);
+                var wrfCust = WRF_CUST.GetList(w => w.CUST_ID == Customer.CUST_ID);
                 
+
                 if (custType == null)
                 {
-                    this.Waterrights = WRF_CUST.GetList(x => x.CUST_ID == custId && x.WRF_ID == wrf).ToList();
+                    this.Waterrights = wrfCust.Where(x => x.WRF_ID == wrf).ToList();
                 }
                 else
                 {
-                    this.Waterrights = WRF_CUST.GetList(x => x.CUST_ID == custId && x.WRF_ID == wrf && x.CCT_CODE.ToLower() == custType.ToLower()).ToList();                    
+                    this.Waterrights = wrfCust.Where(x=>x.WRF_ID == wrf && x.CCT_CODE.ToLower() == custType.ToLower()).ToList();                    
                 }
+
+                if(wrfCust != null)
+                {
+                    this.PccList = (from w in wrfCust
+                                   join c in V_AWS_CUSTOMER.GetList(x => x.CUST_ID == Customer.CUST_ID) on w.WRF_ID equals c.WRF_ID into validCustomers
+                                   from v in validCustomers.DefaultIfEmpty()
+                                   select new
+                                   {
+                                       //w.WRF_ID,
+                                       //AWS_WRF_ID = v== null ? 0 : v.WRF_ID,
+                                       PCC = WTR_RIGHT_FACILITY.Get(f => f.ID == w.WRF_ID).PCC + (v == null ? "*" : "")
+                                   }).Distinct().Select(x => x.PCC).ToList();
+                }
+                //var wrfId=WRF_CUST.GetList(w => w.CUST_ID == Customer.CUST_ID).Select(w => w.WRF_ID).ToList();
             }
             catch(Exception exception)
             {

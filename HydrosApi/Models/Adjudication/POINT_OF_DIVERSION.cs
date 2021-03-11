@@ -255,7 +255,7 @@
                 char[] delimiters = new[] { ',', ';' };
                 return podSde;
             }
-            catch (Exception exception)
+            catch 
             {
                 // FileNotFoundExceptions are handled here.
                 return POINT_OF_DIVERSION.Get(p => p.OBJECTID == id);

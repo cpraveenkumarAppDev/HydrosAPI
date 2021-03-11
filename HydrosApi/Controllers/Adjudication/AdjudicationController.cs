@@ -174,7 +174,7 @@
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/updateWfr/{useage}/{id}/{wfr_num}")]
         [HttpPost]
-        public async Task<IHttpActionResult> updateWfr(string useage, int id, string wfr_num)
+        public async Task<IHttpActionResult> UpdateWfr(string useage, int id, string wfr_num)
         {
             try
             {
@@ -204,7 +204,7 @@
                 return Ok(wfr);
 
             }
-            catch (Exception exception)
+            catch 
             {
                 return BadRequest("Could not find WFR to assign");
             }
