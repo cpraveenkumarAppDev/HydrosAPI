@@ -327,6 +327,8 @@
     <Compile Include="Models\Adjudication\WFR_POD.cs" />
     <Compile Include="Models\ADWR\CD_CUST_TYPE.cs" />
     <Compile Include="Models\ADWR\CUSTOMER.cs" />
+    <Compile Include="Models\ADWR\HYDROS_MANAGER.cs" />
+    <Compile Include="Models\ADWR\LOCATION.cs" />
     <Compile Include="Models\ADWR\WRF_CUST.cs" />
     <Compile Include="Models\ADWR\WTR_RIGHT_FACILITY.cs" />
     <Compile Include="Models\CD_AMA_INA.cs" />
