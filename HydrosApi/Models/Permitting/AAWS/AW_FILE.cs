@@ -55,10 +55,6 @@ namespace HydrosApi.Models.ADWR
         [StringLength(2000)]
         public string OWNER_NAME { get; set; }
 
-        [Column("PREV_FILENUM")]
-        [StringLength(15)]
-        public string PREV_FILENUM { get; set; }
-
         [Column("CREATEBY")]
         [StringLength(30)]
         public string CREATEBY { get; set; }
