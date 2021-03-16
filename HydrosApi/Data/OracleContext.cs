@@ -36,6 +36,7 @@ namespace HydrosApi.Data
         public virtual DbSet<V_AWS_PROVIDER> V_AWS_PROVIDER { get; set; }
         public virtual DbSet<V_AWS_SUBBAS> V_AWS_SUBBAS { get; set; }
         public virtual DbSet<V_AWS_HYDRO> V_AWS_HYDRO { get; set; }
+        public virtual DbSet<AW_WRF_WRF_DEMAND> AW_WRF_WRF_DEMAND { get; set; }
         public virtual DbSet<V_AWS_COUNTY_BASIN> V_AWS_COUNTY_BASIN { get; set; }
         public virtual DbSet<CD_AW_COUNTY> CD_AW_COUNTY { get; set; }
         public virtual DbSet<POINT_OF_DIVERSION_VIEW> POINT_OF_DIVERSION_VIEW { get; set; }
@@ -52,6 +53,9 @@ namespace HydrosApi.Data
         public virtual DbSet<CD_CUST_TYPE> CD_CUST_TYPE { get; set; }
         public virtual DbSet<HYDROS_MANAGER> HYDROS_MANAGER { get; set; }
         public virtual DbSet<LOCATION> LOCATION { get; set; }
+
+
+       
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
         //public virtual DbSet<WATERSHED_FILE_REPORT> WATERSHED_FILE_REPORT { get; set; }
 

@@ -12,6 +12,7 @@
     using System.Web;
     using Models;
     using System.Threading.Tasks;
+    using Models.Permitting.AAWS;
 
     public class SP_AW_INS:Repository<SP_AW_INS> //for SP_AW_INS_FILE, SP_AW_INS_CONV procedures
     {        

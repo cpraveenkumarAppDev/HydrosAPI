@@ -135,7 +135,7 @@ namespace HydrosApi
                 var applicationList = HYDROS_MANAGER.GetAll();
                 return Ok(applicationList);
             }
-            catch (Exception exception)
+            catch 
             {
                 //log error
                 return InternalServerError();
@@ -226,7 +226,7 @@ namespace HydrosApi
                 //}
                 return Ok(locationList);
             }
-            catch (Exception exception)
+            catch 
             {
                 //log error
                 return InternalServerError();
@@ -267,7 +267,7 @@ namespace HydrosApi
                 }
 
             }
-            catch (Exception exception)
+            catch 
             {
                 return InternalServerError();
             }

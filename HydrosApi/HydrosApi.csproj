@@ -334,6 +334,7 @@
     <Compile Include="Models\CD_AMA_INA.cs" />
     <Compile Include="Models\Permitting\AAWS\AW_AMA_COUNTY_BASIN_SUBBAS.cs" />
     <Compile Include="Models\Permitting\AAWS\AW_APP_ACTIVITY_TRK.cs" />
+    <Compile Include="Models\Permitting\AAWS\AW_WRF_WRF_DEMAND.cs" />
     <Compile Include="Models\Permitting\AAWS\CD_AW_APP_ACTIVITY.cs" />
     <Compile Include="Models\Permitting\AAWS\CD_AW_COMMENT_TYPE.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_COUNTY_BASIN.cs" />
@@ -358,6 +359,7 @@
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\PCC.cs" />
     <Compile Include="ViewModel\ADWR\GeoBoundaryViewModel.cs" />
+    <Compile Include="ViewModel\Permitting\AAWS\AwsHydrologyViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWSNewApp.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWS_CommentsVM.cs" />
     <Compile Include="Data\ADWRContext.cs" />

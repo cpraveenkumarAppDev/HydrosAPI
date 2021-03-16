@@ -1,13 +1,12 @@
-﻿using HydrosApi.Models;
-using HydrosApi.Models.ADWR;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Web;
-
-namespace HydrosApi.ViewModel.Permitting.AAWS
+﻿namespace HydrosApi.ViewModel.Permitting.AAWS
 {
+    using Models;
+    using Models.ADWR;
+    using Models.Permitting.AAWS;  
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+
     public class AWS_CommentsVM
     {
         public int WrfId { get; set; }

@@ -9,10 +9,10 @@ namespace HydrosApi.Controllers
     using System.Text.RegularExpressions;
     using HydrosApi.Data;
     using System.Linq;
-    using HydrosApi.Models.Permitting.AAWS;
+    using Models.Permitting.AAWS;
     using System.Collections.Generic;
-    using HydrosApi.ViewModel.Permitting.AAWS;
-    using HydrosApi.Models.ADWR;
+    using ViewModel.Permitting.AAWS;
+    using Models.ADWR;
     using Oracle.ManagedDataAccess.Client;
     using System.Data.Entity.Infrastructure;
     using System.Net.Http;
@@ -810,6 +810,23 @@ namespace HydrosApi.Controllers
             var custCodeList = AwsCustomerCodes.Select(item => item.Key).ToList();
             var codes = CD_CUST_TYPE.GetList(x => custCodeList.Contains(x.CODE));
             return Ok(codes);
+        }
+
+        [HttpGet, Route("aws/hydrobypcc/{pcc}")]
+        public IHttpActionResult GetHydroByPcc(string pcc)
+        {            
+            Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
+            pcc = regex.Replace(pcc, "$1-$2.$3");
+
+            var hydroView = new AwsHydrologyViewModel(pcc);
+            return Ok(hydroView);            
+        }
+
+        [HttpGet, Route("aws/hydrobyid/{id}")]
+        public IHttpActionResult GetHydroByWrfId(int id)
+        {
+            var hydroView = new AwsHydrologyViewModel(id);
+            return Ok(hydroView);
         }
     }
 }

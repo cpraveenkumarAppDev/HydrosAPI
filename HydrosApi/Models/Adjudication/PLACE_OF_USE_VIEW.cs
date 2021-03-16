@@ -154,10 +154,9 @@
                 var wellList = bocList.Where(p => p.program == "55" || p.program=="35");                
                 var swList = bocList.Where(p => p.program != "55" && p.program != "35");
 
-                pou.Well = wellList == null ? null :
-                    wellList.Select(f => WELLS_VIEW.Get(s => s.FILE_NO == f.file_no && s.PROGRAM==f.program)).ToList();
+                pou.Well = wellList?.Select(f => WELLS_VIEW.Get(s => s.FILE_NO == f.file_no && s.PROGRAM==f.program)).ToList();
 
-                pou.Surfacewater = swList==null ? null : swList.Select(f => SW_AIS_VIEW.Get(s => s.ART_APPLI_NO == f.numeric_file_no)).ToList();
+                pou.Surfacewater = swList?.Select(f => SW_AIS_VIEW.Get(s => s.ART_APPLI_NO == f.numeric_file_no)).ToList();
             }
 
             pou.ProposedWaterRight = PROPOSED_WATER_RIGHT.Get(p => p.POU_ID == pou.DWR_ID);

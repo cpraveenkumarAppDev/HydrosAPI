@@ -1,5 +1,5 @@
 ﻿
-namespace HydrosApi.Models
+namespace HydrosApi.Models.Permitting.AAWS
 {
     using HydrosApi.Data;
     using HydrosApi.Models.ADWR;
@@ -7,9 +7,7 @@ namespace HydrosApi.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
-    using System.Web;
-
+   
     [Table("AWS.AW_COMMENTS")]
     public class AWS_COMMENTS : Repository<AWS_COMMENTS>
     {

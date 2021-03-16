@@ -1,14 +1,12 @@
-﻿namespace HydrosApi.Models
+﻿namespace HydrosApi.Models.Permitting.AAWS
 {
-
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System;
     using Data;
     using ViewModel;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Dynamic;
+    using System.Linq;   
 
     [Table("AWS.V_AWS_GENERAL_INFO")]
     public class V_AWS_GENERAL_INFO : Repository<V_AWS_GENERAL_INFO>
@@ -16,7 +14,6 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public V_AWS_GENERAL_INFO()
         {
-
         }
        
         [Key]
