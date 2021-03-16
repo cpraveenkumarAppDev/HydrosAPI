@@ -336,6 +336,7 @@
     <Compile Include="Models\Permitting\AAWS\AW_APP_ACTIVITY_TRK.cs" />
     <Compile Include="Models\Permitting\AAWS\AW_FILE.cs" />
     <Compile Include="Models\Permitting\AAWS\CD_AW_APP_ACTIVITY.cs" />
+    <Compile Include="Models\Permitting\AAWS\CD_AW_CITY.cs" />
     <Compile Include="Models\Permitting\AAWS\CD_AW_COMMENT_TYPE.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_COUNTY_BASIN.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_CUSTOMER.cs" />

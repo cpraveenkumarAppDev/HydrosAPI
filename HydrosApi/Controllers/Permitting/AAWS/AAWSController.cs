@@ -98,6 +98,21 @@ namespace HydrosApi.Controllers
               }).OrderBy(o=>o.AMA != "OUTSIDE OF AMA OR INA" ? "_"+o.AMA : o.AMA).ToList());           
         }
 
+        [HttpGet, Route("aws/getAwCity")]
+        public IHttpActionResult GetAwCity()
+        {
+            try
+            {
+                var awCityList = CD_AW_CITY.GetAll();
+                return Ok(awCityList);
+            }
+            catch (Exception exception)
+            {
+                //log error
+                return InternalServerError();
+            }
+        }
+
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpGet,Route("aws/getgeneralInfoByPcc/{id}")]        
         public IHttpActionResult GetGeneralInfoByPcc(string id)
