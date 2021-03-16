@@ -52,6 +52,8 @@ namespace HydrosApi.Data
         public virtual DbSet<WRF_CUST> WRF_CUST { get; set; }
         public virtual DbSet<CD_CUST_TYPE> CD_CUST_TYPE { get; set; }
         public virtual DbSet<HYDROS_MANAGER> HYDROS_MANAGER { get; set; }
+        public virtual DbSet<AW_FILE> AW_FILE { get; set; }
+        public virtual DbSet<CD_AW_CITY> CD_AW_CITY { get; set; }
         public virtual DbSet<LOCATION> LOCATION { get; set; }
 
 
