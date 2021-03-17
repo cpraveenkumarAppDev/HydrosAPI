@@ -17,6 +17,7 @@ namespace HydrosApi.Controllers
     using System.Data.Entity.Infrastructure;
     using System.Net.Http;
     using System.Net;
+    using HydrosApi.Services;
 
     public class AAWSController : ApiController
     {
@@ -201,6 +202,45 @@ namespace HydrosApi.Controllers
             }
 
             return Ok(genInfo);
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpGet, Route("aws/get42Parent/{pcc42}")]
+        public async Task<IHttpActionResult> Get42Parent(string pcc42)
+        {
+            try
+            {
+                using(var context = new OracleContext())
+                {
+                    var conveyanceInfo = new ConveyanceInfo(context);
+                    var parent = conveyanceInfo.Get42Parent(new PCC(pcc42));
+                    return Ok(parent);
+                }
+            }
+            catch (Exception exception)
+            {
+                return InternalServerError(exception);
+            }
+        }
+
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpGet, Route("aws/getconveyanceCount/{pcc28}")]
+        public async Task<IHttpActionResult> GetConveyanceCount(string pcc28)
+        {
+            try
+            {
+                using(var context = new OracleContext())
+                {
+                    var conveyanceInfo = new ConveyanceInfo(context);
+                    var pcc = new PCC(pcc28);
+                    var count = conveyanceInfo.Get42ConveyanceCount(pcc);
+                    return Ok(new { PCC = pcc, Count = count});
+                }
+            }
+            catch(Exception exception)
+            {
+                return InternalServerError(exception);
+            }
         }
 
        /* [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]

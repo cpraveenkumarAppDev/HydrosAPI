@@ -41,5 +41,10 @@ namespace HydrosApi.Services
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return $"{this.Program}-{this.Certificate}.{this.Conveyance}";
+        }
     }
 }
