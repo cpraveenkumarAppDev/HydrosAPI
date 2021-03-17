@@ -1,4 +1,5 @@
 ﻿using HydrosApi.Data;
+using HydrosApi.Models.ADWR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,15 +40,21 @@ namespace HydrosApi.Services
         /// <summary>
         /// Get the count of the number of conveyances from a 42 parent
         /// </summary>
-        public List<PCC> Get42ConveyanceCount(PCC pcc28)
+        public List<WTR_RIGHT_FACILITY> Get42ConveyanceCount(PCC pcc28)
         {
             if (pcc28.Program != "28")
                 throw new Exception($"pcc parameter must be a 28 (parent of 42), provided {pcc28}");
             var converter = new ConvertWrfPCC(this.context);
             var found28WRF = converter.ConvertPCCToWrf(pcc28);
-            var foundEntities = this.context.WRF_WRF.Where(x => x.WRF_ID_FROM == found28WRF).Select(x => x.WRF_ID_TO).ToList();
-            var PCCList = foundEntities.Select(x => converter.ConvertWrfToPCC(x));
-            return PCCList.Where(x => x.Program == "42").ToList();
+            var foundEntities = this.context.WRF_WRF
+                .Where(x => x.WRF_ID_FROM == found28WRF)
+                .Join(
+                this.context.WTR_RIGHT_FACILITY,
+                wrfwrf => wrfwrf.WRF_ID_TO, wtr => wtr.ID,
+                (wrfwrf, wtr) => wtr)
+                .Where(x => x.Program == "42")
+                .ToList();
+            return foundEntities;
         }
 
         public void Dispose()

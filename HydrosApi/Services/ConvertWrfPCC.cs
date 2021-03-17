@@ -43,8 +43,10 @@ namespace HydrosApi.Services
             var found = this.context.WTR_RIGHT_FACILITY
                 .Where(x => x.Program == PCC.Program && x.Certificate == PCC.Certificate && x.Conveyance == PCC.Conveyance)
                 .FirstOrDefault();
-            var foundID = found.ID != 0 ? found.ID : 0;
-            return foundID;
+            if (found != null)
+                return found.ID;
+            else
+                return 0;
         }
     }
 }

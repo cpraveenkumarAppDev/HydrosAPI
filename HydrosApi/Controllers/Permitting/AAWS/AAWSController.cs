@@ -234,7 +234,7 @@ namespace HydrosApi.Controllers
                     var conveyanceInfo = new ConveyanceInfo(context);
                     var pcc = new PCC(pcc28);
                     var foundPCCs = conveyanceInfo.Get42ConveyanceCount(pcc);
-                    return Ok(new { PCC = pcc, Count = foundPCCs.Count(), conveyances = foundPCCs});
+                    return Ok(foundPCCs);
                 }
             }
             catch(Exception exception)
