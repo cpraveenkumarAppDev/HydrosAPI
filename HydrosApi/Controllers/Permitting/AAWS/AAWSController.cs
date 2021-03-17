@@ -129,7 +129,51 @@ namespace HydrosApi.Controllers
         {
             return Json(new AWSNewAppViewModel());
         }
+        [HttpGet, Route("aws/getAwFileByWrfId/{id}")]
+        public IHttpActionResult GetAwFileByPcc(int id)
+        {
+            return Ok(AW_FILE.Get(p => p.WRF_ID == id));
+        }
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpPut, Route("aws/UpdateAwFile/{id}")]
+        public async Task<IHttpActionResult> UpdateAwFile([FromBody] AW_FILE af, int id)
+        {
+            af.UPDATEBY = User.Identity.Name.Replace("AZWATER0\\", "");
+            AW_FILE aw_file;
 
+            using (var context = new OracleContext())
+            {
+                aw_file = context.AW_FILE.Where(x => x.WRF_ID == id).FirstOrDefault();
+                if (aw_file != null)
+                {
+                    var props = aw_file.GetType().GetProperties().ToList();
+                    foreach (var prop in props)
+                    {
+                        var value = prop.GetValue(af);
+                        if (value != null)
+                        {
+                            prop.SetValue(aw_file, value);
+                        }
+                    }
+                    await context.SaveChangesAsync();
+                }
+                return Ok(aw_file);
+            }
+        }
+        [HttpGet, Route("aws/getAwCity")]
+        public IHttpActionResult GetAwCity()
+        {
+            try
+            {
+                var awCityList = CD_AW_CITY.GetAll();
+                return Ok(awCityList);
+            }
+            catch (Exception exception)
+            {
+                //log error
+                return InternalServerError();
+            }
+        }
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpGet, Route("aws/diagram/{id}")]
         public IHttpActionResult GetConveyanceDiagram(string id) //New conveyance

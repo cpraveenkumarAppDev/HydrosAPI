@@ -33,7 +33,7 @@ namespace HydrosApi
             else
             {
                 var pages = new List<ActivePage>();
-                var page1 = new ActivePage() { Page = "adjudications", Online=true};
+                var page1 = new ActivePage() { Page = "adjudications", Online = true };
                 var page2 = new ActivePage() { Page = "aaws", Online = true };
                 var page3 = new ActivePage() { Page = "logs", Online = false };
                 pages.Add(page1);
@@ -120,7 +120,7 @@ namespace HydrosApi
                     return BadRequest("no content in the body of the request");
                 }
             }
-            catch 
+            catch
             {
                 return Ok("Failed to send noticiation");
             }
@@ -135,7 +135,7 @@ namespace HydrosApi
                 var applicationList = HYDROS_MANAGER.GetAll();
                 return Ok(applicationList);
             }
-            catch 
+            catch
             {
                 //log error
                 return InternalServerError();
@@ -152,7 +152,7 @@ namespace HydrosApi
             {
                 hydrosManager = context.HYDROS_MANAGER.Where(x => x.ID == id).FirstOrDefault();
                 if (hydrosManager != null)
-                { 
+                {
                     hydrosManager.STATUS = man.STATUS;
                     hydrosManager.USERNAME = user;
                     hydrosManager.STATUS_DT = DateTime.Now;
@@ -170,7 +170,7 @@ namespace HydrosApi
             {
                 found = WTR_RIGHT_FACILITY.Get(x => x.ID == wrf);
             }
-            catch 
+            catch
             {
                 //log exception
                 return InternalServerError();
@@ -187,7 +187,7 @@ namespace HydrosApi
                 PCC validPCC = new PCC(inputPcc);
                 found = WTR_RIGHT_FACILITY.Get(x => x.Program == validPCC.Program && x.Certificate == validPCC.Certificate && x.Conveyance == validPCC.Conveyance);
             }
-            catch 
+            catch
             {
                 //log exception
                 return InternalServerError();
@@ -226,7 +226,7 @@ namespace HydrosApi
                 //}
                 return Ok(locationList);
             }
-            catch 
+            catch
             {
                 //log error
                 return InternalServerError();
@@ -244,35 +244,63 @@ namespace HydrosApi
                     foreach (var location in LocationList)
                     {
                         //TO DO check for dups
-                        //var locationExists = context.LOCATION.Where(x => x.ID == wrfcust.CUST_ID).FirstOrDefault() != null ? true : false;
+                        var locationExists = context.LOCATION.Where(x => x.ID == location.ID).FirstOrDefault() != null ? true : false;
                         //var wrfExists = context.WRF_CUST.Where(x => x.WRF_ID == wrfcust.WRF_ID).FirstOrDefault() != null ? true : false;
                         //var count = LOCATION.GetList(x => x.WRF_ID == wrfcust.WRF_ID && x.CUST_ID == wrfcust.CUST_ID && x.CCT_CODE == wrfcust.CCT_CODE).Count();
                         //if (!customerExists || !wrfExists)
                         //{
                         //    return BadRequest("location wrf does not exist");
                         //}
-                        //if (count > -1)
-                        //{
+                        if (!locationExists)
+                        {
                             location.CREATEBY = userName;
                             location.CREATEDT = DateTime.Now;
                             context.LOCATION.Add(location);
-                        //}
-                        //else
-                        // {
-                        //    return BadRequest("wrf, cust, custType record already exists");
-                        // }
+                        }
                     }
                     context.SaveChanges();
                     return Ok(LocationList);
                 }
 
             }
-            catch 
+            catch
             {
                 return InternalServerError();
             }
         }
+        [HttpPost, Route("adwr/deleteCadastralByWrf/{wrf}")]
+        public IHttpActionResult DeleteCadastralByWrf([FromBody] List<LOCATION> LocationList, int wrf)
+        {
+            try
+            {
+                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
+                using (var context = new OracleContext())
+                {
+                    foreach (var location in LocationList)
+                    {
+                        //TO DO check for dups
+                        var locationExists = context.LOCATION.Where(x => x.ID == location.ID).FirstOrDefault() != null ? true : false;
+                        //var wrfExists = context.WRF_CUST.Where(x => x.WRF_ID == wrfcust.WRF_ID).FirstOrDefault() != null ? true : false;
+                        //var count = LOCATION.GetList(x => x.WRF_ID == wrfcust.WRF_ID && x.CUST_ID == wrfcust.CUST_ID && x.CCT_CODE == wrfcust.CCT_CODE).Count();
+                        //if (!customerExists || !wrfExists)
+                        //{
+                        //    return BadRequest("location wrf does not exist");
+                        //}
+                        if (locationExists)
+                        {
+                            LOCATION.Delete(location);
+                        }
+                    }
+                    context.SaveChanges();
+                    return Ok(LocationList);
+                }
 
+            }
+            catch
+            {
+                return InternalServerError();
+            }
+        }
     }
 
 

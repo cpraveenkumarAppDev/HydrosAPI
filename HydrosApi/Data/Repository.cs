@@ -43,7 +43,14 @@ using System.Data.Entity.Infrastructure;
                 return databaseContext.Set<T>().Where(predicate).ToList();
             }
         }
-
+        public static void Delete(T entity)
+        {
+            using (var databaseContext = new OracleContext())
+            {
+                databaseContext.Entry(entity).State = EntityState.Deleted;
+                databaseContext.SaveChanges();
+            }
+        }
         public static List<T> GetList(Expression<Func<T, bool>> predicate, Expression<Func<T, byte>> orderByPredicate)
         {
             using (var databaseContext = new OracleContext())
