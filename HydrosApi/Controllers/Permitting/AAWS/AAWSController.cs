@@ -223,7 +223,7 @@ namespace HydrosApi.Controllers
             }
         }
 
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpGet, Route("aws/getconveyanceCount/{pcc28}")]
         public async Task<IHttpActionResult> GetConveyanceCount(string pcc28)
         {
@@ -232,8 +232,13 @@ namespace HydrosApi.Controllers
                 using(var context = new OracleContext())
                 {
                     var conveyanceInfo = new ConveyanceInfo(context);
-                    var pcc = new PCC(pcc28);
-                    var foundPCCs = conveyanceInfo.Get42ConveyanceCount(pcc);
+                    var checkedPCC = new PCC(pcc28);
+
+                    if(checkedPCC.Program == "42")
+                    {
+                        checkedPCC = conveyanceInfo.Get42Parent(checkedPCC);
+                    }
+                    var foundPCCs = conveyanceInfo.Get42ConveyanceCount(checkedPCC);
                     return Ok(foundPCCs);
                 }
             }
