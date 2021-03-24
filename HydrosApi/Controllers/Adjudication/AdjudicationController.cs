@@ -48,7 +48,18 @@
         //--------------------------------------------------------------------------------------------------------
         //---------------------------------- WEB SERVICE REQUESTS ------------------------------------------------
         //--------------------------------------------------------------------------------------------------------       
+        [Route("adj/getmapurls")]
+        [HttpGet]
+        public IHttpActionResult GetMapUrls()
+        {
+  
+            string[] repositoryUrls = ConfigurationManager.AppSettings.AllKeys
+                 .Where(key => key.StartsWith("gisAdjUrl"))
+                 .Select(key => ConfigurationManager.AppSettings[key])
+                 .ToArray();
+            return Ok(repositoryUrls);
 
+        }
         [Route("adj/getpwr/{id}")]
         [HttpGet]
         public async Task<IHttpActionResult> GetProposedWaterRight(string id)
@@ -204,7 +215,7 @@
                 return Ok(wfr);
 
             }
-            catch 
+            catch
             {
                 return BadRequest("Could not find WFR to assign");
             }

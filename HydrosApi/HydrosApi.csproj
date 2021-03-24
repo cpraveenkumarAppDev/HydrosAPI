@@ -433,6 +433,7 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
+    <Content Include="Adj.config" />
     <None Include="packages.config" />
     <Content Include="Properties\launchSettings.json" />
     <None Include="Web.Debug.config">

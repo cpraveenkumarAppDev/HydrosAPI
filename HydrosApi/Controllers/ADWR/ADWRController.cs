@@ -151,7 +151,7 @@ namespace HydrosApi
             using (var context = new OracleContext())
             {
                 hydrosManager = context.HYDROS_MANAGER.Where(x => x.ID == id).FirstOrDefault();
-                if (hydrosManager != null)
+                if (hydrosManager != null && hydrosManager.STATUS !=man.STATUS)
                 {
                     hydrosManager.STATUS = man.STATUS;
                     hydrosManager.USERNAME = user;
@@ -259,7 +259,9 @@ namespace HydrosApi
                         }
                     }
                     context.SaveChanges();
-                    return Ok(LocationList);
+                    var locationList = LOCATION.GetList(x => x.WRF_ID == wrf);
+
+                    return Ok(locationList);
                 }
 
             }
@@ -292,7 +294,9 @@ namespace HydrosApi
                         }
                     }
                     context.SaveChanges();
-                    return Ok(LocationList);
+                    var locationList = LOCATION.GetList(x => x.WRF_ID == wrf);
+
+                    return Ok(locationList);
                 }
 
             }
