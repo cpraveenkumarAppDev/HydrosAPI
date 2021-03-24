@@ -161,6 +161,7 @@ namespace HydrosApi.Controllers
                 return Ok(aw_file);
             }
         }
+
         [HttpGet, Route("aws/getAwCity")]
         public IHttpActionResult GetAwCity()
         {
@@ -175,6 +176,47 @@ namespace HydrosApi.Controllers
                 return InternalServerError();
             }
         }
+
+        [HttpGet, Route("aws/getWellServingById/{id}")]
+        public IHttpActionResult GetWellServingById(int id)
+        {
+            List<V_AWS_WELL_SERVING> wellServingList;
+            try
+            {
+                wellServingList = V_AWS_WELL_SERVING.GetList(x => x.WRF_ID == id);
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError();
+            }
+            return Ok(wellServingList);
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        [HttpPost, Route("aws/addWellServing/{wrf}/{well}")]
+        public IHttpActionResult AddWellServing(int wrf, string well)
+        {
+            var record = new AW_WELL_SERVING
+            {
+                CREATEDT = DateTime.Now,
+                WRF_ID = wrf,
+                WELL_REGISTRY_ID = well,
+                CREATEBY = User.Identity.Name.Replace(@"AZWATER0\", "")
+            };
+
+            try
+            {
+                AW_WELL_SERVING.Add(record);
+                return Ok("Created");
+            }
+            catch
+            {
+                //log exception
+                return InternalServerError();
+            }
+        }
+
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpGet, Route("aws/diagram/{id}")]
         public IHttpActionResult GetConveyanceDiagram(string id) //New conveyance

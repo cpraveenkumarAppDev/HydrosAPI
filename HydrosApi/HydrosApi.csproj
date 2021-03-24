@@ -336,6 +336,7 @@
     <Compile Include="Models\Permitting\AAWS\AW_AMA_COUNTY_BASIN_SUBBAS.cs" />
     <Compile Include="Models\Permitting\AAWS\AW_APP_ACTIVITY_TRK.cs" />
     <Compile Include="Models\Permitting\AAWS\AW_FILE.cs" />
+    <Compile Include="Models\Permitting\AAWS\AW_WELL_SERVING.cs" />
     <Compile Include="Models\Permitting\AAWS\AW_WRF_WRF_DEMAND.cs" />
     <Compile Include="Models\Permitting\AAWS\CD_AW_APP_ACTIVITY.cs" />
     <Compile Include="Models\Permitting\AAWS\CD_AW_CITY.cs" />
@@ -346,6 +347,7 @@
     <Compile Include="Models\Permitting\AAWS\V_AWS_HYDRO.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_PROVIDER.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_SUBBAS.cs" />
+    <Compile Include="Models\Permitting\AAWS\V_AWS_WELL_SERVING.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_WQ.cs" />
     <Compile Include="Models\Permitting\AAWS\V_CD_AW_AMA_INA.cs" />
     <Compile Include="Models\Permitting\AAWS\V_AWS_OAWS.cs" />

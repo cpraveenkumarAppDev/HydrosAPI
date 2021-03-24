@@ -55,6 +55,8 @@ namespace HydrosApi.Data
         public virtual DbSet<AW_FILE> AW_FILE { get; set; }
         public virtual DbSet<CD_AW_CITY> CD_AW_CITY { get; set; }
         public virtual DbSet<LOCATION> LOCATION { get; set; }
+        public virtual DbSet<AW_WELL_SERVING> AW_WELL_SERVING { get; set; }
+        public virtual DbSet<V_AWS_WELL_SERVING> V_AWS_WELL_SERVING { get; set; }
         public virtual DbSet<WRF_WRF> WRF_WRF { get; set; }
 
 
