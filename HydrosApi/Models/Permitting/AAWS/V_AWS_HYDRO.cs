@@ -1,5 +1,6 @@
 ﻿namespace HydrosApi.Models.Permitting.AAWS
 {
+    using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema; 
     using Data;
@@ -80,6 +81,14 @@
         [Column("CRITERIA_MET_RECHARGE")]
         public string CRITERIA_MET_RECHARGE { get; set; }
 
-        
+        [Column("REGISTERED_GEOLOGIST_REQ")]
+        public string REGISTERED_GEOLOGIST_REQ { get; set; }
+
+        [Column("HYDRO_STUDY_SUBMITTED")]
+        public DateTime? HYDRO_STUDY_SUBMITTED { get; set; }
+
+        [Column("IMPACT_ANALYSIS_SUBMITTED")]
+        public DateTime? IMPACT_ANALYSIS_SUBMITTED { get; set; }
+
     }
 }

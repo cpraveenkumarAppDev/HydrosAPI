@@ -13,35 +13,8 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         public V_AWS_CUSTOMER_LONG_NAME Customer { get; set; }
         public List<WRF_CUST> Waterrights { get; set; }
         public List<string> PccList { get; set; }
-        /// <summary>
-        /// Get all PCCs associated with the customer id
-        /// </summary>
-        /*public List<string> PccListx
-        {
-            get
-            {
-                if (Customer == null)
-                    return null;
-                //var allWrfId = WRF_CUST.GetList(w => w.CUST_ID == Customer.CUST_ID).Select(w => w.WRF_ID).ToList();
-                //return WTR_RIGHT_FACILITY.GetList(f => allWrfId.Contains(f.ID)).Select(f => f.PCC).Distinct().ToList();
-
-                return V_AWS_CUSTOMER_PCC.GetList(w => w.CUST_ID == Customer.CUST_ID).Select(w => w.PCC).ToList();
-            }
-            set
-            {
-                value = this.PccList;
-            }
-        }*/
-
-        public int WaterRightsCount {
-            get {
-                return PccList != null ? PccList.Count() : 0;
-            }
-            set
-            {
-                this.WaterRightsCount = value;
-            }
-        }
+        public int WaterRightsCount { get; set; }
+      
 
         public Aws_customer_wrf_ViewModel()
         {
@@ -55,7 +28,8 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         public Aws_customer_wrf_ViewModel(V_AWS_CUSTOMER_LONG_NAME customer, List<WRF_CUST> wrfCustList)
         {
             this.Customer = customer;
-            this.Waterrights = wrfCustList;    
+            this.Waterrights = wrfCustList;
+            this.WaterRightsCount = wrfCustList != null ? wrfCustList.Count() : 0;
         }
         /// <summary>
         /// finds customer by ID and CustomerType and queries wrf_cust relations by wrf
@@ -68,8 +42,7 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
             try
             {
                 this.Customer = V_AWS_CUSTOMER_LONG_NAME.Get(x => x.CUST_ID == custId);
-                var wrfCust = WRF_CUST.GetList(w => w.CUST_ID == Customer.CUST_ID);
-                
+                var wrfCust = WRF_CUST.GetList(w => w.CUST_ID == Customer.CUST_ID);                
 
                 if (custType == null)
                 {
@@ -82,6 +55,7 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
 
                 if(wrfCust != null)
                 {
+                    this.WaterRightsCount = wrfCust.Count();
                     this.PccList = (from w in wrfCust
                                    join c in V_AWS_CUSTOMER.GetList(x => x.CUST_ID == Customer.CUST_ID) on w.WRF_ID equals c.WRF_ID into validCustomers
                                    from v in validCustomers.DefaultIfEmpty()
@@ -91,6 +65,7 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
                                        //AWS_WRF_ID = v== null ? 0 : v.WRF_ID,
                                        PCC = WTR_RIGHT_FACILITY.Get(f => f.ID == w.WRF_ID).PCC + (v == null ? "*" : "")
                                    }).Distinct().Select(x => x.PCC).ToList();
+                    
                 }
                 //var wrfId=WRF_CUST.GetList(w => w.CUST_ID == Customer.CUST_ID).Select(w => w.WRF_ID).ToList();
             }
@@ -107,6 +82,7 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         {
             this.Customer = customer;
             this.Waterrights = WRF_CUST.GetList(x => x.CUST_ID == customer.CUST_ID).OrderBy(x => x.WRF_ID).ToList();
+            this.WaterRightsCount = this.Waterrights != null ? this.Waterrights.Count() : 0;
         }
                        
         public string IsValidMsg()
