@@ -59,6 +59,8 @@ namespace HydrosApi.Data
         public virtual DbSet<V_AWS_WELL_SERVING> V_AWS_WELL_SERVING { get; set; }
         public virtual DbSet<WRF_WRF> WRF_WRF { get; set; }
 
+        public virtual DbSet<V_AWS_AMA> V_AWS_AMA { get; set; }
+
 
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
         //public virtual DbSet<WATERSHED_FILE_REPORT> WATERSHED_FILE_REPORT { get; set; }

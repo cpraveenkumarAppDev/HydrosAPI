@@ -210,10 +210,28 @@ namespace HydrosApi.Controllers
                 AW_WELL_SERVING.Add(record);
                 return Ok("Created");
             }
-            catch
+            catch(Exception exception)
             {
                 //log exception
-                return InternalServerError();
+                return InternalServerError(exception);
+            }
+        }
+
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        [HttpGet, Route("aws/amaDetail/{wrfid:int}")]
+        public IHttpActionResult GetAmaDetail(int wrfid)
+        {
+            try
+            {
+                using(var context = new OracleContext())
+                {
+                    var found = context.V_AWS_AMA.Where(x => x.WRFID == wrfid).FirstOrDefault();
+                    return Ok(found);
+                }
+            }
+            catch (Exception exception)
+            {
+                return InternalServerError(exception);
             }
         }
 
