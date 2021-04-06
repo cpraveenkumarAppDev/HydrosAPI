@@ -13,6 +13,7 @@ namespace HydrosApi.Models.Permitting.AAWS
     {
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+        [Column("ID")]
         public int Id { get; set; }//ID
 
         [Column("WRF_ID")]
@@ -28,6 +29,6 @@ namespace HydrosApi.Models.Permitting.AAWS
         public string CreateBy { get; set; }//CREATEBY
 
         [Column("CREATEDT")]
-        public DateTime CreateDt  { get; set; }//CREATEDT
+        public DateTime CreateDt { get; set; }//CREATEDT
     }
 }
