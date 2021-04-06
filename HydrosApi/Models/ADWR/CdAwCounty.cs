@@ -9,11 +9,13 @@ using System.Web;
 namespace HydrosApi.Models.ADWR
 {
     [Table("AWS.CD_AW_COUNTY")]
-    public class CD_AW_COUNTY : Repository<CD_AW_COUNTY>
+    public class CdAwCounty : Repository<CdAwCounty>//CD_AW_COUNTY
     {
         [Key]
-        public string CODE { get; set; }
+        [Column("CODE")]
+        public string Code { get; set; }//CODE
 
-        public string DESCR { get; set; }
+        [Column("DESCR")]
+        public string Description { get; set; }//DESCR
     }
 }

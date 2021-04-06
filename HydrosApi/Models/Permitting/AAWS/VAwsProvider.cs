@@ -6,24 +6,27 @@
     using Data;
 
     [Table("AWS.V_AWS_PROVIDER")]
-    public class V_AWS_PROVIDER : Repository<V_AWS_PROVIDER>
+    public class VAwsProvider : Repository<VAwsProvider>//V_AWS_PROVIDER
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public V_AWS_PROVIDER()
+        public VAwsProvider()
         {
         }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("PROVIDER_WRF_ID")]
-        public int? PROVIDER_WRF_ID { get; set; }
+        public int? ProviderWaterRightFacilityId { get; set; }//PROVIDER_WRF_ID
+
         [Column("PROVIDER_NAME")]
-        public string PROVIDER_NAME { get; set; }
+        public string ProviderName { get; set; }//PROVIDER_NAME
+
         [Column("PROVIDER_PCC")]
-        public string PROVIDER_PCC { get; set; }
+        public string ProviderPCC { get; set; }//PROVIDER_PCC
+
         [Column("PROVIDER_AMA_CODE")]
-        public string PROVIDER_AMA_CODE { get; set; }
+        public string ProviderAmaCode { get; set; }//PROVIDER_AMA_CODE
 
         [Column("PROVIDER_PWSID")]
-        public string PWS_ID_Number { get; set; }
+        public string ProviderPublicWaterSystemId { get; set; }//PWS_ID_Number
     }
 }

@@ -22,7 +22,7 @@ namespace HydrosApi.Services
         /// <returns></returns>
         public PCC ConvertWrfToPCC(int wrf)
         {
-            var newPCC = new PCC(this.context.WTR_RIGHT_FACILITY.Where(x => x.ID == wrf).FirstOrDefault().PCC);
+            var newPCC = new PCC(this.context.WTR_RIGHT_FACILITY.Where(x => x.Id == wrf).FirstOrDefault().PCC);
             return newPCC;
         }
 
@@ -34,7 +34,7 @@ namespace HydrosApi.Services
         public int ConvertPCCToWrf(string inPCC)
         {
             var pccObject = new PCC(inPCC);
-            var found = this.context.WTR_RIGHT_FACILITY.Where(x => x.PCC == pccObject.ToString()).FirstOrDefault().ID;
+            var found = this.context.WTR_RIGHT_FACILITY.Where(x => x.PCC == pccObject.ToString()).FirstOrDefault().Id;
             return found;
         }
 
@@ -44,7 +44,7 @@ namespace HydrosApi.Services
                 .Where(x => x.Program == PCC.Program && x.Certificate == PCC.Certificate && x.Conveyance == PCC.Conveyance)
                 .FirstOrDefault();
             if (found != null)
-                return found.ID;
+                return found.Id;
             else
                 return 0;
         }

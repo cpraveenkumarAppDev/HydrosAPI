@@ -2,21 +2,19 @@
    
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
- 
-
 
     [Table("AWS.AW_VERIFIED_OAWS")]
-    public class AW_VERIFIED_OAWS
+    public class AwVerifiedOaws//AW_VERIFIED_OAWS
     {
         [Key]
-        
-        public int WRF_ID { get; set; }
+        [Column("WRF_ID")]
+        public int WaterRightFacilityId { get; set; }//WRF_ID
 
-     
-        public string APP_COMPLETE { get; set; }
+        [Column("APP_COMPLETE")]
+        public string AppComplete { get; set; }//APP_COMPLETE
 
-       
-        public string APP_ACCEPTED { get; set; }
+        [Column("APP_ACCEPTED")]
+        public string AppAccepted { get; set; }//APP_ACCEPTED
 
         //hydro_study_contracts varchar2(1)
         //contracts_attached varchar2(1)

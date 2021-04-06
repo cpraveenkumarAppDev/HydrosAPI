@@ -8,33 +8,33 @@ using System.Web;
 namespace HydrosApi.Models.ADWR
 {
     [Table("RGR.WRF_WRF")]
-    public class WRF_WRF
+    public class WaterRightFacilityToWaterRightFacility//WRF_WRF
     {
         [Key, Column("WRF_ID_FROM", Order = 0)]
-        public int WRF_ID_FROM { get; set; }
+        public int WaterRightFacilityIdFrom { get; set; }//WRF_ID_FROM
 
         [Key, Column("CWFT_CODE", Order = 1), StringLength(4)]
-        public string CWFT_CODE { get; set; }
+        public string RelationshipTypeCode { get; set; }//CWFT_CODE
 
         [Column("WRF_ID_TO")]
-        public int WRF_ID_TO { get; set; }
+        public int WaterRightFacilityIdTo { get; set; }//WRF_ID_TO
 
         [Column("IS_ACTIVE"), StringLength(1)]
-        public string IS_ACTIVE { get; set; }
+        public string IsActive { get; set; }//IS_ACTIVE
 
         [Column("CREATEBY"), StringLength(30)]
-        public string CREATEBY { get; set; }
+        public string CreateBy { get; set; }//CREATEBY
 
         [Column("CREATEDT")]
-        public DateTime? CREATEDT { get; set; }
+        public DateTime? CreateDt { get; set; }//CREATEDT
 
         [Column("UPDATEBY"), StringLength(30)]
-        public string UPDATEBY { get; set; }
+        public string UpdateBy { get; set; }//UPDATEBY
 
         [Column("UPDATEDT")]
-        public DateTime? UPDATEDT { get; set; }
+        public DateTime? UpdateDt { get; set; }//UPDATEDT
 
         [Column("AR_REPORTING_FLAG"), StringLength(1)]
-        public string AR_REPORTING_FLAG { get; set; }
+        public string ArReportingFlag { get; set; }//AR_REPORTING_FLAG
     }
 }

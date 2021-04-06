@@ -11,21 +11,26 @@ namespace HydrosApi.Models.Permitting.AAWS
     using System.Web;
 
     [Table("AWS.V_AWS_COUNTY_BASIN")]
-    public class V_AWS_COUNTY_BASIN : Repository<V_AWS_COUNTY_BASIN>
+    public class VAwsCountyBasin : Repository<VAwsCountyBasin>//V_AWS_COUNTY_BASIN
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("COUNTY")]
-        public string COUNTY_NAME { get; set; }
+        public string CountyName { get; set; }//COUNTY_NAME
+
         [Column("AMA_CODE")]
-        public string AMA_CODE { get; set; }
+        public string AmaCode { get; set; }//AMA_CODE
+
         [Column("BASIN_ABBR")]
-        public string BASIN_ABBR { get; set; }
+        public string BasinAbbr { get; set; }//BASIN_ABBR
+
         [Column("BASIN_NAME")]
-        public string BASIN_NAME { get; set; }
+        public string BasinName { get; set; }//BASIN_NAME
+
         [Column("SUBBASIN_ABBR")]
-        public string SUBBASIN_ABBR { get; set; }
+        public string SubbasinAbbr { get; set; }//SUBBASIN_ABBR
+
         [Column("SUBBASIN_NAME")]
-        public string SUBBASIN_NAME { get; set; }
+        public string SubbasinName { get; set; }//SUBBASIN_NAME
     }
 }

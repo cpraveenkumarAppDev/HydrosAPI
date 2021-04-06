@@ -10,67 +10,67 @@ using System.Web;
 namespace HydrosApi.Models.ADWR
 {
     [Table("AWS.AW_FILE")]
-    public class AW_FILE : Repository<AW_FILE>
+    public class AwFile : Repository<AwFile>//AW_FILE
     {
         [Column("WRF_ID")]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int WRF_ID { get; set; }
+        public int WaterRightFacilityId { get; set; }//WRF_ID
 
         [Column("CACY_CODE")]
         [StringLength(4)]
-        public string CACY_CODE { get; set; }
+        public string CountyCode { get; set; }//CACY_CODE
 
         [Column("CACT_CODE")]
         [StringLength(4)]
-        public string CACT_CODE { get; set; }
+        public string CityCode { get; set; }//CACT_CODE
 
         [Column("CAPA_CODE")]
         [StringLength(4)]
-        public string CAPA_CODE { get; set; }
+        public string PlattingAuthorityCode { get; set; }//CAPA_CODE
 
         [Column("CASB_CODE")]
         [StringLength(4)]
-        public string CASB_CODE { get; set; }
+        public string SubbasinCode { get; set; }//CASB_CODE
 
         [Column("ORIG_CERT_DATE")]
-        public DateTime? ORIG_CERT_DATE { get; set; }
+        public DateTime? OriginalCertificateDate { get; set; }//ORIG_CERT_DATE
 
         [Column("PREV_SUBDIVISION")]
         [StringLength(120)]
-        public string PREV_SUBDIVISION { get; set; }
+        public string PreviousSubdivision { get; set; }//PREV_SUBDIVISION
 
         [Column("PREV_FILENUM")]
         [StringLength(15)]
-        public string PREV_FILENUM { get; set; }
+        public string PreviousFileNumber { get; set; }//PREV_FILENUM
 
         [Column("NUM_OF_LOTS")]
-        public int? NUM_OF_LOTS { get; set; }
+        public int? NumberOfLots { get; set; }//NUM_OF_LOTS
 
         [Column("ANALYSIS_DWR_NUM")]
         [StringLength(15)]
-        public string ANALYSIS_DWR_NUM { get; set; }
+        public string AnalysisDwrNumber { get; set; }//ANALYSIS_DWR_NUM
 
         [Column("OWNER_NAME")]
         [StringLength(2000)]
-        public string OWNER_NAME { get; set; }
+        public string OwnerName { get; set; }//OWNER_NAME
 
         [Column("CREATEBY")]
         [StringLength(30)]
-        public string CREATEBY { get; set; }
+        public string CreateBy { get; set; }//CREATEBY
 
         [Column("CREATEDT")]
-        public DateTime? CREATEDT { get; set; }
+        public DateTime? CreateDt { get; set; }//CREATEDT
 
         [Column("UPDATEBY")]
         [StringLength(30)]
-        public string UPDATEBY { get; set; }
+        public string UpdateBy { get; set; }//UPDATEBY
 
         [Column("UPDATEDT")]
-        public DateTime? UPDATEDT { get; set; }
+        public DateTime? UpdateDt { get; set; }//UPDATEDT
 
         [Column("FILE_REVIEWER")]
         [StringLength(30)]
-        public string FILE_REVIEWER { get; set; }
+        public string FileReviewer { get; set; }//FILE_REVIEWER
     }
 }

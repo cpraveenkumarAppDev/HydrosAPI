@@ -18,18 +18,18 @@
         public static List<AWS_CommentsVM> GetComments(int id)
         {
             List<AWS_CommentsVM> AWS_CommentsVM = new List<AWS_CommentsVM>();
-            var awsComments = AWS_COMMENTS.GetList(p => p.WRF_ID == id).OrderByDescending(t => t.CMT_DT_TIME);
+            var awsComments = AwsComments.GetList(p => p.WaterRightFacilityId == id).OrderByDescending(t => t.CommentDate);
             foreach (var comments in awsComments)
             {
-                var user = AW_USERS.Get(p => p.ID == comments.AUSR_ID);
-                var commentTypes = CD_AW_COMMENT_TYPE.Get(p => p.CODE == comments.CACM_CODE);
+                var user = AwUsers.Get(p => p.Id == comments.AwsUserId);
+                var commentTypes = CdAwCommentType.Get(p => p.Code == comments.CommentTypeCode);
                 var commentObj = new AWS_CommentsVM();
-                commentObj.WrfId = comments.WRF_ID;
-                commentObj.Date = comments.CMT_DT_TIME.ToString("g",DateTimeFormatInfo.InvariantInfo);
-                commentObj.Code = commentTypes.CODE;
-                commentObj.Description = commentTypes.DESCR;
-                commentObj.FileManager = user.FIRST_NAME + " " + user.LAST_NAME;
-                commentObj.Comment = comments.COMMENTS;
+                commentObj.WrfId = comments.WaterRightFacilityId;
+                commentObj.Date = comments.CommentDate.ToString("g",DateTimeFormatInfo.InvariantInfo);
+                commentObj.Code = commentTypes.Code;
+                commentObj.Description = commentTypes.Description;
+                commentObj.FileManager = user.FirstName + " " + user.LastName;
+                commentObj.Comment = comments.Comments;
                 AWS_CommentsVM.Add(commentObj);
             };
 

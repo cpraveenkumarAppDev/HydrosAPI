@@ -17,49 +17,49 @@ namespace HydrosApi.Data
 
             base.Configuration.ProxyCreationEnabled = false;
         }
-        public virtual DbSet<V_AWS_WQ> V_AWS_WQ { get; set; }
+        public virtual DbSet<VAwsWq> V_AWS_WQ { get; set; }
 
-        public virtual DbSet<V_CD_AW_AMA_INA> V_CD_AW_AMA_INA { get; set; }
-        public virtual DbSet<V_CD_AW_APP_FEE_RATES> V_CD_AW_APP_FEE_RATES { get; set; }
-        public virtual DbSet<CD_AW_COMMENT_TYPE> CD_AW_COMMENT_TYPE { get; set; }
+        public virtual DbSet<VCdAwAmaIna> V_CD_AW_AMA_INA { get; set; }
+        public virtual DbSet<VCdAwAppFeeRates> V_CD_AW_APP_FEE_RATES { get; set; }
+        public virtual DbSet<CdAwCommentType> CD_AW_COMMENT_TYPE { get; set; }
 
-        public virtual DbSet<V_AWS_GENERAL_INFO> V_AWS_GENERAL_INFO { get; set; }
-        public virtual DbSet<V_AWS_OAWS> V_AWS_OAWS { get; set; }
+        public virtual DbSet<VAwsGeneralInfo> V_AWS_GENERAL_INFO { get; set; }
+        public virtual DbSet<VAwsOaws> V_AWS_OAWS { get; set; }
 
-        public virtual DbSet<AW_APP_ACTIVITY_TRK> AW_APP_ACTIVITY_TRK { get; set; }
-        public virtual DbSet<CD_AW_APP_ACTIVITY> CD_AW_APP_ACTIVITY { get; set; }
+        public virtual DbSet<AwAppActivityTrk> AW_APP_ACTIVITY_TRK { get; set; }
+        public virtual DbSet<CdAwAppActivity> CD_AW_APP_ACTIVITY { get; set; }
 
         public virtual DbSet<FILE> FILES { get; set; }
-        public virtual DbSet<AW_AMA_COUNTY_BASIN_SUBBAS> AW_AMA_COUNTY_BASIN_SUBBAS { get; set; }
+        public virtual DbSet<AwAmaCountyBasinSubbasin> AW_AMA_COUNTY_BASIN_SUBBAS { get; set; }
         public virtual DbSet<PROPOSED_WATER_RIGHT> PROPOSED_WATER_RIGHT { get; set; }
         public virtual DbSet<PWR_POD> PWR_POD { get; set; }
-        public virtual DbSet<V_AWS_PROVIDER> V_AWS_PROVIDER { get; set; }
-        public virtual DbSet<V_AWS_SUBBAS> V_AWS_SUBBAS { get; set; }
-        public virtual DbSet<V_AWS_HYDRO> V_AWS_HYDRO { get; set; }
-        public virtual DbSet<AW_WRF_WRF_DEMAND> AW_WRF_WRF_DEMAND { get; set; }
-        public virtual DbSet<V_AWS_COUNTY_BASIN> V_AWS_COUNTY_BASIN { get; set; }
-        public virtual DbSet<CD_AW_COUNTY> CD_AW_COUNTY { get; set; }
+        public virtual DbSet<VAwsProvider> V_AWS_PROVIDER { get; set; }
+        public virtual DbSet<VAwsSubbasin> V_AWS_SUBBAS { get; set; }
+        public virtual DbSet<VAwsHydro> V_AWS_HYDRO { get; set; }
+        public virtual DbSet<AwWrfWrfDemand> AW_WRF_WRF_DEMAND { get; set; }
+        public virtual DbSet<VAwsCountyBasin> V_AWS_COUNTY_BASIN { get; set; }
+        public virtual DbSet<CdAwCounty> CD_AW_COUNTY { get; set; }
         public virtual DbSet<POINT_OF_DIVERSION_VIEW> POINT_OF_DIVERSION_VIEW { get; set; }
         public virtual DbSet<WFR_POD> WFR_POD { get; set; }
-        public virtual DbSet<AW_USERS> AW_USERS { get; set; }        
+        public virtual DbSet<AwUsers> AW_USERS { get; set; }        
 
-        public virtual DbSet<WTR_RIGHT_FACILITY> WTR_RIGHT_FACILITY { get; set; }
-        public virtual DbSet<AWS_COMMENTS> AWS_COMMENTS { get; set; }
-        public virtual DbSet<V_AWS_CUSTOMER_LONG_NAME> V_AWS_CUSTOMER_LONG_NAME { get; set; }
-        public virtual DbSet<V_AWS_CUSTOMER> V_AWS_CUSTOMER{ get; set; }
-        public virtual DbSet<CUSTOMER> CUSTOMER { get; set; }
-        public virtual DbSet<AW_CUST_LONG_NAME> AW_CUST_LONG_NAME { get; set; }
-        public virtual DbSet<WRF_CUST> WRF_CUST { get; set; }
-        public virtual DbSet<CD_CUST_TYPE> CD_CUST_TYPE { get; set; }
-        public virtual DbSet<HYDROS_MANAGER> HYDROS_MANAGER { get; set; }
-        public virtual DbSet<AW_FILE> AW_FILE { get; set; }
-        public virtual DbSet<CD_AW_CITY> CD_AW_CITY { get; set; }
-        public virtual DbSet<LOCATION> LOCATION { get; set; }
-        public virtual DbSet<AW_WELL_SERVING> AW_WELL_SERVING { get; set; }
-        public virtual DbSet<V_AWS_WELL_SERVING> V_AWS_WELL_SERVING { get; set; }
-        public virtual DbSet<WRF_WRF> WRF_WRF { get; set; }
+        public virtual DbSet<WaterRightFacility> WTR_RIGHT_FACILITY { get; set; }
+        public virtual DbSet<AwsComments> AWS_COMMENTS { get; set; }
+        public virtual DbSet<VAwsCustomerLongName> V_AWS_CUSTOMER_LONG_NAME { get; set; }
+        public virtual DbSet<VAwsCustomer> V_AWS_CUSTOMER{ get; set; }
+        public virtual DbSet<Customer> CUSTOMER { get; set; }
+        public virtual DbSet<AwCustLongName> AW_CUST_LONG_NAME { get; set; }
+        public virtual DbSet<WaterRightFacilityCustomer> WRF_CUST { get; set; }
+        public virtual DbSet<CdCustType> CD_CUST_TYPE { get; set; }
+        public virtual DbSet<HydrosManager> HYDROS_MANAGER { get; set; }
+        public virtual DbSet<AwFile> AW_FILE { get; set; }
+        public virtual DbSet<CdAwCity> CD_AW_CITY { get; set; }
+        public virtual DbSet<Location> LOCATION { get; set; }
+        public virtual DbSet<AwWellServing> AW_WELL_SERVING { get; set; }
+        public virtual DbSet<VAwsWellServing> V_AWS_WELL_SERVING { get; set; }
+        public virtual DbSet<WaterRightFacilityToWaterRightFacility> WRF_WRF { get; set; }
 
-        public virtual DbSet<V_AWS_AMA> V_AWS_AMA { get; set; }
+        public virtual DbSet<VAwsActiveManagementArea> V_AWS_AMA { get; set; }
 
 
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }

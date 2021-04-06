@@ -9,10 +9,10 @@
     using System.Linq;   
 
     [Table("AWS.V_AWS_GENERAL_INFO")]
-    public class V_AWS_GENERAL_INFO : Repository<V_AWS_GENERAL_INFO>
+    public class VAwsGeneralInfo : Repository<VAwsGeneralInfo>//V_AWS_GENERAL_INFO
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public V_AWS_GENERAL_INFO()
+        public VAwsGeneralInfo()
         {
         }
        
@@ -26,21 +26,28 @@
 
         [Column("SUBDIVISION_NAME")]
         public string Subdivision { get; set; }
+
         [Column("AMA_DESCR")]
         public string AMA { get; set; }
+
         [Column("CAMA_CODE")]
-        public string Cama_code { get; set; }
+        public string AmaCode { get; set; }//Cama_code
+
         [Column("PROGRAM_CODE")]
         public string ProgramCode { get; set; }
+
         [Column("FILE_REVIEWER")]
         public string FileReviewer { get; set; }
+
         [Column("SECONDARY_PROV_SYS")] //replace once LTFDaysRemaining is added to the view
         public string LTFDaysRemaining { get; set; }
+
         [Column("APP_STATUS_DESCR")]
         public string Status { get; set; }
 
         [Column("APP_STATUS_DT")]
         public DateTime? StatusDate { get; set; }
+
         [Column("APP_STATUS_CODE")]
         public string StatusCode { get; set; }
         //public DateTime? APP_STATUS_DT { get; set; }
@@ -49,68 +56,93 @@
         public string Hydrology { get; set; }
 
         [Column("LEGAL_AVAILABILITY")]
-        public string Legal_Availability { get; set; }
+        public string LegalAvailability { get; set; }//Legal_Availability
 
         [Column("SECONDARY_PROV_NAME")]
         public string SecondaryProviderName { get; set; }
+
         [Column("SECONDARY_PROV_WRFID")]
         public int? SecondaryProviderWrfId { get; set; }
+
         [Column("USER_NAME")]
         public string UserName { get; set; }
+
         [Column("PRIMARY_PROV_WRFID")]
         public int? PrimaryProviderWrfId { get; set; }
+
         [Column("PRIMARY_PROV_NAME")]
         public string PrimaryProviderName { get; set; }
+
         [Column("COMPLETE_CORRECT_DT")]
-        public DateTime? Complete_Correct { get; set; }
+        public DateTime? CompleteCorrect { get; set; }//Complete_Correct
+
         [Column("DATEACCEPTED")]
-        public DateTime? Date_Accepted { get; set; }
+        public DateTime? DateAccepted { get; set; }//Date_Accepted
+
         [Column("DEC_COMPLETE_DT")] 
-        public DateTime? Date_Declared_Complete { get; set; }
+        public DateTime? DateDeclaredComplete { get; set; }//Date_Declared_Complete
+
         [Column("RECEIVEDDT")]
-        public DateTime? Date_Received { get; set; }
+        public DateTime? DateReceived { get; set; }//Date_Received
+
         [Column("FIRST_NOTICEDT")]
-        public DateTime? First_Notice_Date { get; set; }
+        public DateTime? FirstNoticeDate { get; set; }//First_Notice_Date
+
         [Column("SEC_NOTICEDT")]
-        public DateTime? Second_Notice_Date { get; set; }
+        public DateTime? SecondNoticeDate { get; set; }//Second_Notice_Date
+
         [Column("PUB_COMM_ENDDT")]
-        public DateTime? Final_Date_for_Public_Comment { get; set; }
+        public DateTime? FinalDateForPublicComment { get; set; }//Final_Date_for_Public_Comment
+
         //[Column("DEC_COMPLETE_DT")]
         //public DateTime? Final_Date_for_Public_Comment { get; set; }
         [Column("PHYSICAL_AVAILABILITY")]
-        public string Physical_Availability { get; set; }
+        public string PhysicalAvailability { get; set; }//Physical_Availability
+
         [Column("CONTINUOUS_AVAILABILITY")]
-        public string Continuous_Availability { get; set; }
+        public string ContinuousAvailability { get; set; }//Continuous_Availability
+
         [Column("CONSISTENCY_WITH_MGMT_PLAN")]
-        public string Consistency_With_Mgmt_Plan { get; set; }
+        public string ConsistencyWithMgmtPlan { get; set; }//Consistency_With_Mgmt_Plan
+
         [Column("CONSISTENCY_WITH_MGMT_GOAL")]
-        public string Consistency_With_Mgmt_Goal { get; set; }
+        public string ConsistencyWithMgmtGoal { get; set; }//Consistency_With_Mgmt_Goal
+
         [Column("FINANCIAL_CAPABILITY")]
-        public string Financial_Capability { get; set; }
+        public string FinancialCapability { get; set; }//Financial_Capability
+
         [Column("OWNERSHIP_DOCUMENTS")]
-        public string Ownership_Documents { get; set; }
+        public string OwnershipDocuments { get; set; }//Ownership_Documents
+
         [Column("DEMAND_CALCULATOR")]
-        public string Demand_Calculator { get; set; }
+        public string DemandCalculator { get; set; }//Demand_Calculator
+
         [Column("WATER_QUALITY")]
-        public string Water_Quality { get; set; }
+        public string WaterQuality { get; set; }//Water_Quality
+
         [Column("DESIGNATION_TERM")]
-        public int? Designation_Term { get; set; }
+        public int? DesignationTerm { get; set; }//Designation_Term
+
         [Column("COUNTY_CODE")]
-        public string County_Code { get; set; }
+        public string CountyCode { get; set; }//County_Code
+
         [Column("COUNTY_DESCR")]
-        public string County_Descr { get; set; }
+        public string CountyDescription { get; set; }//County_Descr
+
         [Column("REVIEW_PLAT_MPC")]
-        public string Review_Plat_for_MPC { get; set; }
+        public string ReviewPlatForMaterialPlatChanges { get; set; }//Review_Plat_for_MPC
+
         [Column("CHECK_PLAT_RECORDED")]
-        public string Check_Plat_Recorded { get; set; }
+        public string CheckPlatRecorded { get; set; }//Check_Plat_Recorded
+
         [Column("VERIFY_WTR_PROVIDER_LTR_REC")]
-        public string Verify_Water_Provider_Letter_Received { get; set; }
+        public string VerifyWaterProviderLetterReceived { get; set; }//Verify_Water_Provider_Letter_Received
 
         //[NotMapped]
         //public Dictionary<string,bool> Overview { get; set; } //add or remove 
 
         [NotMapped]
-        public List<V_AWS_HYDRO> HydrologyInfo { get; set; } //add or remove 
+        public List<VAwsHydro> HydrologyInfo { get; set; } //add or remove 
 
         [NotMapped]
         public string PWS_ID_Number { get; set; }
@@ -120,7 +152,7 @@
         public List<SP_AW_CONV_DIAGRAM> Diagram { get; set; }
 
         [NotMapped]
-        public V_CD_AW_APP_FEE_RATES FeeRates { get; set; }
+        public VCdAwAppFeeRates FeeRates { get; set; }
 
         [NotMapped]
         public string ProcessStatus { get; set; } //Use this for error messages in stored procedure or api calls 
@@ -171,16 +203,16 @@
                 }
             }*/
 
-        public static List<V_AWS_GENERAL_INFO> GetGeneralInformation(List<string> pcc)
+        public static List<VAwsGeneralInfo> GetGeneralInformation(List<string> pcc)
         {
-            var general = V_AWS_GENERAL_INFO.GetList(g => pcc.Contains(g.ProgramCertificateConveyance));
+            var general = VAwsGeneralInfo.GetList(g => pcc.Contains(g.ProgramCertificateConveyance));
             return PopulateGeneralInfoSummary(general);
         }
         
         //===== get individual records to populate forms ================================================
-        public static V_AWS_GENERAL_INFO GetGeneralInformation(string pcc)
+        public static VAwsGeneralInfo GetGeneralInformation(string pcc)
         {
-            var generalInfo=V_AWS_GENERAL_INFO.Get(g => g.ProgramCertificateConveyance == pcc);
+            var generalInfo=VAwsGeneralInfo.Get(g => g.ProgramCertificateConveyance == pcc);
 
             if(generalInfo != null)
             {
@@ -190,9 +222,9 @@
             return generalInfo;
         }
 
-        public static V_AWS_GENERAL_INFO GetGeneralInformation(int wrfId)
+        public static VAwsGeneralInfo GetGeneralInformation(int wrfId)
         {
-            var generalInfo = V_AWS_GENERAL_INFO.Get(g => g.WaterRightFacilityId == wrfId);            
+            var generalInfo = VAwsGeneralInfo.Get(g => g.WaterRightFacilityId == wrfId);            
 
             if (generalInfo != null)
             {
@@ -201,26 +233,26 @@
             return generalInfo;
         }
 
-        public static List<V_AWS_GENERAL_INFO> PopulateGeneralInfoSummary(List<V_AWS_GENERAL_INFO> generalInfo)
+        public static List<VAwsGeneralInfo> PopulateGeneralInfoSummary(List<VAwsGeneralInfo> generalInfo)
         {
             if (generalInfo == null)
             {
                 return generalInfo;
             }
 
-            return generalInfo.Select(g => new V_AWS_GENERAL_INFO
+            return generalInfo.Select(g => new VAwsGeneralInfo
             {
                 ProgramCertificateConveyance = g.ProgramCertificateConveyance,
                 WaterRightFacilityId = g.WaterRightFacilityId,
                 Subdivision = g.Subdivision,
                 ProgramCode = g.ProgramCode,
-                Cama_code = g.Cama_code
+                AmaCode = g.AmaCode
             }).ToList();
         }
 
         //from dictionary with field dictionary key names that correspond to the column or column alias names
         //set values true or false back to Y/N
-        public static void SetGeneralInfoCriteriaFromBool(Dictionary<string, bool> criteriaValues, V_AWS_GENERAL_INFO generalInfo)
+        public static void SetGeneralInfoCriteriaFromBool(Dictionary<string, bool> criteriaValues, VAwsGeneralInfo generalInfo)
         {
             foreach (var criteriaValue in criteriaValues)
             {
@@ -234,32 +266,32 @@
             }
         }
 
-        public static void PopulateGeneralInfo(V_AWS_GENERAL_INFO generalInfo)
+        public static void PopulateGeneralInfo(VAwsGeneralInfo generalInfo)
         {
             Dictionary<string, bool> setCriteria = new Dictionary<string, bool>();
             generalInfo.Diagram = SP_AW_CONV_DIAGRAM.ConveyanceDiagram(generalInfo.ProgramCertificateConveyance);
-            setCriteria.Add("Physical_Availability", generalInfo.Physical_Availability == "Y" && true);
+            setCriteria.Add("Physical_Availability", generalInfo.PhysicalAvailability == "Y" && true);
             setCriteria.Add("Hydrology", generalInfo.Hydrology == "Y" && true);
-            setCriteria.Add("Continuous_Availability", generalInfo.Continuous_Availability == "Y" && true);
-            setCriteria.Add("Legal_Availability", generalInfo.Legal_Availability == "Y" && true);
-            setCriteria.Add("Consistency_With_Mgmt_Plan", generalInfo.Consistency_With_Mgmt_Plan == "Y" && true);
-            setCriteria.Add("Consistency_With_Mgmt_Goal", generalInfo.Consistency_With_Mgmt_Goal == "Y" && true);
-            setCriteria.Add("Water_Quality", generalInfo.Water_Quality == "Y" && true);
-            setCriteria.Add("Financial_Capability", generalInfo.Financial_Capability == "Y" && true);
-            setCriteria.Add("Demand_Calculator", generalInfo.Demand_Calculator == "Y" && true);
-            setCriteria.Add("Review_Plat_for_MPC", generalInfo.Demand_Calculator == "Y" && true);
-            setCriteria.Add("Check_Plat_Recorded", generalInfo.Demand_Calculator == "Y" && true);
-            setCriteria.Add("Verify_Water_Provider_Letter_Received", generalInfo.Demand_Calculator == "Y" && true);
+            setCriteria.Add("Continuous_Availability", generalInfo.ContinuousAvailability == "Y" && true);
+            setCriteria.Add("Legal_Availability", generalInfo.LegalAvailability == "Y" && true);
+            setCriteria.Add("Consistency_With_Mgmt_Plan", generalInfo.ConsistencyWithMgmtPlan == "Y" && true);
+            setCriteria.Add("Consistency_With_Mgmt_Goal", generalInfo.ConsistencyWithMgmtGoal == "Y" && true);
+            setCriteria.Add("Water_Quality", generalInfo.WaterQuality == "Y" && true);
+            setCriteria.Add("Financial_Capability", generalInfo.FinancialCapability == "Y" && true);
+            setCriteria.Add("Demand_Calculator", generalInfo.DemandCalculator == "Y" && true);
+            setCriteria.Add("Review_Plat_for_MPC", generalInfo.DemandCalculator == "Y" && true);
+            setCriteria.Add("Check_Plat_Recorded", generalInfo.DemandCalculator == "Y" && true);
+            setCriteria.Add("Verify_Water_Provider_Letter_Received", generalInfo.DemandCalculator == "Y" && true);
             //generalInfo.Overview = setCriteria;
 
-            generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? V_AWS_PROVIDER.Get(p => p.PROVIDER_WRF_ID == generalInfo.PrimaryProviderWrfId).PWS_ID_Number : null;
-            var hydrologyInfo = V_AWS_HYDRO.Get(h => h.WRFID == generalInfo.WaterRightFacilityId);
+            generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? VAwsProvider.Get(p => p.ProviderWaterRightFacilityId == generalInfo.PrimaryProviderWrfId).ProviderPublicWaterSystemId : null;
+            var hydrologyInfo = VAwsHydro.Get(h => h.WaterRightFacilityId == generalInfo.WaterRightFacilityId);
 
             if (hydrologyInfo != null)
             {
-                generalInfo.SubbasinCode = hydrologyInfo.SUBBASIN_CODE;
+                generalInfo.SubbasinCode = hydrologyInfo.SubbasinCode;
             }
-            generalInfo.FeeRates = V_CD_AW_APP_FEE_RATES.Get(x => x.PROGRAM_CODE == generalInfo.ProgramCode);
+            generalInfo.FeeRates = VCdAwAppFeeRates.Get(x => x.ProgramCode == generalInfo.ProgramCode);
 
         }
     }

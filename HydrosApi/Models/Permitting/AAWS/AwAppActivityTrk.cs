@@ -9,20 +9,25 @@ using System.Web;
 namespace HydrosApi.Models.Permitting.AAWS
 {
     [Table("AWS.AW_APP_ACTIVITY_TRK")]
-    public class AW_APP_ACTIVITY_TRK : Repository<AW_APP_ACTIVITY_TRK>
+    public class AwAppActivityTrk : Repository<AwAppActivityTrk>//AW_APP_ACTIVITY_TRK
     {
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        public int Id { get; set; }//ID
+
         [Column("WRF_ID")]
-        public int WRF_ID { get; set; }
+        public int WaterRightFacilityId { get; set; }//WRF_ID
+
         [Column("CAAA_CODE")]
         public string ActivityCode { get; set; }
+
         [Column("ACT_TRK_DT_TIME")]
-        public DateTime? ACT_TRK_DT_TIME { get; set; }
+        public DateTime? ActivityTrackDate { get; set; }//ACT_TRK_DT_TIME
+
         [Column("CREATEBY")]
-        public string CREATEBY { get; set; }
+        public string CreateBy { get; set; }//CREATEBY
+
         [Column("CREATEDT")]
-        public DateTime CREATEDT  { get; set; }
+        public DateTime CreateDt  { get; set; }//CREATEDT
     }
 }

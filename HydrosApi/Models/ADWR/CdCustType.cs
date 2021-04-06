@@ -9,11 +9,12 @@ using System.Web;
 namespace HydrosApi.Models.ADWR
 {
     [Table("RGR.CD_CUST_TYPE")]
-    public class CD_CUST_TYPE : Repository<CD_CUST_TYPE>
+    public class CdCustType : Repository<CdCustType>//CD_CUST_TYPE
     {
         [Key, Column("CODE"), StringLength(4)]
-        public string CODE { get; set; }
+        public string Code { get; set; }//CODE
+
         [Column("DESCR"), StringLength(40)]
-        public string DESCR { get; set; }
+        public string Description { get; set; }//DESCR
     }
 }

@@ -9,41 +9,41 @@ using System.Web;
 namespace HydrosApi.Models.ADWR
 {
     [Table("RGR.WRF_CUST")]
-    public class WRF_CUST : Repository<WRF_CUST>
+    public class WaterRightFacilityCustomer : Repository<WaterRightFacilityCustomer>//WRF_CUST
     {
         [Key, Column("CUST_ID", Order = 1)]
-        public int CUST_ID { get; set; }
+        public int CustomerId { get; set; }//CUST_ID
 
         [Key, Column("WRF_ID", Order = 0)]
-        public int WRF_ID { get; set; }
+        public int WaterRightFacilityId { get; set; }//WRF_ID
 
         [Key, Column("CCT_CODE", Order = 2)]
         [StringLength(4)]
-        public string CCT_CODE { get; set; }
+        public string CustomerTypeCode { get; set; }//CCT_CODE
 
         [Key, Column("LINE_NUM", Order = 3)]
-        public int LINE_NUM { get; set; }
+        public int LineNum { get; set; }//LINE_NUM
 
         [Column("IS_ACTIVE")]
         [StringLength(1)]
-        public string IS_ACTIVE { get; set; }
+        public string IsActive { get; set; }//IS_ACTIVE
 
         [Column("PRIMARY_MAILING_ADDRESS")]
         [StringLength(1)]
-        public string PRIMARY_MAILING_ADDRESS { get; set; }
+        public string PrimaryMailingAddress { get; set; }//PRIMARY_MAILING_ADDRESS
 
         [Column("CREATEBY")]
         [StringLength(30)]
-        public string CREATEBY { get; set; }
+        public string CreateBy { get; set; }//CREATEBY
 
         [Column("CREATEDT")]
-        public DateTime? CREATEDT { get; set; }
+        public DateTime? CreateDt { get; set; }//CREATEDT
 
         [Column("UPDATEBY")]
         [StringLength(30)]
-        public string UPDATEBY { get; set; }
+        public string UpdateBy { get; set; }//UPDATEBY
 
         [Column("UPDATEDT")]
-        public DateTime? UPDATEDT { get; set; }
+        public DateTime? UpdateDt { get; set; }//UPDATEDT
     }
 }

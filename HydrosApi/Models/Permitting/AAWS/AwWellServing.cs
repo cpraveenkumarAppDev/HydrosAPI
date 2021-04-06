@@ -10,27 +10,27 @@ using System.Web;
 namespace HydrosApi.Models.Permitting.AAWS
 {
     [Table("AWS.AW_WELL_SERVING")]
-    public class AW_WELL_SERVING : Repository<AW_WELL_SERVING>
+    public class AwWellServing : Repository<AwWellServing>//AW_WELL_SERVING
     {
         [Key, Column("WRF_ID", Order = 0)]
-        public int WRF_ID { get; set; }
+        public int WaterRightFacilityId { get; set; }//WRF_ID
 
         [Key, Column("WELL_REGISTRY_ID", Order = 1)]
         [StringLength(6)]
-        public string WELL_REGISTRY_ID { get; set; }
+        public string WellRegistryId { get; set; }//WELL_REGISTRY_ID
 
         [Column("CREATEBY")]
         [StringLength(30)]
-        public string CREATEBY { get; set; }
+        public string CreateBy { get; set; }//CREATEBY
 
         [Column("CREATEDT")]
-        public DateTime? CREATEDT { get; set; }
+        public DateTime? CreateDt { get; set; }//CREATEDT
 
         [Column("UPDATEBY")]
         [StringLength(30)]
-        public string UPDATEBY { get; set; }
+        public string UpdateBy { get; set; }//UPDATEBY
 
         [Column("UPDATEDT")]
-        public DateTime? UPDATEDT { get; set; }
+        public DateTime? UpdateDt { get; set; }//UPDATEDT
     }
 }

@@ -8,15 +8,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HydrosApi.Models.Permitting.AAWS
 {
     [Table("AWS.V_AWS_CUSTOMER")]
-    public class V_AWS_CUSTOMER : Repository<V_AWS_CUSTOMER>
+    public class VAwsCustomer : Repository<VAwsCustomer>//V_AWS_CUSTOMER
     {
 
         [Key, Column("CUST_ID", Order = 1)]
-        public int CUST_ID { get; set; }
+        public int CustomerId { get; set; }//CUST_ID
 
         [Key, Column("WRF_ID", Order = 0)]
-        public int WRF_ID { get; set; }
+        public int WaterRightFacilityId { get; set; }//WRF_ID
 
-     
     }
 }

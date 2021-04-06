@@ -9,20 +9,25 @@ using System.Web;
 namespace HydrosApi.Models.ADWR
 {
     [Table("RGR.WTR_RIGHT_FACILITY")]
-    public class WTR_RIGHT_FACILITY : Repository<WTR_RIGHT_FACILITY>
+    public class WaterRightFacility : Repository<WaterRightFacility>//WTR_RIGHT_FACILITY
     {
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         [Column("ID")]
-        public int ID { get; set; }
+        public int Id { get; set; }//ID
+
         [Column("CAMA_CODE")]
-        public string AmaCode { get; set; }
+        public string ActiveManagementAreaCode { get; set; }//AmaCode
+
         [Column("CFST_CODE")]
         public string FileStatusCode { get; set; }
+
         [Column("PROGRAM_CODE")]
         public string Program { get; set; }
+
         [Column("CERT_NO")]
         public string Certificate { get; set; }
+
         [Column("CONV_NO")]
         public string Conveyance { get; set; }
 

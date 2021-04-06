@@ -7,16 +7,16 @@ using System.Web;
 
     public class AWSNewAppViewModel
     {
-        public List<V_CD_AW_APP_FEE_RATES> ApplicationTypes { get; set; }
-        public AW_VERIFIED_OAWS ApplicationComplete { get; set; }
+        public List<VCdAwAppFeeRates> ApplicationTypes { get; set; }
+        public AwVerifiedOaws ApplicationComplete { get; set; }
 
 
-        public V_CD_AW_AMA_INA Ama { get; set; }
+        public VCdAwAmaIna Ama { get; set; }
         public AWSNewAppViewModel()
         {
 
-            this.ApplicationTypes = V_CD_AW_APP_FEE_RATES.GetAll();
-            this.Ama = V_CD_AW_AMA_INA.GetAll().FirstOrDefault();
+            this.ApplicationTypes = VCdAwAppFeeRates.GetAll();
+            this.Ama = VCdAwAmaIna.GetAll().FirstOrDefault();
 
         }
        

@@ -10,24 +10,23 @@
 
 
     [Table("AWS.AW_WRF_WRF_DEMAND")]
-    public class AW_WRF_WRF_DEMAND : Repository<AW_WRF_WRF_DEMAND>
+    public class AwWrfWrfDemand : Repository<AwWrfWrfDemand>//AW_WRF_WRF_DEMAND
     {       
-
-         
-        [Key,Column("WRF_ID_TO")]
-        public int WRF_ID_TO { get; set; }
         
+        [Key,Column("WRF_ID_TO")]
+        public int WaterRightFacilityIdTo { get; set; }//WRF_ID_TO
+
         [Column("WRF_ID_FROM")]
-        public int WRF_ID_FROM { get; set; }
+        public int WaterRightFacilityIdFrom { get; set; }//WRF_ID_FROM
 
         [Column("WTR_DEMAND")]
-        public decimal? WTR_DEMAND { get; set; }
+        public decimal? WaterDemand { get; set; }//WTR_DEMAND
 
         [NotMapped, StringLength(14)]
-        public string ASSOCIATED_PCC { get; set; }
+        public string AssociatedPCC { get; set; }//ASSOCIATED_PCC
 
         [NotMapped, StringLength(20)]
-        public string AVAILABILITY_TYPE { get; set; }
+        public string AvailabilityType { get; set; }//AVAILABILITY_TYPE
 
 
     }

@@ -1,43 +1,39 @@
 ﻿using HydrosApi.Data;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
 
 namespace HydrosApi.Models.Permitting.AAWS
 {
     [Table("AWS.V_AWS_WELL_SERVING")]
-    public class V_AWS_WELL_SERVING : Repository<V_AWS_WELL_SERVING>
+    public class VAwsWellServing : Repository<VAwsWellServing>//V_AWS_WELL_SERVING
     {
         [Key, Column("ID")]
-        public int ID { get; set; }
+        public int Id { get; set; }//ID
 
         [Column("WRF_ID")]
-        public int WRF_ID { get; set; }
+        public int WaterRightFacilityId { get; set; }//WRF_ID
 
         [Column("WELL_REGISTRY_ID")]
         [StringLength(6)]
-        public string WELL_REGISTRY_ID { get; set; }
+        public string WellRegistryId { get; set; }//WELL_REGISTRY_ID
 
         [Column("PT_PERMIT_NUMBER")]
-        public int? PT_PERMIT_NUMBER { get; set; }
+        public int? PermitNumber { get; set; }//PT_PERMIT_NUMBER
 
         [Column("ACRE_FEET_ANNUM")]
-        public int? ACRE_FEET_ANNUM { get; set; }
+        public int? AcreFeetAnnualNumber { get; set; }//ACRE_FEET_ANNUM
 
         [Column("PRMT_CODE")]
         [StringLength(2)]
-        public string PRMT_CODE { get; set; }
+        public string PermitCode { get; set; }//PRMT_CODE
 
         [Column("PERMIT_CODE_DESCR")]
         [StringLength(80)]
-        public string PERMIT_CODE_DESCR { get; set; }
+        public string PermitCodeDescription { get; set; }//PERMIT_CODE_DESCR
 
         [Column("CADASTRAL")]
         [StringLength(20)]
-        public string CADASTRAL { get; set; }
+        public string Cadastral { get; set; }//CADASTRAL
 
         [Column("PCC")]
         [StringLength(20)]

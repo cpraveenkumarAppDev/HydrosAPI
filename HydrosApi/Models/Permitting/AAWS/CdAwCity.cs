@@ -10,26 +10,26 @@ using System.Web;
 namespace HydrosApi.Models.Permitting.AAWS
 {
     [Table("AWS.CD_AW_CITY")]
-    public class CD_AW_CITY : Repository<CD_AW_CITY>
+    public class CdAwCity : Repository<CdAwCity>//CD_AW_CITY
     {
         [Key, Column("CODE"), StringLength(4)]
-        public string CODE { get; set; }
+        public string Code { get; set; }//CODE
 
         [Column("DESCR"), StringLength(40)]
-        public string DESCR { get; set; }
+        public string Description { get; set; }//DESCR
 
         [Column("CREATEBY")]
         [StringLength(30)]
-        public string CREATEBY { get; set; }
+        public string CreateBy { get; set; }//CREATEBY
 
         [Column("CREATEDT")]
-        public DateTime? CREATEDT { get; set; }
+        public DateTime? CreateDt { get; set; }//CREATEDT
 
         [Column("UPDATEBY")]
         [StringLength(30)]
-        public string UPDATEBY { get; set; }
+        public string UpdateBy { get; set; }//UPDATEBY
 
         [Column("UPDATEDT")]
-        public DateTime? UPDATEDT { get; set; }
+        public DateTime? UpdateDt { get; set; }//UPDATEDT
     }
 }

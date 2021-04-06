@@ -132,7 +132,7 @@ namespace HydrosApi
         {
             try
             {
-                var applicationList = HYDROS_MANAGER.GetAll();
+                var applicationList = HydrosManager.GetAll();
                 return Ok(applicationList);
             }
             catch
@@ -144,18 +144,18 @@ namespace HydrosApi
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV")]
         [HttpPut, Route("adwr/SetAppAvailability/{id}")]
-        public async Task<IHttpActionResult> SetAppAvailability([FromBody] HYDROS_MANAGER man, int id)
+        public async Task<IHttpActionResult> SetAppAvailability([FromBody] HydrosManager man, int id)
         {
             var user = User.Identity.Name.Replace("AZWATER0\\", "");
-            HYDROS_MANAGER hydrosManager;
+            HydrosManager hydrosManager;
             using (var context = new OracleContext())
             {
-                hydrosManager = context.HYDROS_MANAGER.Where(x => x.ID == id).FirstOrDefault();
-                if (hydrosManager != null && hydrosManager.STATUS !=man.STATUS)
+                hydrosManager = context.HYDROS_MANAGER.Where(x => x.Id == id).FirstOrDefault();
+                if (hydrosManager != null && hydrosManager.Status !=man.Status)
                 {
-                    hydrosManager.STATUS = man.STATUS;
-                    hydrosManager.USERNAME = user;
-                    hydrosManager.STATUS_DT = DateTime.Now;
+                    hydrosManager.Status = man.Status;
+                    hydrosManager.UserName = user;
+                    hydrosManager.StatusDt = DateTime.Now;
                     await context.SaveChangesAsync();
                 }
                 return Ok(hydrosManager);
@@ -165,10 +165,10 @@ namespace HydrosApi
         [HttpGet, Route("adwr/pcc/{wrf}")]
         public IHttpActionResult GetPcc(int wrf)
         {
-            WTR_RIGHT_FACILITY found;
+            WaterRightFacility found;
             try
             {
-                found = WTR_RIGHT_FACILITY.Get(x => x.ID == wrf);
+                found = WaterRightFacility.Get(x => x.Id == wrf);
             }
             catch
             {
@@ -181,11 +181,11 @@ namespace HydrosApi
         [HttpGet, Route("adwr/wrf/{inputPcc}")]
         public IHttpActionResult GetPcc(string inputPcc)
         {
-            WTR_RIGHT_FACILITY found;
+            WaterRightFacility found;
             try
             {
                 PCC validPCC = new PCC(inputPcc);
-                found = WTR_RIGHT_FACILITY.Get(x => x.Program == validPCC.Program && x.Certificate == validPCC.Certificate && x.Conveyance == validPCC.Conveyance);
+                found = WaterRightFacility.Get(x => x.Program == validPCC.Program && x.Certificate == validPCC.Certificate && x.Conveyance == validPCC.Conveyance);
             }
             catch
             {
@@ -218,7 +218,7 @@ namespace HydrosApi
         {
             try
             {
-                var locationList = LOCATION.GetList(x => x.WRF_ID == wrf);
+                var locationList = Location.GetList(x => x.WaterRightFacilityId == wrf);
                 ////List<Aws_customer_wrf_ViewModel> customerList = new List<Aws_customer_wrf_ViewModel>();
                 //foreach (var custId in custIdList)
                 //{
@@ -234,7 +234,7 @@ namespace HydrosApi
         }
 
         [HttpPost, Route("adwr/addCadastralByWrf/{wrf}")]
-        public IHttpActionResult AddCadastralByWrf([FromBody] List<LOCATION> LocationList, int wrf)
+        public IHttpActionResult AddCadastralByWrf([FromBody] List<Location> LocationList, int wrf)
         {
             try
             {
@@ -244,7 +244,7 @@ namespace HydrosApi
                     foreach (var location in LocationList)
                     {
                         //TO DO check for dups
-                        var locationExists = context.LOCATION.Where(x => x.ID == location.ID).FirstOrDefault() != null ? true : false;
+                        var locationExists = context.LOCATION.Where(x => x.Id == location.Id).FirstOrDefault() != null ? true : false;
                         //var wrfExists = context.WRF_CUST.Where(x => x.WRF_ID == wrfcust.WRF_ID).FirstOrDefault() != null ? true : false;
                         //var count = LOCATION.GetList(x => x.WRF_ID == wrfcust.WRF_ID && x.CUST_ID == wrfcust.CUST_ID && x.CCT_CODE == wrfcust.CCT_CODE).Count();
                         //if (!customerExists || !wrfExists)
@@ -253,13 +253,13 @@ namespace HydrosApi
                         //}
                         if (!locationExists)
                         {
-                            location.CREATEBY = userName;
-                            location.CREATEDT = DateTime.Now;
+                            location.CreateBy = userName;
+                            location.CreateDt = DateTime.Now;
                             context.LOCATION.Add(location);
                         }
                     }
                     context.SaveChanges();
-                    var locationList = LOCATION.GetList(x => x.WRF_ID == wrf);
+                    var locationList = Location.GetList(x => x.WaterRightFacilityId == wrf);
 
                     return Ok(locationList);
                 }
@@ -271,7 +271,7 @@ namespace HydrosApi
             }
         }
         [HttpPost, Route("adwr/deleteCadastralByWrf/{wrf}")]
-        public IHttpActionResult DeleteCadastralByWrf([FromBody] List<LOCATION> LocationList, int wrf)
+        public IHttpActionResult DeleteCadastralByWrf([FromBody] List<Location> LocationList, int wrf)
         {
             try
             {
@@ -281,7 +281,7 @@ namespace HydrosApi
                     foreach (var location in LocationList)
                     {
                         //TO DO check for dups
-                        var locationExists = context.LOCATION.Where(x => x.ID == location.ID).FirstOrDefault() != null ? true : false;
+                        var locationExists = context.LOCATION.Where(x => x.Id == location.Id).FirstOrDefault() != null ? true : false;
                         //var wrfExists = context.WRF_CUST.Where(x => x.WRF_ID == wrfcust.WRF_ID).FirstOrDefault() != null ? true : false;
                         //var count = LOCATION.GetList(x => x.WRF_ID == wrfcust.WRF_ID && x.CUST_ID == wrfcust.CUST_ID && x.CCT_CODE == wrfcust.CCT_CODE).Count();
                         //if (!customerExists || !wrfExists)
@@ -290,11 +290,11 @@ namespace HydrosApi
                         //}
                         if (locationExists)
                         {
-                            LOCATION.Delete(location);
+                            Location.Delete(location);
                         }
                     }
                     context.SaveChanges();
-                    var locationList = LOCATION.GetList(x => x.WRF_ID == wrf);
+                    var locationList = Location.GetList(x => x.WaterRightFacilityId == wrf);
 
                     return Ok(locationList);
                 }

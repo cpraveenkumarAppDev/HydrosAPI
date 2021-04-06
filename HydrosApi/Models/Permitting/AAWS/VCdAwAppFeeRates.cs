@@ -8,21 +8,24 @@
 
 
     [Table("AWS.V_CD_AW_APP_FEE_RATES")]
-    public class V_CD_AW_APP_FEE_RATES : Repository<V_CD_AW_APP_FEE_RATES>
+    public class VCdAwAppFeeRates : Repository<VCdAwAppFeeRates>//V_CD_AW_APP_FEE_RATES
     {
         [Key]
         //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("PROGRAM_CODE", Order = 0)]
-        public string PROGRAM_CODE { get; set; }
+        public string ProgramCode { get; set; }//PROGRAM_CODE
 
         [Column("PROGRAM_DESCR")]
-        public string PROGRAM_DESCR { get; set; }
+        public string ProgramDescription { get; set; }//PROGRAM_DESCR
+
         [Key]
         [Column("ASSURED_OR_ADEQUATE_CODE", Order = 1)]
-        public string ASSURED_OR_ADEQUATE_CODE { get; set; }
+        public string AssuredOrAdequateCode { get; set; }//ASSURED_OR_ADEQUATE_CODE
+
         [Key]
         [Column("BASIC_FEE", Order = 2)]
-        public int BASIC_FEE { get; set; }       
+        public int BasicFee { get; set; }//BASIC_FEE
+
         //public int ADD_FEE_RATE { get; set; }       
         //public int SUBSTRACTOR { get; set; }      
         //public int MAX_FEE { get; set; }        

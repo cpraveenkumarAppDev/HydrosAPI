@@ -8,10 +8,13 @@
     using Data;
 
     [Table("AWS.CD_AW_COMMENT_TYPE")]
-    public class CD_AW_COMMENT_TYPE : Repository<CD_AW_COMMENT_TYPE>
+    public class CdAwCommentType : Repository<CdAwCommentType>//CD_AW_COMMENT_TYPE
     {
         [Key]
-        public string CODE { get; set; }
-        public string DESCR { get; set; }
+        [Column("CODE")]
+        public string Code { get; set; }//CODE
+
+        [Column("DESCR")]
+        public string Description { get; set; }//DESCR
     }
 }

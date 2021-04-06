@@ -9,35 +9,39 @@ namespace HydrosApi.Models.Permitting.AAWS
     using System.ComponentModel.DataAnnotations.Schema;
    
     [Table("AWS.AW_COMMENTS")]
-    public class AWS_COMMENTS : Repository<AWS_COMMENTS>
+    public class AwsComments : Repository<AwsComments>//AWS_COMMENTS
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ID")]
-        public int ID { get; set; }
+        public int Id { get; set; }//ID
+
         [Column("WRF_ID")]
-        public int WRF_ID { get; set; }
+        public int WaterRightFacilityId { get; set; }//WRF_ID
+
         [Column("AUSR_ID")]
-        public int AUSR_ID { get; set; }
+        public int AwsUserId { get; set; }//AUSR_ID
+
         [Column("CMT_DT_TIME")]
-        public DateTime CMT_DT_TIME { get; set; }
+        public DateTime CommentDate { get; set; }//CMT_DT_TIME
 
         [Column("CACM_CODE")]
-        public string CACM_CODE { get; set; }
+        public string CommentTypeCode { get; set; }//CACM_CODE
 
         [Column("CREATEBY")]
-        public string CREATEBY { get; set; }
+        public string CreateBy { get; set; }//CREATEBY
 
         [Column("COMMENTS")]
-        public string COMMENTS { get; set; }
+        public string Comments { get; set; }//COMMENTS
+
         [NotMapped]
-        public AW_USERS USER { get; set; }
-        public static List<AWS_COMMENTS> PopulateComments(int id)
+        public AwUsers USER { get; set; }
+        public static List<AwsComments> PopulateComments(int id)
         {
-            var awsComments = AWS_COMMENTS.GetList(p => p.WRF_ID == id);
+            var awsComments = AwsComments.GetList(p => p.WaterRightFacilityId == id);
             foreach (var comment in awsComments)
             {
-                comment.USER = AW_USERS.Get(p => p.ID == comment.AUSR_ID);
+                comment.USER = AwUsers.Get(p => p.Id == comment.AwsUserId);
             }
             return awsComments;
         }

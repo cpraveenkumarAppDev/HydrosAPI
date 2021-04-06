@@ -43,7 +43,7 @@
             {
                 try
                 {
-                    var amaCode = V_CD_AW_AMA_INA.Get(a => a.CODE == value.ToUpper() || a.DESCR == value.ToUpper().Replace(" AMA", "") + " AMA");
+                    var amaCode = VCdAwAmaIna.Get(a => a.Code == value.ToUpper() || a.Description == value.ToUpper().Replace(" AMA", "") + " AMA");
 
                     if(amaCode==null)
                     {
@@ -51,7 +51,7 @@
                     }
                     else
                     {
-                        p_ama_code=amaCode.CODE;
+                        p_ama_code=amaCode.Code;
                     }
                 }
                 catch
@@ -61,13 +61,13 @@
             }                
         }
 
-        public static async Task<V_AWS_GENERAL_INFO> CreateNewFile(SP_AW_INS paramValues, string requestType)
+        public static async Task<VAwsGeneralInfo> CreateNewFile(SP_AW_INS paramValues, string requestType)
         {
             var parameter = new List<OracleParameter>();
             var result = new SP_AW_INS();
             var user = HttpContext.Current.User.Identity.Name;
             string command = "";
-            var generalInfo=new V_AWS_GENERAL_INFO();
+            var generalInfo=new VAwsGeneralInfo();
 
             try { 
 
@@ -117,7 +117,7 @@
                     property.SetValue(result, value);
                 }
 
-                return await Task.FromResult(V_AWS_GENERAL_INFO.Get(i => i.WaterRightFacilityId == result.p_new_wrf_id));
+                return await Task.FromResult(VAwsGeneralInfo.Get(i => i.WaterRightFacilityId == result.p_new_wrf_id));
             }
              
             catch (Exception exception)

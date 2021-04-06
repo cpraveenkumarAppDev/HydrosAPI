@@ -10,31 +10,31 @@ using System.Web;
 namespace HydrosApi.Models.ADWR
 {
     [Table("ADWR_ADMIN.HYDROS_MANAGER")]
-    public class HYDROS_MANAGER : Repository<HYDROS_MANAGER>
+    public class HydrosManager : Repository<HydrosManager>//HYDROS_MANAGER
     {
         [Column("ID")]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        public int Id { get; set; }//ID
 
         [Column("NAME")]
         [StringLength(50)]
-        public string NAME { get; set; }
+        public string Name { get; set; }//NAME
 
         [Column("GROUPS")]
         [StringLength(500)]
-        public string GROUPS { get; set; }
+        public string Groups { get; set; }//GROUPS
 
         [Column("STATUS")]
         [StringLength(20)]
-        public string STATUS { get; set; }
+        public string Status { get; set; }//STATUS
 
         [Column("STATUS_DT")]
-        public DateTime? STATUS_DT { get; set; }
+        public DateTime? StatusDt { get; set; }//STATUS_DT
 
         [Column("USERNAME")]
         [StringLength(25)]
-        public string USERNAME { get; set; }
+        public string UserName { get; set; }//USERNAME
 
     }
 }

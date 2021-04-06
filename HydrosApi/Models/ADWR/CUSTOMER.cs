@@ -10,48 +10,48 @@ using System.Web;
 namespace HydrosApi.Models.ADWR
 {
     [Table("RGR.CUSTOMER")]
-    public class CUSTOMER : Repository<CUSTOMER>
+    public class Customer : Repository<Customer>//CUSTOMER
     {
         [Column("ID")]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        public int Id { get; set; }//ID
 
         [Column("LAST_NAME")]
         [StringLength(30)]
-        public string LAST_NAME { get; set; }
+        public string LastName { get; set; }//LAST_NAME
 
         [Column("FIRST_NAME")]
         [StringLength(30)]
-        public string FIRST_NAME { get; set; }
+        public string FirstName { get; set; }//FIRST_NAME
 
         [Column("EMAIL")]
         [StringLength(120)]
-        public string EMAIL { get; set; }
+        public string Email { get; set; }//EMAIL
 
         [Column("COMPANY")]
         [StringLength(100)]
-        public string COMPANY { get; set; }
+        public string Company { get; set; }//COMPANY
 
         [Column("ADDRESS1")]
         [StringLength(100)]
-        public string ADDRESS1 { get; set; }
+        public string Address1 { get; set; }//ADDRESS1
 
         [Column("ADDRESS2")]
         [StringLength(100)]
-        public string ADDRESS2 { get; set; }
+        public string Address2 { get; set; }//ADDRESS2
 
         [Column("CITY")]
         [StringLength(20)]
-        public string CITY { get; set; }
+        public string City { get; set; }//CITY
 
         [Column("STATE")]
         [StringLength(2)]
-        public string STATE { get; set; }
+        public string State { get; set; }//STATE
 
         [Column("COUNTRY")]
         [StringLength(20)]
-        public string COUNTRY { get; set; }
+        public string Country { get; set; }//COUNTRY
 
         [Column("ZIP")]
         [StringLength(6)]
@@ -59,68 +59,68 @@ namespace HydrosApi.Models.ADWR
 
         [Column("ZIP4")]
         [StringLength(4)]
-        public string ZIP4 { get; set; }
+        public string Zip4 { get; set; }//ZIP4
 
         [Column("PHONE")]
         [StringLength(20)]
-        public string PHONE { get; set; }
+        public string Phone { get; set; }//PHONE
 
         [Column("FAX")]
         [StringLength(14)]
-        public string FAX { get; set; }
+        public string Fax { get; set; }//FAX
 
         [Column("BAD_ADDRESS_FLAG")]
         [StringLength(1)]
-        public string BAD_ADDRESS_FLAG { get; set; }
+        public string BadAddressFlag { get; set; }//BAD_ADDRESS_FLAG
 
         [Column("COMMENTS")]
         [StringLength(1990)]
-        public string COMMENTS { get; set; }
+        public string Comments { get; set; }//COMMENTS
 
         [Column("PERSON_TITLE")]
         [StringLength(80)]
-        public string PERSON_TITLE { get; set; }
+        public string PersonTitle { get; set; }//PERSON_TITLE
 
         [Column("CREATEBY")]
         [StringLength(30)]
-        public string CREATEBY { get; set; }
+        public string CreateBy { get; set; }//CREATEBY
 
         [Column("CREATEDT")]
-        public DateTime? CREATEDT { get; set; }
+        public DateTime? CreateDt { get; set; }//CREATEDT
 
         [Column("UPDATEBY")]
         [StringLength(30)]
-        public string UPDATEBY { get; set; }
+        public string UpdateBy { get; set; }//UPDATEBY
 
         [Column("UPDATEDT")]
-        public DateTime? UPDATEDT { get; set; }
+        public DateTime? UpdateDt { get; set; }//UPDATEDT
 
-        public CUSTOMER()
+        public Customer()
         {
             //default constructor
         }
 
-        public CUSTOMER(V_AWS_CUSTOMER_LONG_NAME awsCustomer, string userName)
+        public Customer(VAwsCustomerLongName awsCustomer, string userName)
         {
-            this.ADDRESS1 = awsCustomer.ADDRESS1;
-            this.ADDRESS2 = awsCustomer.ADDRESS2;
-            this.BAD_ADDRESS_FLAG = awsCustomer.BAD_ADDRESS_FLAG;
-            this.CITY = awsCustomer.CITY;
-            this.COMMENTS = awsCustomer.COMMENTS;
-            this.COMPANY = awsCustomer.COMPANY_LONG_NAME;
-            this.COUNTRY = awsCustomer.COUNTRY;
-            this.CREATEBY = userName;
-            this.CREATEDT = DateTime.Now; //this is changed by the rgr.customer insert trigger
-            this.EMAIL = awsCustomer.EMAIL;
-            this.FAX = awsCustomer.FAX;
-            this.FIRST_NAME = awsCustomer.FIRST_NAME;
-            this.ID = awsCustomer.CUST_ID;
-            this.LAST_NAME = awsCustomer.LAST_NAME;
-            this.PERSON_TITLE = awsCustomer.PERSON_TITLE;
-            this.PHONE = awsCustomer.PHONE;
-            this.STATE = awsCustomer.STATE;
-            this.ZIP = awsCustomer.ZIP;
-            this.ZIP4 = awsCustomer.ZIP4;
+            this.Address1 = awsCustomer.Address1;
+            this.Address2 = awsCustomer.Address2;
+            this.BadAddressFlag = awsCustomer.BadAddressFlag;
+            this.City = awsCustomer.City;
+            this.Comments = awsCustomer.Comments;
+            this.Company = awsCustomer.CompanyLongName;
+            this.Country = awsCustomer.Country;
+            this.CreateBy = userName;
+            this.CreateDt = DateTime.Now; //this is changed by the rgr.customer insert trigger
+            this.Email = awsCustomer.Email;
+            this.Fax = awsCustomer.Fax;
+            this.FirstName = awsCustomer.FirstName;
+            this.Id = awsCustomer.CustomerId;
+            this.LastName = awsCustomer.LastName;
+            this.PersonTitle = awsCustomer.PersonTitle;
+            this.Phone = awsCustomer.Phone;
+            this.State = awsCustomer.State;
+            this.ZIP = awsCustomer.Zip;
+            this.Zip4 = awsCustomer.Zip4;
         }
     }
 }

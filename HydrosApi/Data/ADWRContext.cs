@@ -40,12 +40,12 @@
         public virtual DbSet<WELLS_VIEW> WELLS_VIEW { get; set; }
         public virtual DbSet<SW_AIS_VIEW> SW_AIS_VIEW { get; set; }
         public virtual DbSet<SOC_AIS_VIEW> SOC_AIS_VIEW { get; set; }
-        public virtual DbSet<V_AWS_PROVIDER> V_AWS_PROVIDER { get; set; }
-        public virtual DbSet<V_AWS_SUBBAS> V_AWS_SUBBAS { get; set; }
-        public virtual DbSet<V_AWS_HYDRO> V_AWS_HYDRO { get; set; }
+        public virtual DbSet<VAwsProvider> V_AWS_PROVIDER { get; set; }
+        public virtual DbSet<VAwsSubbasin> V_AWS_SUBBAS { get; set; }
+        public virtual DbSet<VAwsHydro> V_AWS_HYDRO { get; set; }
         public virtual DbSet<CD_AMA_INA> CD_AMA_INA { get; set; }
-        public virtual DbSet<V_AWS_COUNTY_BASIN> V_AWS_COUNTY_BASIN { get; set; }
-        public virtual DbSet<CD_AW_COMMENT_TYPE> CD_AW_COMMENT_TYPE { get; set; }
+        public virtual DbSet<VAwsCountyBasin> V_AWS_COUNTY_BASIN { get; set; }
+        public virtual DbSet<CdAwCommentType> CD_AW_COMMENT_TYPE { get; set; }
         public virtual DbSet<POINT_OF_DIVERSION_VIEW> POINT_OF_DIVERSION_VIEW { get; set; }
         public virtual DbSet<WFR_POD> WFR_POD { get; set; }
 

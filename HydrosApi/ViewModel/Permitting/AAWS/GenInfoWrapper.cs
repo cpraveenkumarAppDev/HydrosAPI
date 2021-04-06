@@ -5,6 +5,6 @@
 
     public class GenInfoWrapper
     {
-        public V_AWS_GENERAL_INFO Overview { get; set; }
+        public VAwsGeneralInfo Overview { get; set; }
     }
 }

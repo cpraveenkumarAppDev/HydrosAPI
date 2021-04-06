@@ -10,79 +10,79 @@ using System.Web;
 namespace HydrosApi.Models.ADWR
 {
     [Table("RGR.LOCATION")]
-    public class LOCATION : Repository<LOCATION>
+    public class Location : Repository<Location>//LOCATION
     {
         [Column("ID")]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        public int Id { get; set; }//ID
 
         [Column("WRF_ID")]
-        public int WRF_ID { get; set; }
+        public int WaterRightFacilityId { get; set; }//WRF_ID
 
         [Column("WHOLE_TOWNSHIP")]
-        public int? WHOLE_TOWNSHIP { get; set; }
+        public int? WholeTownship { get; set; }//WHOLE_TOWNSHIP
 
         [Column("WHOLE_RANGE")]
-        public int? WHOLE_RANGE { get; set; }
+        public int? WholeRange { get; set; }//WHOLE_RANGE
 
         [Column("QUAD_CODE")]
         [StringLength(4)]
-        public string QUAD_CODE { get; set; }
+        public string QuadCode { get; set; }//QUAD_CODE
 
         [Column("HALF_TOWNSHIP")]
         [StringLength(1)]
-        public string HALF_TOWNSHIP { get; set; }
+        public string HalfTownship { get; set; }//HALF_TOWNSHIP
 
         [Column("HALF_RANGE")]
         [StringLength(1)]
-        public string HALF_RANGE { get; set; }
+        public string HalfRange { get; set; }//HALF_RANGE
 
         [Column("SECTION")]
         [StringLength(10)]
-        public string SECTION { get; set; }
+        public string Section { get; set; }//SECTION
 
         [Column("QTR_160_ACRE")]
         [StringLength(10)]
-        public string QTR_160_ACRE { get; set; }
+        public string Qtr160Acre { get; set; }//QTR_160_ACRE
 
         [Column("QTR_40_ACRE")]
         [StringLength(10)]
-        public string QTR_40_ACRE { get; set; }
+        public string Qtr40Acre { get; set; }//QTR_40_ACRE
 
         [Column("QTR_10_ACRE")]
         [StringLength(10)]
-        public string QTR_10_ACRE { get; set; }
+        public string Qtr10Acre { get; set; }//QTR_10_ACRE
 
         [Column("QTR_2_ACRE")]
         [StringLength(10)]
-        public string QTR_2_ACRE { get; set; }
+        public string Qtr2Acre { get; set; }//QTR_2_ACRE
 
         [Column("LOT_NO")]
         [StringLength(10)]
-        public string LOT_NO { get; set; }
+        public string LotNo { get; set; }//LOT_NO
 
         [Column("IS_ACTIVE")]
         [StringLength(1)]
-        public string IS_ACTIVE { get; set; }
+        public string IsActive { get; set; }//IS_ACTIVE
 
         [Column("COMMENTS")]
         [StringLength(1990)]
-        public string COMMENTS { get; set; }
+        public string Comments { get; set; }//COMMENTS
 
         [Column("CREATEBY")]
         [StringLength(30)]
-        public string CREATEBY { get; set; }
+        public string CreateBy { get; set; }//CREATEBY
 
         [Column("CREATEDT")]
-        public DateTime? CREATEDT { get; set; }
+        public DateTime? CreateDt { get; set; }//CREATEDT
 
         [Column("UPDATEBY")]
         [StringLength(30)]
-        public string UPDATEBY { get; set; }
+        public string UpdateBy { get; set; }//UPDATEBY
 
         [Column("UPDATEDT")]
-        public DateTime? UPDATEDT { get; set; }
+        public DateTime? UpdateDt { get; set; }//UPDATEDT
 
     }
 }

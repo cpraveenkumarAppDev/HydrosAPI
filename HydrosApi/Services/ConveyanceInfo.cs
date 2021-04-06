@@ -40,17 +40,17 @@ namespace HydrosApi.Services
         /// <summary>
         /// Get the count of the number of conveyances from a 42 parent
         /// </summary>
-        public List<WTR_RIGHT_FACILITY> Get42ConveyanceCount(PCC pcc28)
+        public List<WaterRightFacility> Get42ConveyanceCount(PCC pcc28)
         {
             if (pcc28.Program != "28")
                 throw new Exception($"pcc parameter must be a 28 (parent of 42), provided {pcc28}");
             var converter = new ConvertWrfPCC(this.context);
             var found28WRF = converter.ConvertPCCToWrf(pcc28);
             var foundEntities = this.context.WRF_WRF
-                .Where(x => x.WRF_ID_FROM == found28WRF)
+                .Where(x => x.WaterRightFacilityIdFrom == found28WRF)
                 .Join(
                 this.context.WTR_RIGHT_FACILITY,
-                wrfwrf => wrfwrf.WRF_ID_TO, wtr => wtr.ID,
+                wrfwrf => wrfwrf.WaterRightFacilityIdTo, wtr => wtr.Id,
                 (wrfwrf, wtr) => wtr)
                 .Where(x => x.Program == "42")
                 .ToList();
