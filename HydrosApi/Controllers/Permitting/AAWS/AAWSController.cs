@@ -868,7 +868,7 @@ namespace HydrosApi.Controllers
                         //if the Type is a valueType then make the default object and compare, otherwise it's a ref type and is compared to null
                         if (tempVal != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null))
                         {
-                            if (prop.Name != "CUST_ID" && prop.Name != "CCT_CODE")//can't update the DB Key
+                            if (prop.Name != "CustomerId" && prop.Name != "CustomerTypeCode")//can't update the DB Key
                                 prop.SetValue(foundUser, tempVal);
                         }
                     }
@@ -884,7 +884,7 @@ namespace HydrosApi.Controllers
                             var incomingValue = prop.GetValue(wrf_cust);
                             if (tempValue != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null) && tempValue != incomingValue)
                             {
-                                if (prop.Name != "WRF_ID" && prop.Name != "CUST_ID" && prop.Name != "CCT_CODE")
+                                if (prop.Name != "WaterRightFacilityId" && prop.Name != "CustomerId" && prop.Name != "CustomerTypeCode" && prop.Name != "LineNum")
                                 {
                                     prop.SetValue(wrf_cust, tempValue);
                                     changesOccurred = true;
