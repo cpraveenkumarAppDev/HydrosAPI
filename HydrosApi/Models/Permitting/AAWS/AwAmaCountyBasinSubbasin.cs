@@ -20,15 +20,16 @@ namespace HydrosApi.Models.Permitting.AAWS
         public string AMA { get; set; }//Could not update
 
         [Column("CAMA_CODE")]
-        public string Cama_code { get; set; }//Could not update
+        public string AmaCode { get; set; }//Could not update
 
-        public string AMA_INA_TYPE { get; set; }//Could not update
+        [Column("AMA_INA_TYPE")]
+        public string AmaInaType { get; set; }//Could not update
 
         [Column("COUNTY")]
-        public string County_Descr { get; set; }//Could not update
+        public string County { get; set; }//Could not update
 
         [Column("COUNTY_CODE")]
-        public string County_Code { get; set; }//Could not update
+        public string CountyCode { get; set; }//Could not update
 
         [Column("BASIN_ABBR")]
         public string BasinCode { get; set; }

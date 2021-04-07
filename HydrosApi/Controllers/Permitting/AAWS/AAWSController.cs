@@ -83,19 +83,19 @@ namespace HydrosApi.Controllers
         public IHttpActionResult GetAMACountyBasin(string amacode=null)
         {
             var infoList = amacode == null ? AwAmaCountyBasinSubbasin.GetAll() :
-                AwAmaCountyBasinSubbasin.GetList(a => a.Cama_code== amacode.ToUpper());
+                AwAmaCountyBasinSubbasin.GetList(a => a.AmaCode== amacode.ToUpper());
 
-            return Ok(infoList.GroupBy(g=> new {g.AMA, g.Cama_code, g.AMA_INA_TYPE
-                , DefaultBasinCode=g.Cama_code.Replace("X","0") != "0" ? g.BasinCode : null //When AMA/INA already has basin/subbasin assigned
-                , DefaultBasinName = g.Cama_code.Replace("X", "0") != "0" ? g.BasinName : null})
-              .Select(a => new { a.Key.AMA, a.Key.Cama_code, a.Key.AMA_INA_TYPE, a.Key.DefaultBasinCode, a.Key.DefaultBasinName,
-                  AMAInfo = a.GroupBy(g => new { g.County_Descr, g.County_Code })
-              .Select(c => new { c.Key.County_Descr, c.Key.County_Code,
+            return Ok(infoList.GroupBy(g=> new {g.AMA, g.AmaCode, g.AmaInaType
+                , DefaultBasinCode=g.AmaCode.Replace("X","0") != "0" ? g.BasinCode : null //When AMA/INA already has basin/subbasin assigned
+                , DefaultBasinName = g.AmaCode.Replace("X", "0") != "0" ? g.BasinName : null})
+              .Select(a => new { a.Key.AMA, a.Key.AmaCode, a.Key.AmaInaType, a.Key.DefaultBasinCode, a.Key.DefaultBasinName,
+                  AMAInfo = a.GroupBy(g => new { g.County, g.CountyCode })
+              .Select(c => new { c.Key.County, c.Key.CountyCode,
                   Basin = c.GroupBy(g => new { g.BasinCode, g.BasinName, HasSubbasin = g.SubbasinCode != g.BasinCode && true }).Distinct().OrderBy(o=>o.Key.BasinName)
                 .Select(i => new { i.Key.BasinCode, i.Key.BasinName, i.Key.HasSubbasin 
                 , Subbasin = i.Select(s => new { s.BasinCode, s.BasinName, s.SubbasinCode, s.SubbasinName }).Distinct().OrderBy(o => o.SubbasinName)
               }).Distinct()
-              }).OrderBy(o => o.County_Descr)
+              }).OrderBy(o => o.County)
               }).OrderBy(o=>o.AMA != "OUTSIDE OF AMA OR INA" ? "_"+o.AMA : o.AMA).ToList());           
         }
 

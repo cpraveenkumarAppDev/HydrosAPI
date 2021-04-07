@@ -145,7 +145,7 @@
         public List<VAwsHydro> HydrologyInfo { get; set; } //add or remove 
 
         [NotMapped]
-        public string PWS_ID_Number { get; set; }
+        public string ProviderPublicWaterSystemId { get; set; }
         [NotMapped]
         public string SubbasinCode { get; set; }
         [NotMapped]
@@ -270,21 +270,21 @@
         {
             Dictionary<string, bool> setCriteria = new Dictionary<string, bool>();
             generalInfo.Diagram = SP_AW_CONV_DIAGRAM.ConveyanceDiagram(generalInfo.ProgramCertificateConveyance);
-            setCriteria.Add("Physical_Availability", generalInfo.PhysicalAvailability == "Y" && true);
+            setCriteria.Add("PhysicalAvailability", generalInfo.PhysicalAvailability == "Y" && true);
             setCriteria.Add("Hydrology", generalInfo.Hydrology == "Y" && true);
-            setCriteria.Add("Continuous_Availability", generalInfo.ContinuousAvailability == "Y" && true);
-            setCriteria.Add("Legal_Availability", generalInfo.LegalAvailability == "Y" && true);
-            setCriteria.Add("Consistency_With_Mgmt_Plan", generalInfo.ConsistencyWithMgmtPlan == "Y" && true);
-            setCriteria.Add("Consistency_With_Mgmt_Goal", generalInfo.ConsistencyWithMgmtGoal == "Y" && true);
-            setCriteria.Add("Water_Quality", generalInfo.WaterQuality == "Y" && true);
-            setCriteria.Add("Financial_Capability", generalInfo.FinancialCapability == "Y" && true);
-            setCriteria.Add("Demand_Calculator", generalInfo.DemandCalculator == "Y" && true);
-            setCriteria.Add("Review_Plat_for_MPC", generalInfo.DemandCalculator == "Y" && true);
-            setCriteria.Add("Check_Plat_Recorded", generalInfo.DemandCalculator == "Y" && true);
-            setCriteria.Add("Verify_Water_Provider_Letter_Received", generalInfo.DemandCalculator == "Y" && true);
+            setCriteria.Add("ContinuousAvailability", generalInfo.ContinuousAvailability == "Y" && true);
+            setCriteria.Add("LegalAvailability", generalInfo.LegalAvailability == "Y" && true);
+            setCriteria.Add("ConsistencyWithMgmtPlan", generalInfo.ConsistencyWithMgmtPlan == "Y" && true);
+            setCriteria.Add("ConsistencyWithMgmtGoal", generalInfo.ConsistencyWithMgmtGoal == "Y" && true);
+            setCriteria.Add("WaterQuality", generalInfo.WaterQuality == "Y" && true);
+            setCriteria.Add("FinancialCapability", generalInfo.FinancialCapability == "Y" && true);
+            setCriteria.Add("DemandCalculator", generalInfo.DemandCalculator == "Y" && true);
+            setCriteria.Add("ReviewPlatForMaterialPlatChanges", generalInfo.ReviewPlatForMaterialPlatChanges == "Y" && true);
+            setCriteria.Add("CheckPlatRecorded", generalInfo.CheckPlatRecorded == "Y" && true);
+            setCriteria.Add("VerifyWaterProviderLetterReceived", generalInfo.VerifyWaterProviderLetterReceived == "Y" && true);
             //generalInfo.Overview = setCriteria;
 
-            generalInfo.PWS_ID_Number = generalInfo.PrimaryProviderWrfId != null ? VAwsProvider.Get(p => p.ProviderWaterRightFacilityId == generalInfo.PrimaryProviderWrfId).ProviderPublicWaterSystemId : null;
+            generalInfo.ProviderPublicWaterSystemId = generalInfo.PrimaryProviderWrfId != null ? VAwsProvider.Get(p => p.ProviderWaterRightFacilityId == generalInfo.PrimaryProviderWrfId).ProviderPublicWaterSystemId : null;
             var hydrologyInfo = VAwsHydro.Get(h => h.WaterRightFacilityId == generalInfo.WaterRightFacilityId);
 
             if (hydrologyInfo != null)
