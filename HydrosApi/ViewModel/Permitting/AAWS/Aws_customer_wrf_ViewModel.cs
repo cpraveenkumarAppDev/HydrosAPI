@@ -89,18 +89,18 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         {
             var msg = "";
 
-            if (this.Customer.ADDRESS1 == null)
-            {
-                msg += " ADDRESS1, ";
-            }
-            if (this.Customer.CITY == null)
-            {
-                msg += " CITY, ";
-            }
-            if (this.Customer.STATE == null)
-            {
-                msg += " STATE, "; 
-            }
+            //if (this.Customer.ADDRESS1 == null)
+            //{
+            //    msg += " ADDRESS1, ";
+            //}
+            //if (this.Customer.CITY == null)
+            //{
+            //    msg += " CITY, ";
+            //}
+            //if (this.Customer.STATE == null)
+            //{
+            //    msg += " STATE, "; 
+            //}
             if (this.Customer.COMPANY_LONG_NAME == null && (this.Customer.FIRST_NAME == null || this.Customer.LAST_NAME == null))
             {
                 msg += " COMPANY NAME or FIRST NAME and LAST NAME, ";
