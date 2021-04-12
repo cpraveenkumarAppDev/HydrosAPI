@@ -89,20 +89,22 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         {
             var msg = "";
 
-            if (this.Customer.Address1 == null)
-            {
-                msg += " ADDRESS1, ";
-            }
-            if (this.Customer.City == null)
-            {
-                msg += " CITY, ";
-            }
-            if (this.Customer.State == null)
-            {
-                msg += " STATE, "; 
-            }
+            //if (this.Customer.ADDRESS1 == null)
+            //{
+            //    msg += " ADDRESS1, ";
+            //}
+            //if (this.Customer.CITY == null)
+            //{
+            //    msg += " CITY, ";
+            //}
+            //if (this.Customer.STATE == null)
+            //{
+            //    msg += " STATE, "; 
+            //}
+            
+
             if (this.Customer.CompanyLongName == null && (this.Customer.FirstName == null || this.Customer.LastName == null))
-            {
+                {
                 msg += " COMPANY NAME or FIRST NAME and LAST NAME, ";
             }
             if (this.Waterrights.Count > 0)
@@ -130,7 +132,7 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         public bool IsValid()
         {
             var isValid = true;
-            if (this.Customer.Address1 == null)
+           /* if (this.Customer.Address1 == null)
             {
                 isValid = false;
             }
@@ -141,7 +143,7 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
             if (this.Customer.State == null)
             {
                 isValid = false;
-            }
+            }*/
             if (this.Customer.CompanyLongName == null && (this.Customer.FirstName == null || this.Customer.LastName == null))
             {
                 isValid = false;

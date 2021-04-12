@@ -164,7 +164,7 @@
             else
             {
 
-                var wfrPodList = await Task.FromResult(WFR_POD.Get(p => p.POD_ID == podobjectid && p.WFR_ID == id));
+                var wfrPodList = await Task.FromResult(WFR_POD.Get(p => p.POD_ID == adwrpod.ID && p.WFR_ID == id));
 
                 if (wfrPodList != null)
                 {
