@@ -4,6 +4,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema; 
     using Data;
+    using System.Text.RegularExpressions;
 
     [Table("AWS.V_AWS_HYDRO")]
     public class VAwsHydro : Repository<VAwsHydro>//V_AWS_HYDRO
@@ -120,5 +121,32 @@
         [Column("IMPACT_ANALYSIS_SUBMITTED")]
         public DateTime? ImpactAnalysisSubmitted { get; set; }//IMPACT_ANALYSIS_SUBMITTED
 
+        [Column("APPLICANT_PROJECTED_DEMAND")]
+        public string _ApplicantProjectedDemand { get; set; }
+
+        [Column("ADWR_PROJECTED_DEMAND")]
+        public string _ADWRProjectedDemand { get; set; }
+
+
+        [NotMapped]
+        public string UpdateBy { get; set; }
+
+        [NotMapped]
+        public DateTime? UpdateDt { get; set; }
+
+        [NotMapped]
+        public decimal? ApplicantProjectedDemand {
+            get => !string.IsNullOrEmpty(_ApplicantProjectedDemand) ? (decimal?)decimal.Parse(Regex.Replace(_ApplicantProjectedDemand, @"[^0-9.]+", "")) : null;
+            set => _ApplicantProjectedDemand = value.ToString();
+        }
+
+        [NotMapped]
+        public decimal? ADWRProjectedDemand
+        {
+            get => !string.IsNullOrEmpty(_ADWRProjectedDemand) ? (decimal?)decimal.Parse(Regex.Replace(_ADWRProjectedDemand, @"[^0-9.]+", "")) : null;
+            set => _ADWRProjectedDemand = value.ToString();
+        }
     }
+
+    
 }

@@ -35,6 +35,14 @@ namespace HydrosApi.Controllers
 
         private readonly Dictionary<string, string> AwsCustomerCodes = new Dictionary<string, string> { { "AS", "ASSIGNEE" }, { "BY", "BUYER" }, { "C", "CONTACT PARTY" }, { "CH", "CERTIFICATE HOLDER" }, { "CN", "CONSULTANT" }, { "MR", "MUNICIPAL REPRESENTATIVE" }, { "O", "OWNER" }, { "AP", "APPLICANT" } }; 
 
+        private static string GetBestUsername(string user)
+        {
+            string userName = user.Replace("AZWATER0\\", "");
+            //get Oracle USER_ID if available
+            var foundUser = AwUsers.Get(u => u.Email.ToLower().Replace("@azwater.gov", "") == userName);
+            string oracleUserID = foundUser.UserId ?? null;            
+            return oracleUserID ?? userName; //Set to Oracle ID if possible
+        }
         // GET: AAWS
         //IRR-29-A16011018CBB-01
         [Route("aws/getgeneralInfo/")]
@@ -961,21 +969,29 @@ namespace HydrosApi.Controllers
             return Ok(codes);
         }
 
+        [HttpPut, Route("aws/updatehydro/")]
+        public IHttpActionResult UpdateHydro([FromBody] VAwsHydro hydro)
+        {
+            hydro.UpdateBy= GetBestUsername(User.Identity.Name);
+            hydro.UpdateDt = DateTime.Now;
+
+            var h = hydro;
+            return Ok(hydro);
+        }
+
         [HttpGet, Route("aws/hydrobypcc/{pcc}")]
         public IHttpActionResult GetHydroByPcc(string pcc)
         {            
             Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
             pcc = regex.Replace(pcc, "$1-$2.$3");
-
-            var hydroView = new AwsHydrologyViewModel(pcc);
-            return Ok(hydroView);            
+            return Ok(VAwsHydro.Get(h =>h.PCC == pcc));
         }
 
         [HttpGet, Route("aws/hydrobyid/{id}")]
         public IHttpActionResult GetHydroByWrfId(int id)
         {
-            var hydroView = new AwsHydrologyViewModel(id);
-            return Ok(hydroView);
+            return Ok(VAwsHydro.Get(h=>h.WaterRightFacilityId==id));
+            
         }
     }
 }
