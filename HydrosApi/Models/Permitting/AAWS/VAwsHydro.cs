@@ -127,13 +127,10 @@
         [Column("ADWR_PROJECTED_DEMAND")]
         public string _ADWRProjectedDemand { get; set; }
 
+        [Column("USER_NAME")]
+        public string UserName { get; set; }
 
-        [NotMapped]
-        public string UpdateBy { get; set; }
-
-        [NotMapped]
-        public DateTime? UpdateDt { get; set; }
-
+        
         [NotMapped]
         public decimal? ApplicantProjectedDemand {
             get => !string.IsNullOrEmpty(_ApplicantProjectedDemand) ? (decimal?)decimal.Parse(Regex.Replace(_ApplicantProjectedDemand, @"[^0-9.]+", "")) : null;

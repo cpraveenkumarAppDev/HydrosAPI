@@ -972,8 +972,7 @@ namespace HydrosApi.Controllers
         [HttpPut, Route("aws/updatehydro/")]
         public IHttpActionResult UpdateHydro([FromBody] VAwsHydro hydro)
         {
-            hydro.UpdateBy= GetBestUsername(User.Identity.Name);
-            hydro.UpdateDt = DateTime.Now;
+            hydro.UserName= GetBestUsername(User.Identity.Name);         
 
             var h = hydro;
             return Ok(hydro);
