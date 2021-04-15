@@ -437,6 +437,7 @@
     <Content Include="Adj.config" />
     <None Include="packages.config" />
     <Content Include="Properties\launchSettings.json" />
+    <None Include="Properties\PublishProfiles\TESTenvDeploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
