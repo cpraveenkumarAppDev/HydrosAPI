@@ -315,6 +315,7 @@
     <Compile Include="Controllers\LayersController.cs" />
     <Compile Include="Controllers\Permitting\AAWS\AAWSController.cs" />
     <Compile Include="Data\AdwrRepository.cs" />
+    <Compile Include="Data\GetBestUsername.cs" />
     <Compile Include="Data\HandleForm.cs" />
     <Compile Include="Data\SdeRepository.cs" />
     <Compile Include="Models\Adjudication\AISPODS.cs" />

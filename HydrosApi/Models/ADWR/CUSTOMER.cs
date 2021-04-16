@@ -42,7 +42,7 @@ namespace HydrosApi.Models.ADWR
         public string Address2 { get; set; }//ADDRESS2
 
         [Column("CITY")]
-        [StringLength(20)]
+        [StringLength(100)]
         public string City { get; set; }//CITY
 
         [Column("STATE")]
@@ -55,7 +55,7 @@ namespace HydrosApi.Models.ADWR
 
         [Column("ZIP")]
         [StringLength(6)]
-        public string ZIP { get; set; }
+        public string Zip { get; set; }
 
         [Column("ZIP4")]
         [StringLength(4)]
@@ -119,7 +119,7 @@ namespace HydrosApi.Models.ADWR
             this.PersonTitle = awsCustomer.PersonTitle;
             this.Phone = awsCustomer.Phone;
             this.State = awsCustomer.State;
-            this.ZIP = awsCustomer.Zip;
+            this.Zip = awsCustomer.Zip;
             this.Zip4 = awsCustomer.Zip4;
         }
     }

@@ -35,14 +35,15 @@ namespace HydrosApi.Controllers
 
         private readonly Dictionary<string, string> AwsCustomerCodes = new Dictionary<string, string> { { "AS", "ASSIGNEE" }, { "BY", "BUYER" }, { "C", "CONTACT PARTY" }, { "CH", "CERTIFICATE HOLDER" }, { "CN", "CONSULTANT" }, { "MR", "MUNICIPAL REPRESENTATIVE" }, { "O", "OWNER" }, { "AP", "APPLICANT" } }; 
 
-        private static string GetBestUsername(string user)
+        /*private static string GetBestUsername(string user)
         {
             string userName = user.Replace("AZWATER0\\", "");
             //get Oracle USER_ID if available
             var foundUser = AwUsers.Get(u => u.Email.ToLower().Replace("@azwater.gov", "") == userName);
-            string oracleUserID = foundUser.UserId ?? null;            
+            string oracleUserID = foundUser != null ? foundUser.UserId : null;            
             return oracleUserID ?? userName; //Set to Oracle ID if possible
-        }
+        }*/
+
         // GET: AAWS
         //IRR-29-A16011018CBB-01
         [Route("aws/getgeneralInfo/")]
@@ -671,14 +672,14 @@ namespace HydrosApi.Controllers
         {
             try
             {
-                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
-                //get Oracle USER_ID if available
-                var foundUser = AwUsers.Get(u => u.Email.ToLower().Replace("@azwater.gov", "") == userName);
-                string oracleUserID =  foundUser.UserId ?? null;
-                var createDt = DateTime.Now;
-                string appendCompanyName = "";
+                /* string userName = User.Identity.Name.Replace("AZWATER0\\", "");
+                 //get Oracle USER_ID if available
+                 var foundUser = AwUsers.Get(u => u.Email.ToLower().Replace("@azwater.gov", "") == userName);
+                 string oracleUserID =  foundUser.UserId ?? null;*/
+                string userName = new GetBestUsername(User.Identity.Name).UserName;  //Set to Oracle ID if possible
 
-                userName =oracleUserID ?? userName; //Set to Oracle ID if possible
+                var createDt = DateTime.Now;
+                string appendCompanyName = "";                
                           
                 if(customer.Customer== null || customer.Waterrights==null)
                 {
@@ -717,7 +718,7 @@ namespace HydrosApi.Controllers
                     //Customer is new, create customer
                     if (customerID < 1) 
                     {
-                        if (customer.Customer.CompanyLongName.Length > 60)
+                        if (customer.Customer.CompanyLongName != null && customer.Customer.CompanyLongName.Length > 60)
                         {
                             appendCompanyName = customer.Customer.CompanyLongName.Substring(60);
                             customer.Customer.CompanyLongName = customer.Customer.CompanyLongName.Substring(0, 60);
@@ -800,14 +801,9 @@ namespace HydrosApi.Controllers
         {
             try
             {
-                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
-                //get Oracle USER_ID if available
-                var foundAwUser = AwUsers.Get(u => u.Email.ToLower().Replace("@azwater.gov", "") == userName);
-                string oracleUserID = foundAwUser.UserId ?? null;
+                string userName = new GetBestUsername(User.Identity.Name).UserName;   
                 var currentDt = DateTime.Now;
                 var requestMethod = ActionContext.Request.Method.ToString().ToUpper(); //POST, DELETE ETC.
-               
-                userName = oracleUserID ?? userName; //Set to Oracle ID if possible
 
                 using (var context = new OracleContext())
                 {
@@ -870,11 +866,20 @@ namespace HydrosApi.Controllers
 
                     //get customer properties
                     var custPropList = customer.Customer.GetType().GetProperties().ToList();
+                    
                     foreach (var prop in custPropList)
-                    {
-                        var tempVal = prop.GetValue(customer.Customer);
-                        //if the Type is a valueType then make the default object and compare, otherwise it's a ref type and is compared to null
-                        if (tempVal != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null))
+                    {                      
+                        var tempVal = prop.GetValue(customer.Customer);             
+                        var hasTrim = prop.PropertyType.GetMethods().Where(i => i.Name == "Trim"); //use the trim method if one exists                          
+
+                        if (hasTrim != null && tempVal != null)
+                        {
+                            tempVal.ToString().Trim(new Char[] { ' ', '\n', '\r' });
+                        }
+
+                        var originalValue = prop.GetValue(foundUser);
+                       
+                        if (!Object.Equals(tempVal, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : prop.GetValue(foundUser))))
                         {
                             if (prop.Name != "CustomerId" && prop.Name != "CustomerTypeCode")//can't update the DB Key
                                 prop.SetValue(foundUser, tempVal);
@@ -890,10 +895,16 @@ namespace HydrosApi.Controllers
                         {
                             var tempValue = prop.GetValue(waterRight);
                             var incomingValue = prop.GetValue(wrf_cust);
-                            if (tempValue != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null) && tempValue != incomingValue)
+                            var useValue = !(tempValue == (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : incomingValue));
+                            var newValue = Object.Equals(tempValue, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : incomingValue));
+
+                            //if (tempValue != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : incomingValue))
+                            if(!Object.Equals(tempValue, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : incomingValue)))
                             {
                                 if (prop.Name != "WaterRightFacilityId" && prop.Name != "CustomerId" && prop.Name != "CustomerTypeCode" && prop.Name != "LineNum")
                                 {
+                                    //r st = String.Format("Old value {0} New Value {1} equal ? {2}", tempValue, incomingValue, newValue
+
                                     prop.SetValue(wrf_cust, tempValue);
                                     changesOccurred = true;
                                 }
@@ -972,7 +983,7 @@ namespace HydrosApi.Controllers
         [HttpPut, Route("aws/updatehydro/")]
         public IHttpActionResult UpdateHydro([FromBody] VAwsHydro hydro)
         {
-            hydro.UserName= GetBestUsername(User.Identity.Name);         
+            hydro.UserName= new GetBestUsername(User.Identity.Name).UserName;         
 
             var h = hydro;
             return Ok(hydro);
