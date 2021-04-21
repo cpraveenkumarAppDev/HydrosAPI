@@ -237,7 +237,7 @@ namespace HydrosApi.Controllers
             catch (Exception exception)
             {
                 //log exception
-                return InternalServerError();
+                return InternalServerError(exception);
             }
             return Ok(longTermStorageCreditsList);
         }
