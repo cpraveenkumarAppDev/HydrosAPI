@@ -347,6 +347,7 @@
     <Compile Include="Models\Permitting\AAWS\VAwsCustomer.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsCustomerLongName.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsHydro.cs" />
+    <Compile Include="Models\Permitting\AAWS\VAwsLongTermStorageCredits.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsProvider.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsSubbasin.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsWellServing.cs" />

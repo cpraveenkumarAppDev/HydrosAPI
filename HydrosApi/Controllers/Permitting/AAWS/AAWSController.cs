@@ -226,6 +226,22 @@ namespace HydrosApi.Controllers
             }
         }
 
+        [HttpGet, Route("aws/getLongTermStorageCreditsById/{id}")]
+        public IHttpActionResult GetLongTermStorageCreditsById(int id)
+        {
+            List<VAwsLongTermStorageCredits> longTermStorageCreditsList;
+            try
+            {
+                longTermStorageCreditsList = VAwsLongTermStorageCredits.GetList(x => x.WaterRightFacilityId == id);
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError();
+            }
+            return Ok(longTermStorageCreditsList);
+        }
+
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpGet, Route("aws/amaDetail/{wrfid:int}")]
         public IHttpActionResult GetAmaDetail(int wrfid)
