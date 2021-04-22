@@ -226,6 +226,91 @@ namespace HydrosApi.Controllers
             }
         }
 
+        [HttpGet, Route("aws/getLongTermStorageCreditsById/{id}")]
+        public IHttpActionResult GetLongTermStorageCreditsById(int id)
+        {
+            List<VAwsLongTermStorageCredits> longTermStorageCreditsList;
+            try
+            {
+                longTermStorageCreditsList = VAwsLongTermStorageCredits.GetList(x => x.WaterRightFacilityId == id);
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError(exception);
+            }
+            return Ok(longTermStorageCreditsList);
+        }
+
+        [HttpGet, Route("aws/getEffluentLegalAvailabilityById/{id}")]
+        public IHttpActionResult GetEffluentLegalAvailabilityById(int id)
+        {
+            List<AwEffluentLegalAvailability> EffluentLegalAvailabilityList;
+            try
+            {
+                EffluentLegalAvailabilityList = AwEffluentLegalAvailability.GetList(x => x.WaterRightFacilityId == id);
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError();
+            }
+            return Ok(EffluentLegalAvailabilityList);
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        [HttpPut, Route("aws/updateEffluentLegalAvailability/{id}")]
+        public async Task<IHttpActionResult> UpdateEffluentLegalAvailability([FromBody] AwEffluentLegalAvailability eff, int id)
+        {
+            eff.UpdateBy = User.Identity.Name.Replace("AZWATER0\\", "");
+            AwEffluentLegalAvailability effLA;
+
+            using (var context = new OracleContext())
+            {
+                effLA = context.AW_EFFLUENT_LEGAL_AVAILABILITY.Where(x => x.Id == id).FirstOrDefault();
+                if (effLA != null)
+                {
+                    var props = effLA.GetType().GetProperties().ToList();
+                    foreach (var prop in props)
+                    {
+                        var value = prop.GetValue(eff);
+                        if (value != null)
+                        {
+                            prop.SetValue(effLA, value);
+                        }
+                    }
+                    await context.SaveChangesAsync();
+                }
+                return Ok(effLA);
+            }
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        [HttpPost, Route("aws/addEffluentLegalAvailability/{wrf}/{et}/{cn}/{amt}")]
+        public IHttpActionResult AddEffluentLegalAvailability(int wrf, string et, string cn, decimal amt)
+        {
+            var record = new AwEffluentLegalAvailability
+            {
+                CreateDt = DateTime.Now,
+                WaterRightFacilityId = wrf,
+                EffluentType = et,
+                ContractName = cn,
+                Amount = amt,
+                CreateBy = User.Identity.Name.Replace(@"AZWATER0\", "")
+            };
+
+            try
+            {
+                AwEffluentLegalAvailability.Add(record);
+                return Ok("Created");
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError(exception);
+            }
+        }
+
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpGet, Route("aws/amaDetail/{wrfid:int}")]
         public IHttpActionResult GetAmaDetail(int wrfid)
