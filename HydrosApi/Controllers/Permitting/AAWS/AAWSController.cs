@@ -2,10 +2,10 @@
 namespace HydrosApi.Controllers
 {
     using System;
-    using System.Web.Http;    
+    using System.Web.Http;
     using System.Threading.Tasks;
     using Models;
-    using HydrosApi.ViewModel;    
+    using HydrosApi.ViewModel;
     using System.Text.RegularExpressions;
     using HydrosApi.Data;
     using System.Linq;
@@ -33,7 +33,7 @@ namespace HydrosApi.Controllers
             return fullException;
         }
 
-        private readonly Dictionary<string, string> AwsCustomerCodes = new Dictionary<string, string> { { "AS", "ASSIGNEE" }, { "BY", "BUYER" }, { "C", "CONTACT PARTY" }, { "CH", "CERTIFICATE HOLDER" }, { "CN", "CONSULTANT" }, { "MR", "MUNICIPAL REPRESENTATIVE" }, { "O", "OWNER" }, { "AP", "APPLICANT" } }; 
+        private readonly Dictionary<string, string> AwsCustomerCodes = new Dictionary<string, string> { { "AS", "ASSIGNEE" }, { "BY", "BUYER" }, { "C", "CONTACT PARTY" }, { "CH", "CERTIFICATE HOLDER" }, { "CN", "CONSULTANT" }, { "MR", "MUNICIPAL REPRESENTATIVE" }, { "O", "OWNER" }, { "AP", "APPLICANT" } };
 
         // GET: AAWS
         //IRR-29-A16011018CBB-01
@@ -58,7 +58,7 @@ namespace HydrosApi.Controllers
             //this will format any pcc as long as the pattern is two numbers, six numbers, four numbers in it
             //so it can be all numbers or have characters as long as the character are in the correct locations
             //I'm sorry to change it
-            
+
             Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
             var pcc = regex.Replace(id, "$1-$2.$3");
             // var pcc = regex.Replace("~", ".");
@@ -79,28 +79,49 @@ namespace HydrosApi.Controllers
         /// </remarks>
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [HttpGet,Route("aws/getAmaCountyBasin/{amacode?}")]      
-        public IHttpActionResult GetAMACountyBasin(string amacode=null)
+        [HttpGet, Route("aws/getAmaCountyBasin/{amacode?}")]
+        public IHttpActionResult GetAMACountyBasin(string amacode = null)
         {
             var infoList = amacode == null ? AwAmaCountyBasinSubbasin.GetAll() :
-                AwAmaCountyBasinSubbasin.GetList(a => a.AmaCode== amacode.ToUpper());
+                AwAmaCountyBasinSubbasin.GetList(a => a.AmaCode == amacode.ToUpper());
 
-            return Ok(infoList.GroupBy(g=> new {g.AMA, g.AmaCode, g.AmaInaType
-                , DefaultBasinCode=g.AmaCode.Replace("X","0") != "0" ? g.BasinCode : null //When AMA/INA already has basin/subbasin assigned
-                , DefaultBasinName = g.AmaCode.Replace("X", "0") != "0" ? g.BasinName : null})
-              .Select(a => new { a.Key.AMA, a.Key.AmaCode, a.Key.AmaInaType, a.Key.DefaultBasinCode, a.Key.DefaultBasinName,
+            return Ok(infoList.GroupBy(g => new
+            {
+                g.AMA,
+                g.AmaCode,
+                g.AmaInaType
+                ,
+                DefaultBasinCode = g.AmaCode.Replace("X", "0") != "0" ? g.BasinCode : null //When AMA/INA already has basin/subbasin assigned
+                ,
+                DefaultBasinName = g.AmaCode.Replace("X", "0") != "0" ? g.BasinName : null
+            })
+              .Select(a => new
+              {
+                  a.Key.AMA,
+                  a.Key.AmaCode,
+                  a.Key.AmaInaType,
+                  a.Key.DefaultBasinCode,
+                  a.Key.DefaultBasinName,
                   AMAInfo = a.GroupBy(g => new { g.County, g.CountyCode })
-              .Select(c => new { c.Key.County, c.Key.CountyCode,
-                  Basin = c.GroupBy(g => new { g.BasinCode, g.BasinName, HasSubbasin = g.SubbasinCode != g.BasinCode && true }).Distinct().OrderBy(o=>o.Key.BasinName)
-                .Select(i => new { i.Key.BasinCode, i.Key.BasinName, i.Key.HasSubbasin 
-                , Subbasin = i.Select(s => new { s.BasinCode, s.BasinName, s.SubbasinCode, s.SubbasinName }).Distinct().OrderBy(o => o.SubbasinName)
-              }).Distinct()
+              .Select(c => new
+              {
+                  c.Key.County,
+                  c.Key.CountyCode,
+                  Basin = c.GroupBy(g => new { g.BasinCode, g.BasinName, HasSubbasin = g.SubbasinCode != g.BasinCode && true }).Distinct().OrderBy(o => o.Key.BasinName)
+                .Select(i => new
+                {
+                    i.Key.BasinCode,
+                    i.Key.BasinName,
+                    i.Key.HasSubbasin
+                ,
+                    Subbasin = i.Select(s => new { s.BasinCode, s.BasinName, s.SubbasinCode, s.SubbasinName }).Distinct().OrderBy(o => o.SubbasinName)
+                }).Distinct()
               }).OrderBy(o => o.County)
-              }).OrderBy(o=>o.AMA != "OUTSIDE OF AMA OR INA" ? "_"+o.AMA : o.AMA).ToList());           
+              }).OrderBy(o => o.AMA != "OUTSIDE OF AMA OR INA" ? "_" + o.AMA : o.AMA).ToList());
         }
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [HttpGet,Route("aws/getgeneralInfoByPcc/{id}")]        
+        [HttpGet, Route("aws/getgeneralInfoByPcc/{id}")]
         public IHttpActionResult GetGeneralInfoByPcc(string id)
         {
             //this will format any pcc as long as the pattern is two numbers, six numbers, four numbers in it
@@ -114,13 +135,13 @@ namespace HydrosApi.Controllers
             return Ok(found);
         }
 
-        [HttpGet,Route("aws/getCommentsByWrfId/{id}")]
-        public IHttpActionResult GetGeneralInfoByPcc(int id)
+        [HttpGet, Route("aws/getCommentsByWrfId/{id}")]
+        public IHttpActionResult GetCommentsByWrfId(int id)
         {
             //Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
             //var pcc = regex.Replace(id, "$1-$2.$3");
             // var pcc = regex.Replace("~", ".");
-            var found = AWS_CommentsVM.GetComments(id);
+            var found = CommentsViewModel.AwsGetComments(id);
             return Ok(found);
         }
 
@@ -136,6 +157,12 @@ namespace HydrosApi.Controllers
             return Ok(AwFile.Get(p => p.WaterRightFacilityId == id));
         }
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpPost, Route("aws/SaveNewComment/{id}")]
+        public async Task<IHttpActionResult> SaveNewComment([FromBody] CommentsViewModel comment, int id)
+        {
+            return Ok();
+        }
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpPut, Route("aws/UpdateAwFile/{id}")]
         public async Task<IHttpActionResult> UpdateAwFile([FromBody] AwFile af, int id)
         {
@@ -144,21 +171,29 @@ namespace HydrosApi.Controllers
 
             using (var context = new OracleContext())
             {
-                aw_file = context.AW_FILE.Where(x => x.WaterRightFacilityId == id).FirstOrDefault();
-                if (aw_file != null)
+                try
                 {
-                    var props = aw_file.GetType().GetProperties().ToList();
-                    foreach (var prop in props)
+                    aw_file = context.AW_FILE.Where(x => x.WaterRightFacilityId == id).FirstOrDefault();
+                    if (aw_file != null)
                     {
-                        var value = prop.GetValue(af);
-                        if (value != null)
+                        var props = aw_file.GetType().GetProperties().ToList();
+                        foreach (var prop in props)
                         {
-                            prop.SetValue(aw_file, value);
+                            var value = prop.GetValue(af);
+                            if (value != null)
+                            {
+                                prop.SetValue(aw_file, value);
+                            }
                         }
+                        await context.SaveChangesAsync();
                     }
-                    await context.SaveChangesAsync();
+                    return Ok(aw_file);
                 }
-                return Ok(aw_file);
+                catch (Exception exception)
+                {
+                    //log error
+                    return InternalServerError();
+                }
             }
         }
 
@@ -210,7 +245,7 @@ namespace HydrosApi.Controllers
                 AwWellServing.Add(record);
                 return Ok("Created");
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 //log exception
                 return InternalServerError(exception);
@@ -223,7 +258,7 @@ namespace HydrosApi.Controllers
         {
             try
             {
-                using(var context = new OracleContext())
+                using (var context = new OracleContext())
                 {
                     var found = context.V_AWS_AMA.Where(x => x.WaterRightFacilityId == wrfid).FirstOrDefault();
                     return Ok(found);
@@ -247,25 +282,25 @@ namespace HydrosApi.Controllers
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpPost, Route("aws/newconv")]
         public async Task<IHttpActionResult> AddNewConveyance([FromBody] SP_AW_INS paramValues) //New conveyance
-        {                 
+        {
             var conveyance = await Task.FromResult(SP_AW_INS.CreateNewFile(paramValues, "conveyance"));
 
-            if(conveyance==null)
+            if (conveyance == null)
             {
-                return Ok(new { message = "A new conveyance was not created" });               
+                return Ok(new { message = "A new conveyance was not created" });
             }
-            else if(conveyance.Result.ProcessStatus != null)
+            else if (conveyance.Result.ProcessStatus != null)
             {
-                return Ok(new { message = conveyance.Result.ProcessStatus });               
-            }             
+                return Ok(new { message = conveyance.Result.ProcessStatus });
+            }
             return Ok(conveyance);
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpPost, Route("aws/newapp")]
         public async Task<IHttpActionResult> AddNewApplication([FromBody] SP_AW_INS paramValues) //New file
-        {            
-            var application=await Task.FromResult(SP_AW_INS.CreateNewFile(paramValues, "newApplication"));
+        {
+            var application = await Task.FromResult(SP_AW_INS.CreateNewFile(paramValues, "newApplication"));
 
             if (application == null)
             {
@@ -276,7 +311,7 @@ namespace HydrosApi.Controllers
                 return Ok(new { message = application.Result.ProcessStatus });
             }
 
-            return Ok(application);             
+            return Ok(application);
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
@@ -286,14 +321,14 @@ namespace HydrosApi.Controllers
             var user = User.Identity.Name;
             paramValues.Overview.UserName = user.Replace("AZWATER0\\", "");
             VAwsGeneralInfo genInfo;
-            using(var context = new OracleContext())
+            using (var context = new OracleContext())
             {
                 genInfo = context.V_AWS_GENERAL_INFO.Where(x => x.ProgramCertificateConveyance == paramValues.Overview.ProgramCertificateConveyance).FirstOrDefault();
                 var props = genInfo.GetType().GetProperties().ToList();
                 foreach (var prop in props)
                 {
                     var value = prop.GetValue(paramValues.Overview);
-                    if(value != null)
+                    if (value != null)
                     {
                         prop.SetValue(genInfo, value);
                         if (prop.Name == "SubbasinCode")
@@ -314,7 +349,7 @@ namespace HydrosApi.Controllers
         {
             try
             {
-                using(var context = new OracleContext())
+                using (var context = new OracleContext())
                 {
                     var conveyanceInfo = new ConveyanceInfo(context);
                     var parent = conveyanceInfo.Get42Parent(new PCC(pcc42));
@@ -333,12 +368,12 @@ namespace HydrosApi.Controllers
         {
             try
             {
-                using(var context = new OracleContext())
+                using (var context = new OracleContext())
                 {
                     var conveyanceInfo = new ConveyanceInfo(context);
                     var checkedPCC = new PCC(pcc28);
 
-                    if(checkedPCC.Program == "42")
+                    if (checkedPCC.Program == "42")
                     {
                         checkedPCC = conveyanceInfo.Get42Parent(checkedPCC);
                     }
@@ -346,23 +381,23 @@ namespace HydrosApi.Controllers
                     return Ok(foundPCCs);
                 }
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 return InternalServerError(exception);
             }
         }
 
-       /* [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
-        [HttpPut, Route("aws/updateapp")]
-        public IHttpActionResult UpdateApp([FromBody] AAWSProgramInfoViewModel paramValues) //New file
-        {
+        /* [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+         [HttpPut, Route("aws/updateapp")]
+         public IHttpActionResult UpdateApp([FromBody] AAWSProgramInfoViewModel paramValues) //New file
+         {
 
-            var user = User.Identity.Name;
-            var savedApplication = AAWSProgramInfoViewModel.OnUpdate(paramValues, user.Replace("AZWATER0\\",""));
-           
+             var user = User.Identity.Name;
+             var savedApplication = AAWSProgramInfoViewModel.OnUpdate(paramValues, user.Replace("AZWATER0\\",""));
 
-            return Ok(savedApplication);
-        }*/
+
+             return Ok(savedApplication);
+         }*/
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpGet, Route("aws/activity/{wrf}/{activity}")]
@@ -373,7 +408,7 @@ namespace HydrosApi.Controllers
             {
                 activities = AwAppActivityTrk.GetList(x => x.WaterRightFacilityId == wrf && x.ActivityCode == activity).FirstOrDefault();
             }
-            catch  
+            catch
             {
                 //log exception
                 return InternalServerError();
@@ -388,9 +423,9 @@ namespace HydrosApi.Controllers
             List<AwAppActivityTrk> activities = new List<AwAppActivityTrk>();
             try
             {
-                activities = AwAppActivityTrk.GetList(x => x.WaterRightFacilityId == wrf && new List<string>{"ISSD", "IADQ", "IIAD"}.Contains(x.ActivityCode)).OrderByDescending(x => x.CreateDt).ToList();
+                activities = AwAppActivityTrk.GetList(x => x.WaterRightFacilityId == wrf && new List<string> { "ISSD", "IADQ", "IIAD" }.Contains(x.ActivityCode)).OrderByDescending(x => x.CreateDt).ToList();
             }
-            catch 
+            catch
             {
                 //log exception
                 return InternalServerError();
@@ -415,7 +450,7 @@ namespace HydrosApi.Controllers
                 AwAppActivityTrk.Add(record);
                 return Ok("Created");
             }
-            catch 
+            catch
             {
                 //log exception
                 return InternalServerError();
@@ -458,7 +493,7 @@ namespace HydrosApi.Controllers
             {
                 codes = CdAwAppActivity.GetList(x => x.AlsoFileStatus == "Y");
             }
-            catch 
+            catch
             {
                 //log exception
                 return InternalServerError();
@@ -473,14 +508,14 @@ namespace HydrosApi.Controllers
                 var info = new Common_ViewModel();
                 return Ok(info);
             }
-            catch  
+            catch
             {
                 //log error
                 return InternalServerError();
             }
         }
 
-        
+
 
         /// <summary>
         /// aws/company/{company} Search for a company (COMPANY_LONG_NAME) field.
@@ -495,7 +530,7 @@ namespace HydrosApi.Controllers
 
         [HttpGet, Route("aws/company/{company}")]
         public IHttpActionResult GetCustomerByCompany(string company)
-        {            
+        {
             try
             {
                 if (company == null)
@@ -505,17 +540,17 @@ namespace HydrosApi.Controllers
                 var customerList = VAwsCustomerLongName.GetList(co => co.CompanyLongName.ToLower().Contains(company.ToLower()))
                     .Select(result => new
                     {
-                        companyRank = company != null && result.CompanyLongName != null ? result.CompanyLongName.ToLower() == company.ToLower()                                          
-                        ? new string(' ',3)+result.CompanyLongName.ToLower()
-                        : String.Format("{0:D20}{1}",result.CompanyLongName.ToLower().IndexOf(company.ToLower()),result.CompanyLongName.ToLower()) : null,                          
+                        companyRank = company != null && result.CompanyLongName != null ? result.CompanyLongName.ToLower() == company.ToLower()
+                        ? new string(' ', 3) + result.CompanyLongName.ToLower()
+                        : String.Format("{0:D20}{1}", result.CompanyLongName.ToLower().IndexOf(company.ToLower()), result.CompanyLongName.ToLower()) : null,
 
                         result
                     })
-                     .OrderBy(o =>o.companyRank)
+                     .OrderBy(o => o.companyRank)
                      .Select(s => s.result).Take(20);
 
                 var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x));
-                return Ok(custWrfViewModelList);                     
+                return Ok(custWrfViewModelList);
             }
             catch //(Exception exception)
             {
@@ -538,9 +573,9 @@ namespace HydrosApi.Controllers
 
         [HttpPost, Route("aws/customerbyany/")]
         public IHttpActionResult GetCustomerByAny([FromBody] VAwsCustomerLongName customer)
-        {            
+        {
             try
-            {             
+            {
                 string firstname = customer.FirstName;
                 string lastname = customer.LastName;
                 string company = customer.CompanyLongName;
@@ -548,7 +583,7 @@ namespace HydrosApi.Controllers
 
                 if (firstname == null && lastname == null && company == null && address1 == null)
                 {
-                    return Ok(new { Message = "At least one search term must be entered (First Name, Last Name, Company Name or Address1/Care of" });                    
+                    return Ok(new { Message = "At least one search term must be entered (First Name, Last Name, Company Name or Address1/Care of" });
                 }
 
                 var searchString = String.Format("FirstName={0} LastName={1} Company={2} Address1={3}", firstname, lastname, company, address1);
@@ -587,13 +622,13 @@ namespace HydrosApi.Controllers
                 {
                     return Ok(new { Message = "No results were found for " + searchString });
                 }
-               
+
                 var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x.result)).Take(20);
-              
+
                 return Ok(custWrfViewModelList);
             }
             catch (Exception exception)
-            {                
+            {
                 return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
                 //log error
                 //return InternalServerError();
@@ -666,48 +701,49 @@ namespace HydrosApi.Controllers
                 string userName = User.Identity.Name.Replace("AZWATER0\\", "");
                 //get Oracle USER_ID if available
                 var foundUser = AwUsers.Get(u => u.Email.ToLower().Replace("@azwater.gov", "") == userName);
-                string oracleUserID =  foundUser.UserId ?? null;
+                string oracleUserID = foundUser.UserId ?? null;
                 var createDt = DateTime.Now;
                 string appendCompanyName = "";
 
-                userName =oracleUserID ?? userName; //Set to Oracle ID if possible
-                          
-                if(customer.Customer== null || customer.Waterrights==null)
+                userName = oracleUserID ?? userName; //Set to Oracle ID if possible
+
+                if (customer.Customer == null || customer.Waterrights == null)
                 {
                     return BadRequest("Mandatory information for customer was not provided.");
-                }   
-                
+                }
+
                 var existingCustomers = WaterRightFacilityCustomer.GetList(l => l.WaterRightFacilityId == wrf);
 
-                if(existingCustomers==null)
+                if (existingCustomers == null)
                 {
-                   if(WaterRightFacility.Get(l => l.Id == wrf)==null)
+                    if (WaterRightFacility.Get(l => l.Id == wrf) == null)
                     {
                         return BadRequest("The water right facility ID submitted is incorrect or doesn't exist.");
-                    }                     
+                    }
                 }
                 using (var context = new OracleContext())
                 {
                     int? customerID = (int?)customer.Customer.CustomerId ?? -1;
 
-                    customer.Waterrights.Select(w => {
+                    customer.Waterrights.Select(w =>
+                    {
                         w.WaterRightFacilityId = wrf;
                         return w;
                     }).ToList();
-                
+
                     //Customer is new, ensure required data is provided
                     if (!customer.IsValid() && customerID < 1) //if the customer doesn't exist, ensure that the appropriate data is being submitted
                     {
-                        return BadRequest(String.Format("THE CUSTOMER WAS NOT CREATED BECAUSE THE FOLLOWING INFORMAION IS MISSING: {0}",customer.IsValidMsg()));
+                        return BadRequest(String.Format("THE CUSTOMER WAS NOT CREATED BECAUSE THE FOLLOWING INFORMAION IS MISSING: {0}", customer.IsValidMsg()));
                     }
                     //Customer exists, verify the CCT_CODE is provided
-                    else if(customerID > 0 && customer.Waterrights.Count()!=customer.Waterrights.Count(w=>w.CustomerTypeCode !=null))
+                    else if (customerID > 0 && customer.Waterrights.Count() != customer.Waterrights.Count(w => w.CustomerTypeCode != null))
                     {
                         return BadRequest("COULD NOT CREATE AN ASSOCIATION BECAUSE THE CCT CODE MUST BE PROVIDED");
                     }
-                    
+
                     //Customer is new, create customer
-                    if (customerID < 1) 
+                    if (customerID < 1)
                     {
                         if (customer.Customer.CompanyLongName.Length > 60)
                         {
@@ -723,9 +759,9 @@ namespace HydrosApi.Controllers
                         };
                         context.CUSTOMER.Add(rgrCustomer);
                         context.SaveChanges();//need to save and get rgr.customer ID back from DB sequence to use in wrf_cust
-                    
-                        customerID= rgrCustomer.Id;
-                        
+
+                        customerID = rgrCustomer.Id;
+
                         if (customerID < 1)
                         {
                             return BadRequest("ERROR CREATING CUSTOMER");
@@ -744,48 +780,48 @@ namespace HydrosApi.Controllers
                             context.SaveChanges();
                         }
                     }  //customer exists              
-                   else
+                    else
                     {
-                        var findCust=Customer.Get(c => c.Id == customer.Customer.CustomerId, context);
-                        if(findCust==null)
+                        var findCust = Customer.Get(c => c.Id == customer.Customer.CustomerId, context);
+                        if (findCust == null)
                         {
                             BadRequest("COULD NOT FIND A MATCHING CUSTOMER FOR THE ID ENTERED");
                         }
                         else
                         {
-                            customer.Customer=VAwsCustomerLongName.Get(c => c.CustomerId == customer.Customer.CustomerId, context);
+                            customer.Customer = VAwsCustomerLongName.Get(c => c.CustomerId == customer.Customer.CustomerId, context);
                         }
-                    }               
-                    
-                    var waterRights=customer.Waterrights.Select(w =>
-                    {
-                        w.CustomerId = customerID ?? -1;                        
-                        w.IsActive = w.IsActive ?? "Y";                      
-                        w.LineNum = ((from f in existingCustomers where f.CustomerTypeCode == w.CustomerTypeCode && f.WaterRightFacilityId==w.WaterRightFacilityId select f).Max(l => (int?)l.LineNum) ?? 0) + 1; // Set line num 
-                        w.CreateBy = userName;
-                        w.CreateDt = createDt;
-                        return w;
-                    }).ToList();
+                    }
 
-                    if(waterRights==null)
+                    var waterRights = customer.Waterrights.Select(w =>
+                      {
+                          w.CustomerId = customerID ?? -1;
+                          w.IsActive = w.IsActive ?? "Y";
+                          w.LineNum = ((from f in existingCustomers where f.CustomerTypeCode == w.CustomerTypeCode && f.WaterRightFacilityId == w.WaterRightFacilityId select f).Max(l => (int?)l.LineNum) ?? 0) + 1; // Set line num 
+                          w.CreateBy = userName;
+                          w.CreateDt = createDt;
+                          return w;
+                      }).ToList();
+
+                    if (waterRights == null)
                     {
                         BadRequest("THERE WAS AN UNKNOWN ERROR ADDING THE CUSTOMER");
                     }
 
-                    context.WRF_CUST.AddRange(waterRights);                   
-                    context.SaveChanges();                  
-                    
+                    context.WRF_CUST.AddRange(waterRights);
+                    context.SaveChanges();
+
                     return Ok(customer);
-               }
-           }
+                }
+            }
             catch (Exception exception)
             {
-                
+
                 return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
                 //log error
                 //return InternalServerError();
             }
-        }        
+        }
 
         [HttpPut, Route("aws/customer/{custId}"), Authorize]
         public IHttpActionResult UpdateCustomer(int custId, Aws_customer_wrf_ViewModel customer)
@@ -798,7 +834,7 @@ namespace HydrosApi.Controllers
                 string oracleUserID = foundAwUser.UserId ?? null;
                 var currentDt = DateTime.Now;
                 var requestMethod = ActionContext.Request.Method.ToString().ToUpper(); //POST, DELETE ETC.
-               
+
                 userName = oracleUserID ?? userName; //Set to Oracle ID if possible
 
                 using (var context = new OracleContext())
@@ -814,7 +850,7 @@ namespace HydrosApi.Controllers
                     //Ensure IS_ACTIVE is "N". Set the CUST_ID value
                     var wrfCust = customer.Waterrights.Where(w => w.IsActive == "N" && w.CustomerId == custId);
 
-                    if (wrfCust != null && wrfCust.Count()>0)
+                    if (wrfCust != null && wrfCust.Count() > 0)
                     {
                         var deleteWrfCust = (from w in allWaterRights
                                              join c in wrfCust on new { w.WaterRightFacilityId, w.CustomerId, w.CustomerTypeCode, w.LineNum }
@@ -855,9 +891,9 @@ namespace HydrosApi.Controllers
 
                     var rightsCount = allWaterRights != null ? allWaterRights.Select(w => w.WaterRightFacilityId).Distinct().Count() : 0;
 
-                    if(rightsCount > 1)
+                    if (rightsCount > 1)
                     {
-                        return BadRequest(string.Format("THIS CUSTOMER IS ASSOCIATED WITH {0} RIGHTS AND CANNOT BE UPDATED",rightsCount));
+                        return BadRequest(string.Format("THIS CUSTOMER IS ASSOCIATED WITH {0} RIGHTS AND CANNOT BE UPDATED", rightsCount));
                     }
 
                     //get customer properties
@@ -963,12 +999,12 @@ namespace HydrosApi.Controllers
 
         [HttpGet, Route("aws/hydrobypcc/{pcc}")]
         public IHttpActionResult GetHydroByPcc(string pcc)
-        {            
+        {
             Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
             pcc = regex.Replace(pcc, "$1-$2.$3");
 
             var hydroView = new AwsHydrologyViewModel(pcc);
-            return Ok(hydroView);            
+            return Ok(hydroView);
         }
 
         [HttpGet, Route("aws/hydrobyid/{id}")]
@@ -978,4 +1014,6 @@ namespace HydrosApi.Controllers
             return Ok(hydroView);
         }
     }
+    // SAVING COMMENTS
+
 }
