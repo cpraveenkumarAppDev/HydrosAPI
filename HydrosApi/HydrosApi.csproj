@@ -317,6 +317,7 @@
     <Compile Include="Data\AdwrRepository.cs" />
     <Compile Include="Data\GetBestUsername.cs" />
     <Compile Include="Data\HandleForm.cs" />
+    <Compile Include="Data\QueryResult.cs" />
     <Compile Include="Data\SdeRepository.cs" />
     <Compile Include="Models\Adjudication\AISPODS.cs" />
     <Compile Include="Models\Adjudication\POINT_OF_DIVERSION_VIEW.cs" />

@@ -1003,5 +1003,16 @@ namespace HydrosApi.Controllers
             return Ok(VAwsHydro.Get(h=>h.WaterRightFacilityId==id));
             
         }
+
+
+        [HttpGet, Route("aws/anyquery")]
+        public IHttpActionResult TestAnyQuery()
+        {
+            var sql = "select * from wtr_right_facility where rownum < 10";
+            var result = QueryResult.RunAnyQuery(sql);
+
+            return Ok(result);
+
+        }
     }
 }
