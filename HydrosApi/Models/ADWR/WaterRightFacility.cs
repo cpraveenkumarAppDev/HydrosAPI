@@ -31,6 +31,20 @@ namespace HydrosApi.Models.ADWR
         [Column("CONV_NO")]
         public string Conveyance { get; set; }
 
+        [Column("ACC_DOCKET_NO")]
+        public string AzCorpComDocketNumber { get; set; }
+
+        [Column("ACC_DOCKET_DT")]
+        public DateTime? AzCorpComDocketDate { get; set; }
+
         public string PCC { get => $"{this.Program}-{this.Certificate}.{this.Conveyance}"; }
+
+        [Column("UPDATEBY")]
+        [StringLength(30)]
+        public string UpdateBy { get; set; }
+
+        [Column("UPDATEDT")]
+        public DateTime? UpdateDt { get; set; }
+
     }
 }
