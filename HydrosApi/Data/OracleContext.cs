@@ -62,7 +62,7 @@ namespace HydrosApi.Data
 
         public virtual DbSet<WaterRightFacilityToWaterRightFacility> WRF_WRF { get; set; }
 
-        public virtual DbSet<QueryResult> QueryResult { get; set; }
+        //public virtual DbSet<QueryResult> QueryResult { get; set; }
 
         public virtual DbSet<VAwsActiveManagementArea> V_AWS_AMA { get; set; }
 
