@@ -6,7 +6,7 @@
     public class GetBestUsername : Repository<AwUsers>//AW_USERS
     {
         public string UserName;
-        public int? Id;
+        public int Id;
 
         public GetBestUsername(string user)
         {
@@ -24,8 +24,6 @@
             string oracleUserID = foundUser != null ? foundUser.UserId : null;
             Id = foundUser != null ? foundUser.Id : 0;
             UserName=oracleUserID ?? userName; //Set to Oracle ID if possible
-            
-           
         }
     }
 }

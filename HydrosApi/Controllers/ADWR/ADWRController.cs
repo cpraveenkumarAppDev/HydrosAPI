@@ -135,7 +135,7 @@ namespace HydrosApi
                 var applicationList = HydrosManager.GetAll();
                 return Ok(applicationList);
             }
-            catch
+            catch (Exception exception)
             {
                 //log error
                 return InternalServerError();

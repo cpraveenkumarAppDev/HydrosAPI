@@ -143,7 +143,15 @@ namespace HydrosApi.Controllers
             var found = VAwsGeneralInfo.GetGeneralInformation(pcc);
             return Ok(found);
         }
-
+        [HttpGet, Route("aws/getCommentTypes")]
+        public IHttpActionResult GetCommentTypes()
+        {
+            //Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
+            //var pcc = regex.Replace(id, "$1-$2.$3");
+            // var pcc = regex.Replace("~", ".");
+            var found = CdAwCommentType.GetAll();
+            return Ok(found);
+        }
         [HttpGet, Route("aws/getCommentsByWrfId/{id}")]
         public IHttpActionResult GetCommentsByWrfId(int id)
         {
@@ -169,6 +177,9 @@ namespace HydrosApi.Controllers
         [HttpPost, Route("aws/SaveNewComment/{id}")]
         public async Task<IHttpActionResult> SaveNewComment([FromBody] CommentsViewModel comment, int id)
         {
+            var user = User.Identity.Name.Replace("AZWATER0\\", "");
+
+            var saved = CommentsViewModel.AddAWSComment(comment, user);
             return Ok();
         }
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
@@ -1126,15 +1137,15 @@ namespace HydrosApi.Controllers
         }
 
 
-        [HttpGet, Route("aws/anyquery")]
-        public IHttpActionResult TestAnyQuery()
-        {
-            var sql = "select * from wtr_right_facility where rownum < 10";
-            var result = QueryResult.RunAnyQuery(sql);
+        //[HttpGet, Route("aws/anyquery")]
+        //public IHttpActionResult TestAnyQuery()
+        //{
+        //    //var sql = "select * from wtr_right_facility where rownum < 10";
+        //    //var result = QueryResult.RunAnyQuery(sql);
 
-            return Ok(result);
+        //    //return Ok(result);
 
-        }
+        //}
     }
     // SAVING COMMENTS
 

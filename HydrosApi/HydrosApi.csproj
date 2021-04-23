@@ -373,7 +373,7 @@
     <Compile Include="ViewModel\ADWR\GeoBoundaryViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AwsHydrologyViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWSNewApp.cs" />
-    <Compile Include="ViewModel\Permitting\AAWS\AWS_CommentsVM.cs" />
+    <Compile Include="ViewModel\Permitting\AAWS\CommentsViewModel.cs" />
     <Compile Include="Data\ADWRContext.cs" />
     <Compile Include="Data\SQLContext.cs" />
     <Compile Include="Global.asax.cs">
@@ -412,6 +412,7 @@
     <Compile Include="Models\Adjudication\WATERSHED_FILE_REPORT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\Aws_customer_wrf_ViewModel.cs" />
+    <Compile Include="ViewModel\Permitting\AAWS\CommentsViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\Common_ViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\GenInfoWrapper.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\SP_AW_CONV_DIAGRAM.cs" />
