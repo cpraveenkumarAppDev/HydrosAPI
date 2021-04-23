@@ -315,7 +315,9 @@
     <Compile Include="Controllers\LayersController.cs" />
     <Compile Include="Controllers\Permitting\AAWS\AAWSController.cs" />
     <Compile Include="Data\AdwrRepository.cs" />
+    <Compile Include="Data\GetBestUsername.cs" />
     <Compile Include="Data\HandleForm.cs" />
+    <Compile Include="Data\QueryResult.cs" />
     <Compile Include="Data\SdeRepository.cs" />
     <Compile Include="Models\Adjudication\AISPODS.cs" />
     <Compile Include="Models\Adjudication\POINT_OF_DIVERSION_VIEW.cs" />
@@ -335,6 +337,7 @@
     <Compile Include="Models\CD_AMA_INA.cs" />
     <Compile Include="Models\Permitting\AAWS\AwAmaCountyBasinSubbasin.cs" />
     <Compile Include="Models\Permitting\AAWS\AwAppActivityTrk.cs" />
+    <Compile Include="Models\Permitting\AAWS\AwEffluentLegalAvailability.cs" />
     <Compile Include="Models\Permitting\AAWS\AwFile.cs" />
     <Compile Include="Models\Permitting\AAWS\AwWellServing.cs" />
     <Compile Include="Models\Permitting\AAWS\AwWrfWrfDemand.cs" />
@@ -346,6 +349,7 @@
     <Compile Include="Models\Permitting\AAWS\VAwsCustomer.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsCustomerLongName.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsHydro.cs" />
+    <Compile Include="Models\Permitting\AAWS\VAwsLongTermStorageCredits.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsProvider.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsSubbasin.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsWellServing.cs" />
@@ -437,6 +441,7 @@
     <Content Include="Adj.config" />
     <None Include="packages.config" />
     <Content Include="Properties\launchSettings.json" />
+    <None Include="Properties\PublishProfiles\TESTenvDeploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

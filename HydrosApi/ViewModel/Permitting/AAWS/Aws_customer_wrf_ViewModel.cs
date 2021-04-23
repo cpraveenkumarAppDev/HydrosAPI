@@ -12,9 +12,34 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
     {
         public VAwsCustomerLongName Customer { get; set; }
         public List<WaterRightFacilityCustomer> Waterrights { get; set; }
+
+         
         public List<string> PccList { get; set; }
         public int WaterRightsCount { get; set; }
-      
+
+
+        private void AssociatedRights(List<WaterRightFacilityCustomer> wrfCust)
+        {
+            if (wrfCust != null)
+            {
+                var customerIdList = wrfCust.Select(c => c.CustomerId).Distinct().ToList();
+                var awsCustomer = VAwsCustomer.GetList(x => customerIdList.Contains(x.CustomerId));
+
+                this.PccList = (from w in wrfCust
+                                join c in awsCustomer on w.WaterRightFacilityId equals c.WaterRightFacilityId into validCustomers
+                                from v in validCustomers.DefaultIfEmpty()
+                                select new
+                                {
+                                    //w.WRF_ID,
+                                    //AWS_WRF_ID = v== null ? 0 : v.WRF_ID,
+                                    PCC = WaterRightFacility.Get(f => f.Id == w.WaterRightFacilityId).PCC + (v == null ? "*" : "")
+                                }).Distinct().Select(x => x.PCC).ToList();
+
+                this.WaterRightsCount = this.PccList != null ? this.PccList.Count() : 0;
+            }
+             
+        }
+
 
         public Aws_customer_wrf_ViewModel()
         {
@@ -29,7 +54,9 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         {
             this.Customer = customer;
             this.Waterrights = wrfCustList;
-            this.WaterRightsCount = wrfCustList != null ? wrfCustList.Count() : 0;
+            //this.WaterRightsCount = wrfCustList != null ? wrfCustList.Select(c=>new { c.CustomerId,c.WaterRightFacilityId}).Distinct().Count() : 0;
+
+            AssociatedRights(wrfCustList);
         }
         /// <summary>
         /// finds customer by ID and CustomerType and queries wrf_cust relations by wrf
@@ -53,21 +80,8 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
                     this.Waterrights = wrfCust.Where(x=>x.WaterRightFacilityId == wrf && x.CustomerTypeCode.ToLower() == custType.ToLower()).ToList();                    
                 }
 
-                if(wrfCust != null)
-                {
-                    this.WaterRightsCount = wrfCust.Count();
-                    this.PccList = (from w in wrfCust
-                                   join c in VAwsCustomer.GetList(x => x.CustomerId == Customer.CustomerId) on w.WaterRightFacilityId equals c.WaterRightFacilityId into validCustomers
-                                   from v in validCustomers.DefaultIfEmpty()
-                                   select new
-                                   {
-                                       //w.WRF_ID,
-                                       //AWS_WRF_ID = v== null ? 0 : v.WRF_ID,
-                                       PCC = WaterRightFacility.Get(f => f.Id == w.WaterRightFacilityId).PCC + (v == null ? "*" : "")
-                                   }).Distinct().Select(x => x.PCC).ToList();
-                    
-                }
-                //var wrfId=WRF_CUST.GetList(w => w.CUST_ID == Customer.CUST_ID).Select(w => w.WRF_ID).ToList();
+                AssociatedRights(wrfCust);               
+               
             }
             catch(Exception exception)
             {
@@ -82,7 +96,9 @@ namespace HydrosApi.ViewModel.Permitting.AAWS
         {
             this.Customer = customer;
             this.Waterrights = WaterRightFacilityCustomer.GetList(x => x.CustomerId == customer.CustomerId).OrderBy(x => x.WaterRightFacilityId).ToList();
-            this.WaterRightsCount = this.Waterrights != null ? this.Waterrights.Count() : 0;
+            //this.WaterRightsCount = this.Waterrights != null ? this.Waterrights.Select(c=>new {c.CustomerId,c.WaterRightFacilityId }).Count() : 0;
+
+            AssociatedRights(this.Waterrights);
         }
                        
         public string IsValidMsg()

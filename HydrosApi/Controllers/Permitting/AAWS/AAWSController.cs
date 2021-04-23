@@ -35,6 +35,15 @@ namespace HydrosApi.Controllers
 
         private readonly Dictionary<string, string> AwsCustomerCodes = new Dictionary<string, string> { { "AS", "ASSIGNEE" }, { "BY", "BUYER" }, { "C", "CONTACT PARTY" }, { "CH", "CERTIFICATE HOLDER" }, { "CN", "CONSULTANT" }, { "MR", "MUNICIPAL REPRESENTATIVE" }, { "O", "OWNER" }, { "AP", "APPLICANT" } };
 
+        /*private static string GetBestUsername(string user)
+        {
+            string userName = user.Replace("AZWATER0\\", "");
+            //get Oracle USER_ID if available
+            var foundUser = AwUsers.Get(u => u.Email.ToLower().Replace("@azwater.gov", "") == userName);
+            string oracleUserID = foundUser != null ? foundUser.UserId : null;            
+            return oracleUserID ?? userName; //Set to Oracle ID if possible
+        }*/
+
         // GET: AAWS
         //IRR-29-A16011018CBB-01
         [Route("aws/getgeneralInfo/")]
@@ -243,6 +252,91 @@ namespace HydrosApi.Controllers
             try
             {
                 AwWellServing.Add(record);
+                return Ok("Created");
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError(exception);
+            }
+        }
+
+        [HttpGet, Route("aws/getLongTermStorageCreditsById/{id}")]
+        public IHttpActionResult GetLongTermStorageCreditsById(int id)
+        {
+            List<VAwsLongTermStorageCredits> longTermStorageCreditsList;
+            try
+            {
+                longTermStorageCreditsList = VAwsLongTermStorageCredits.GetList(x => x.WaterRightFacilityId == id);
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError(exception);
+            }
+            return Ok(longTermStorageCreditsList);
+        }
+
+        [HttpGet, Route("aws/getEffluentLegalAvailabilityById/{id}")]
+        public IHttpActionResult GetEffluentLegalAvailabilityById(int id)
+        {
+            List<AwEffluentLegalAvailability> EffluentLegalAvailabilityList;
+            try
+            {
+                EffluentLegalAvailabilityList = AwEffluentLegalAvailability.GetList(x => x.WaterRightFacilityId == id);
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError();
+            }
+            return Ok(EffluentLegalAvailabilityList);
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        [HttpPut, Route("aws/updateEffluentLegalAvailability/{id}")]
+        public async Task<IHttpActionResult> UpdateEffluentLegalAvailability([FromBody] AwEffluentLegalAvailability eff, int id)
+        {
+            eff.UpdateBy = User.Identity.Name.Replace("AZWATER0\\", "");
+            AwEffluentLegalAvailability effLA;
+
+            using (var context = new OracleContext())
+            {
+                effLA = context.AW_EFFLUENT_LEGAL_AVAILABILITY.Where(x => x.Id == id).FirstOrDefault();
+                if (effLA != null)
+                {
+                    var props = effLA.GetType().GetProperties().ToList();
+                    foreach (var prop in props)
+                    {
+                        var value = prop.GetValue(eff);
+                        if (value != null)
+                        {
+                            prop.SetValue(effLA, value);
+                        }
+                    }
+                    await context.SaveChangesAsync();
+                }
+                return Ok(effLA);
+            }
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        [HttpPost, Route("aws/addEffluentLegalAvailability/{wrf}/{et}/{cn}/{amt}")]
+        public IHttpActionResult AddEffluentLegalAvailability(int wrf, string et, string cn, decimal amt)
+        {
+            var record = new AwEffluentLegalAvailability
+            {
+                CreateDt = DateTime.Now,
+                WaterRightFacilityId = wrf,
+                EffluentType = et,
+                ContractName = cn,
+                Amount = amt,
+                CreateBy = User.Identity.Name.Replace(@"AZWATER0\", "")
+            };
+
+            try
+            {
+                AwEffluentLegalAvailability.Add(record);
                 return Ok("Created");
             }
             catch (Exception exception)
@@ -698,16 +792,16 @@ namespace HydrosApi.Controllers
         {
             try
             {
-                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
-                //get Oracle USER_ID if available
-                var foundUser = AwUsers.Get(u => u.Email.ToLower().Replace("@azwater.gov", "") == userName);
-                string oracleUserID = foundUser.UserId ?? null;
+                /* string userName = User.Identity.Name.Replace("AZWATER0\\", "");
+                 //get Oracle USER_ID if available
+                 var foundUser = AwUsers.Get(u => u.Email.ToLower().Replace("@azwater.gov", "") == userName);
+                 string oracleUserID =  foundUser.UserId ?? null;*/
+                string userName = new GetBestUsername(User.Identity.Name).UserName;  //Set to Oracle ID if possible
+
                 var createDt = DateTime.Now;
-                string appendCompanyName = "";
-
-                userName = oracleUserID ?? userName; //Set to Oracle ID if possible
-
-                if (customer.Customer == null || customer.Waterrights == null)
+                string appendCompanyName = "";                
+                          
+                if(customer.Customer== null || customer.Waterrights==null)
                 {
                     return BadRequest("Mandatory information for customer was not provided.");
                 }
@@ -745,7 +839,7 @@ namespace HydrosApi.Controllers
                     //Customer is new, create customer
                     if (customerID < 1)
                     {
-                        if (customer.Customer.CompanyLongName.Length > 60)
+                        if (customer.Customer.CompanyLongName != null && customer.Customer.CompanyLongName.Length > 60)
                         {
                             appendCompanyName = customer.Customer.CompanyLongName.Substring(60);
                             customer.Customer.CompanyLongName = customer.Customer.CompanyLongName.Substring(0, 60);
@@ -828,14 +922,9 @@ namespace HydrosApi.Controllers
         {
             try
             {
-                string userName = User.Identity.Name.Replace("AZWATER0\\", "");
-                //get Oracle USER_ID if available
-                var foundAwUser = AwUsers.Get(u => u.Email.ToLower().Replace("@azwater.gov", "") == userName);
-                string oracleUserID = foundAwUser.UserId ?? null;
+                string userName = new GetBestUsername(User.Identity.Name).UserName;   
                 var currentDt = DateTime.Now;
                 var requestMethod = ActionContext.Request.Method.ToString().ToUpper(); //POST, DELETE ETC.
-
-                userName = oracleUserID ?? userName; //Set to Oracle ID if possible
 
                 using (var context = new OracleContext())
                 {
@@ -898,11 +987,20 @@ namespace HydrosApi.Controllers
 
                     //get customer properties
                     var custPropList = customer.Customer.GetType().GetProperties().ToList();
+                    
                     foreach (var prop in custPropList)
-                    {
-                        var tempVal = prop.GetValue(customer.Customer);
-                        //if the Type is a valueType then make the default object and compare, otherwise it's a ref type and is compared to null
-                        if (tempVal != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null))
+                    {                      
+                        var tempVal = prop.GetValue(customer.Customer);             
+                        var hasTrim = prop.PropertyType.GetMethods().Where(i => i.Name == "Trim"); //use the trim method if one exists                          
+
+                        if (hasTrim != null && tempVal != null)
+                        {
+                            tempVal.ToString().Trim(new Char[] { ' ', '\n', '\r' });
+                        }
+
+                        var originalValue = prop.GetValue(foundUser);
+                       
+                        if (!Object.Equals(tempVal, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : prop.GetValue(foundUser))))
                         {
                             if (prop.Name != "CustomerId" && prop.Name != "CustomerTypeCode")//can't update the DB Key
                                 prop.SetValue(foundUser, tempVal);
@@ -918,10 +1016,16 @@ namespace HydrosApi.Controllers
                         {
                             var tempValue = prop.GetValue(waterRight);
                             var incomingValue = prop.GetValue(wrf_cust);
-                            if (tempValue != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null) && tempValue != incomingValue)
+                            var useValue = !(tempValue == (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : incomingValue));
+                            var newValue = Object.Equals(tempValue, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : incomingValue));
+
+                            //if (tempValue != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : incomingValue))
+                            if(!Object.Equals(tempValue, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : incomingValue)))
                             {
                                 if (prop.Name != "WaterRightFacilityId" && prop.Name != "CustomerId" && prop.Name != "CustomerTypeCode" && prop.Name != "LineNum")
                                 {
+                                    //r st = String.Format("Old value {0} New Value {1} equal ? {2}", tempValue, incomingValue, newValue
+
                                     prop.SetValue(wrf_cust, tempValue);
                                     changesOccurred = true;
                                 }
@@ -997,21 +1101,39 @@ namespace HydrosApi.Controllers
             return Ok(codes);
         }
 
+        [HttpPut, Route("aws/updatehydro/")]
+        public IHttpActionResult UpdateHydro([FromBody] VAwsHydro hydro)
+        {
+            hydro.UserName= new GetBestUsername(User.Identity.Name).UserName;         
+
+            var h = hydro;
+            return Ok(hydro);
+        }
+
         [HttpGet, Route("aws/hydrobypcc/{pcc}")]
         public IHttpActionResult GetHydroByPcc(string pcc)
         {
             Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
             pcc = regex.Replace(pcc, "$1-$2.$3");
-
-            var hydroView = new AwsHydrologyViewModel(pcc);
-            return Ok(hydroView);
+            return Ok(VAwsHydro.Get(h =>h.PCC == pcc));
         }
 
         [HttpGet, Route("aws/hydrobyid/{id}")]
         public IHttpActionResult GetHydroByWrfId(int id)
         {
-            var hydroView = new AwsHydrologyViewModel(id);
-            return Ok(hydroView);
+            return Ok(VAwsHydro.Get(h=>h.WaterRightFacilityId==id));
+            
+        }
+
+
+        [HttpGet, Route("aws/anyquery")]
+        public IHttpActionResult TestAnyQuery()
+        {
+            var sql = "select * from wtr_right_facility where rownum < 10";
+            var result = QueryResult.RunAnyQuery(sql);
+
+            return Ok(result);
+
         }
     }
     // SAVING COMMENTS
