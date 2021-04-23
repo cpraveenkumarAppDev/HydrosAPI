@@ -1,15 +1,15 @@
 namespace HydrosApi.Data
-    //*** SHOULD BE REPLACED BY ADWRCONTEXT AND SDECONTEXT WHICH MORE CLOSELY DESCRIBES THEIR SERVER/SCHEMA LOCATIONS    
+//*** SHOULD BE REPLACED BY ADWRCONTEXT AND SDECONTEXT WHICH MORE CLOSELY DESCRIBES THEIR SERVER/SCHEMA LOCATIONS    
 {
     using System;
     using System.Data.Entity;
     using HydrosApi.Models.Adjudication;
     using HydrosApi.Models.ADWR;
     using HydrosApi.Models.Permitting.AAWS;
-    using Models;    
+    using Models;
 
-    
-        public partial class OracleContext : DbContext
+
+    public partial class OracleContext : DbContext
     {
         public OracleContext()
             : base("name=OracleContext")
@@ -41,12 +41,12 @@ namespace HydrosApi.Data
         public virtual DbSet<CdAwCounty> CD_AW_COUNTY { get; set; }
         public virtual DbSet<POINT_OF_DIVERSION_VIEW> POINT_OF_DIVERSION_VIEW { get; set; }
         public virtual DbSet<WFR_POD> WFR_POD { get; set; }
-        public virtual DbSet<AwUsers> AW_USERS { get; set; }        
+        public virtual DbSet<AwUsers> AW_USERS { get; set; }
 
         public virtual DbSet<WaterRightFacility> WTR_RIGHT_FACILITY { get; set; }
         public virtual DbSet<AwsComments> AWS_COMMENTS { get; set; }
         public virtual DbSet<VAwsCustomerLongName> V_AWS_CUSTOMER_LONG_NAME { get; set; }
-        public virtual DbSet<VAwsCustomer> V_AWS_CUSTOMER{ get; set; }
+        public virtual DbSet<VAwsCustomer> V_AWS_CUSTOMER { get; set; }
         public virtual DbSet<Customer> CUSTOMER { get; set; }
         public virtual DbSet<AwCustLongName> AW_CUST_LONG_NAME { get; set; }
         public virtual DbSet<WaterRightFacilityCustomer> WRF_CUST { get; set; }
@@ -59,8 +59,13 @@ namespace HydrosApi.Data
         public virtual DbSet<VAwsWellServing> V_AWS_WELL_SERVING { get; set; }
         public virtual DbSet<VAwsLongTermStorageCredits> V_AWS_LTSC { get; set; }
         public virtual DbSet<AwEffluentLegalAvailability> AW_EFFLUENT_LEGAL_AVAILABILITY { get; set; }
+
         public virtual DbSet<WaterRightFacilityToWaterRightFacility> WRF_WRF { get; set; }
+
+        //public virtual DbSet<QueryResult> QueryResult { get; set; }
+
         public virtual DbSet<VAwsActiveManagementArea> V_AWS_AMA { get; set; }
+
 
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
         //public virtual DbSet<WATERSHED_FILE_REPORT> WATERSHED_FILE_REPORT { get; set; }
