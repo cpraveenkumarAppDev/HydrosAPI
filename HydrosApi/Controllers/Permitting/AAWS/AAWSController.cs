@@ -245,10 +245,10 @@ namespace HydrosApi.Controllers
         [HttpGet, Route("aws/getEffluentLegalAvailabilityById/{id}")]
         public IHttpActionResult GetEffluentLegalAvailabilityById(int id)
         {
-            List<AwEffluentLegalAvailability> EffluentLegalAvailabilityList;
+            List<AwLegalAvailability> EffluentLegalAvailabilityList;
             try
             {
-                EffluentLegalAvailabilityList = AwEffluentLegalAvailability.GetList(x => x.WaterRightFacilityId == id);
+                EffluentLegalAvailabilityList = AwLegalAvailability.GetList(x => x.WaterRightFacilityId == id);
             }
             catch (Exception exception)
             {
@@ -260,14 +260,14 @@ namespace HydrosApi.Controllers
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpPut, Route("aws/updateEffluentLegalAvailability/{id}")]
-        public async Task<IHttpActionResult> UpdateEffluentLegalAvailability([FromBody] AwEffluentLegalAvailability eff, int id)
+        public async Task<IHttpActionResult> UpdateEffluentLegalAvailability([FromBody] AwLegalAvailability eff, int id)
         {
             eff.UpdateBy = User.Identity.Name.Replace("AZWATER0\\", "");
-            AwEffluentLegalAvailability effLA;
+            AwLegalAvailability effLA;
 
             using (var context = new OracleContext())
             {
-                effLA = context.AW_EFFLUENT_LEGAL_AVAILABILITY.Where(x => x.Id == id).FirstOrDefault();
+                effLA = context.AW_LEGAL_AVAILABILITY.Where(x => x.Id == id).FirstOrDefault();
                 if (effLA != null)
                 {
                     var props = effLA.GetType().GetProperties().ToList();
@@ -289,7 +289,7 @@ namespace HydrosApi.Controllers
         [HttpPost, Route("aws/addEffluentLegalAvailability/{wrf}/{et}/{cn}/{amt}")]
         public IHttpActionResult AddEffluentLegalAvailability(int wrf, string et, string cn, decimal amt)
         {
-            var record = new AwEffluentLegalAvailability
+            var record = new AwLegalAvailability
             {
                 CreateDt = DateTime.Now,
                 WaterRightFacilityId = wrf,
@@ -301,7 +301,7 @@ namespace HydrosApi.Controllers
 
             try
             {
-                AwEffluentLegalAvailability.Add(record);
+                AwLegalAvailability.Add(record);
                 return Ok("Created");
             }
             catch (Exception exception)

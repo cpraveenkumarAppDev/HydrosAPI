@@ -337,7 +337,7 @@
     <Compile Include="Models\CD_AMA_INA.cs" />
     <Compile Include="Models\Permitting\AAWS\AwAmaCountyBasinSubbasin.cs" />
     <Compile Include="Models\Permitting\AAWS\AwAppActivityTrk.cs" />
-    <Compile Include="Models\Permitting\AAWS\AwEffluentLegalAvailability.cs" />
+    <Compile Include="Models\Permitting\AAWS\AwLegalAvailability.cs" />
     <Compile Include="Models\Permitting\AAWS\AwFile.cs" />
     <Compile Include="Models\Permitting\AAWS\AwWellServing.cs" />
     <Compile Include="Models\Permitting\AAWS\AwWrfWrfDemand.cs" />
