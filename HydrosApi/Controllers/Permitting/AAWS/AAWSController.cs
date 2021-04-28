@@ -178,9 +178,9 @@ namespace HydrosApi.Controllers
         public async Task<IHttpActionResult> SaveNewComment([FromBody] CommentsViewModel comment, int id)
         {
             var user = User.Identity.Name.Replace("AZWATER0\\", "");
-
+            comment.FileManager = user;
             var saved = CommentsViewModel.AddAWSComment(comment, user);
-            return Ok();
+            return Ok(saved);
         }
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpPut, Route("aws/UpdateAwFile/{id}")]
