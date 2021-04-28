@@ -138,7 +138,7 @@ namespace HydrosApi
             catch (Exception exception)
             {
                 //log error
-                return InternalServerError();
+                return InternalServerError(exception);
             }
         }
 
@@ -194,6 +194,50 @@ namespace HydrosApi
             }
             return Ok(found.PCC);
         }
+
+        [HttpGet, Route("adwr/getWrfById/{id}")]
+        public IHttpActionResult GetWrfById(int id)
+        {
+            WaterRightFacility wrf;
+            try
+            {
+                wrf = WaterRightFacility.Get(x => x.Id == id);
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError();
+            }
+            return Ok(wrf);
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpPut, Route("adwr/UpdateWrf/{id}")]
+        public async Task<IHttpActionResult> UpdateWrf([FromBody] WaterRightFacility data, int id)
+        {
+            data.UpdateBy = User.Identity.Name.Replace("AZWATER0\\", "");
+            WaterRightFacility wrf;
+
+            using (var context = new OracleContext())
+            {
+                wrf = context.WTR_RIGHT_FACILITY.Where(x => x.Id == id).FirstOrDefault();
+                if (wrf != null)
+                {
+                    var props = wrf.GetType().GetProperties().ToList();
+                    foreach (var prop in props)
+                    {
+                        var value = prop.GetValue(data);
+                        if ((value != null) && (prop.Name != "PCC"))
+                        {
+                            prop.SetValue(wrf, value);
+                        }
+                    }
+                    await context.SaveChangesAsync();
+                }
+                return Ok(wrf);
+            }
+        }
+
         /// <summary>
         /// Returns object for Counties, AMA and INA, and Basins
         /// </summary>

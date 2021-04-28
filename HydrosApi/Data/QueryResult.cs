@@ -1,18 +1,23 @@
 ﻿namespace HydrosApi.Data
 {
-
-    using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Collections.Specialized;
-    using System.IO;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Threading.Tasks;
-    using System.Web;
+
     public partial class QueryResult : Repository<QueryResult>
-    {       
+    {
+        /// <summary>
+        /// Use this when you need to run an inline SQL query.
+        /// </summary>
+        /// <param name="sql">Provide an SQL Statement (ideally you should only use this for select statements) </param>
+        /// <returns>Returns the result with the database column names or aliases provided in the query</returns>
+        /// <remarks>
+        /// <para>
+        /// Note: A header row is created with a rowindex of -1 that describes the data types for each column.                    
+        /// You can add functionality to use the data types header row to create fields above each column with search criteria options, 
+        /// for example, above a date column, you may want to allow a user to select a date range with a calendar popup.
+        /// This was a proof of concept for recreating ARM and reusing the existing dataabase structure
+        /// </para>      
+        /// </remarks>
+
         public static List<dynamic> RunAnyQuery(string sql)
         {
             var result = new List<dynamic>();
@@ -26,8 +31,7 @@
                 using (var reader = cmd.ExecuteReader())
                 {
                     var rowIndex = 0;
-
-                    //var schemaTable = reader.GetSchemaTable();
+                     
                     while (reader.Read())
                     {
                         var data = new Dictionary<string, object>();
@@ -37,12 +41,8 @@
 
                         for (int i = 0; i < reader.FieldCount; i++)
                         {
-
-                            //create a header row with a rowindex of -1 and the data types
-                            //use the data types to determine what type of field to use for 
-                            //parameters or search.  For example search by a daterange and 
-                            //provide a calendar popup
-
+                            //create a header row with a rowindex of -1 that describes the data types of each column
+                           
                             if (rowIndex < 2)
                             {
                                 if (i == 0)

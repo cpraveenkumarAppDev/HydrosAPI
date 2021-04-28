@@ -9,8 +9,8 @@ using System.Web;
 
 namespace HydrosApi.Models.Permitting.AAWS
 {
-    [Table("AWS.AW_EFFLUENT_LEGAL_AVAILABILITY")]
-    public class AwEffluentLegalAvailability : Repository<AwEffluentLegalAvailability>
+    [Table("AWS.AW_LEGAL_AVAILABILITY")]
+    public class AwLegalAvailability : Repository<AwLegalAvailability>
     {
         [Column("ID")]
         [Key]
@@ -30,6 +30,10 @@ namespace HydrosApi.Models.Permitting.AAWS
 
         [Column("AMOUNT")]
         public decimal? Amount { get; set; }
+
+        [Column("GROUNDWATER_USE_TYPE")]
+        [StringLength(20)]
+        public string GroundwaterUseType { get; set; }
 
         [Column("CREATEBY")]
         [StringLength(30)]
