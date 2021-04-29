@@ -231,6 +231,24 @@
             }
         }
 
+        [HttpGet, Route("aws/getPlaces/{cad}")]
+        public IHttpActionResult GetAwCity(string cad)
+        {
+            try
+            {
+                var qryString = "select * from cad.cadastral t, LIB.COUNTY c "+
+                                "where t.cadastral_hook in ('A17022013000', 'C01001034000', 'A02002001AB0') and sde.st_intersects(t.shape, c.shape) = 1";
+
+                var cadastralData = QueryResult.RunAnyQuery(qryString);
+                return Ok(cadastralData);
+            }
+            catch (Exception exception)
+            {
+                //log error
+                return InternalServerError();
+            }
+        }
+
         [HttpGet, Route("aws/getWellServingById/{id}")]
         public IHttpActionResult GetWellServingById(int id)
         {
