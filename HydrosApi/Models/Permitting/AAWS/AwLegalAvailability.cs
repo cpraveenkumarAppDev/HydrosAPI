@@ -35,6 +35,17 @@ namespace HydrosApi.Models.Permitting.AAWS
         [StringLength(20)]
         public string GroundwaterUseType { get; set; }
 
+        [Column("WATER_TYPE_CODE")]
+        [StringLength(4)]
+        public string WaterTypeCode { get; set; }
+
+        [Column("PROVIDER_RECEIVER_ID")]
+        public int? ProviderReceiverId { get; set; }
+
+        [Column("AREA_OF_IMPACT")]
+        [StringLength(25)]
+        public string AreaOfImpact { get; set; }
+
         [Column("CREATEBY")]
         [StringLength(30)]
         public string CreateBy { get; set; }

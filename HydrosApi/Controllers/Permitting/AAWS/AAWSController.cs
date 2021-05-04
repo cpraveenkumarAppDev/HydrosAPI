@@ -363,7 +363,10 @@
                         EffluentType = la.EffluentType,
                         ContractName = la.ContractName,
                         Amount = la.Amount,
-                        GroundwaterUseType = la.GroundwaterUseType
+                        GroundwaterUseType = la.GroundwaterUseType,
+                        ProviderReceiverId = la.ProviderReceiverId,
+                        WaterTypeCode = la.WaterTypeCode,
+                        AreaOfImpact = la.AreaOfImpact
                     };
 
                     context.AW_LEGAL_AVAILABILITY.Add(LegalAvailability);
