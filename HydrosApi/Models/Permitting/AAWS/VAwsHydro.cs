@@ -130,7 +130,9 @@
         [Column("USER_NAME")]
         public string UserName { get; set; }
 
-        
+        [Column("METHOD_USED")]
+        public string MethodUsed { get; set; }
+
         [NotMapped]
         public decimal? ApplicantProjectedDemand {
             get => !string.IsNullOrEmpty(_ApplicantProjectedDemand) ? (decimal?)decimal.Parse(Regex.Replace(_ApplicantProjectedDemand, @"[^0-9.]+", "")) : null;
