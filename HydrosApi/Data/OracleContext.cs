@@ -37,6 +37,10 @@ namespace HydrosApi.Data
         public virtual DbSet<VAwsSubbasin> V_AWS_SUBBAS { get; set; }
         public virtual DbSet<VAwsHydro> V_AWS_HYDRO { get; set; }
         public virtual DbSet<AwWrfWrfDemand> AW_WRF_WRF_DEMAND { get; set; }
+
+        public virtual DbSet<VAwsWrfWrfDemand> VAwsWrfWrfDemand { get; set; }
+
+        
         public virtual DbSet<VAwsCountyBasin> V_AWS_COUNTY_BASIN { get; set; }
         public virtual DbSet<CdAwCounty> CD_AW_COUNTY { get; set; }
         public virtual DbSet<POINT_OF_DIVERSION_VIEW> POINT_OF_DIVERSION_VIEW { get; set; }

@@ -320,6 +320,7 @@ namespace HydrosApi.Controllers
                 using(var context = new OracleContext())
                 {
                     var found = context.V_AWS_AMA.Where(x => x.WaterRightFacilityId == wrfid).FirstOrDefault();
+                   
                     return Ok(found);
                 }
             }
@@ -1049,7 +1050,6 @@ namespace HydrosApi.Controllers
                     context.SaveChanges();
                     return Ok(wrfcustList);
                 }
-
             }
             catch
             {
@@ -1082,14 +1082,22 @@ namespace HydrosApi.Controllers
             return Ok(VAwsHydro.Get(h =>h.PCC == pcc));
         }
 
+        [HttpGet, Route("aws/physicalavail/{id}")]
+        public IHttpActionResult GetPhysicalAvailabilityBasis(int id)
+        {
+            return Ok(new AwsPhysicalAvailabilityViewModel(id));                      
+        }
+
         [HttpGet, Route("aws/hydrobyid/{id}")]
         public IHttpActionResult GetHydroByWrfId(int id)
         {
-            return Ok(VAwsHydro.Get(h=>h.WaterRightFacilityId==id));
-            
+            //var hydroInfo = VAwsHydro.Get(h => h.WaterRightFacilityId == id);
+            return Ok(VAwsHydro.Get(h=>h.WaterRightFacilityId==id));            
         }
 
-
+        /// <summary>
+        /// Test for usage of QueryResult
+        /// </summary>       
         [HttpGet, Route("aws/anyquery")]
         public IHttpActionResult TestAnyQuery()
         {

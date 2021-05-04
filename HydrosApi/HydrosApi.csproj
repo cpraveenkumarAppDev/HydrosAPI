@@ -354,6 +354,7 @@
     <Compile Include="Models\Permitting\AAWS\VAwsSubbasin.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsWellServing.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsWq.cs" />
+    <Compile Include="Models\Permitting\AAWS\VAwsWrfWrfDemand.cs" />
     <Compile Include="Models\Permitting\AAWS\VCdAwAmaIna.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsOaws.cs" />
     <Compile Include="Data\Repository.cs" />
@@ -371,7 +372,7 @@
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\PCC.cs" />
     <Compile Include="ViewModel\ADWR\GeoBoundaryViewModel.cs" />
-    <Compile Include="ViewModel\Permitting\AAWS\AwsHydrologyViewModel.cs" />
+    <Compile Include="ViewModel\Permitting\AAWS\AwsPhysicalAvailabilityViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWSNewApp.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWS_CommentsVM.cs" />
     <Compile Include="Data\ADWRContext.cs" />
