@@ -1138,6 +1138,7 @@
             return Ok(codes);
         }
 
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpPut, Route("aws/updatehydro/")]
         public IHttpActionResult UpdateHydro([FromBody] VAwsHydro hydro)
         {
