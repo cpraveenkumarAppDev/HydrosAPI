@@ -1090,6 +1090,7 @@
 
 
         [HttpPost, Route("aws/customer/wrf")]
+        [Authorize]
         public IHttpActionResult CreateWrfcust([FromBody] List<WaterRightFacilityCustomer> wrfcustList)
         {
             try
