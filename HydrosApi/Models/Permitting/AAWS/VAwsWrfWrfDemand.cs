@@ -2,7 +2,8 @@
 {
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-
+    using System;
+    using System.Runtime.InteropServices;
     using Data;
 
 
@@ -10,23 +11,24 @@
     public class VAwsWrfWrfDemand : Repository<VAwsWrfWrfDemand>
     {
 
-        [Key, Column("WRF_ID")]
-        public int? WaterRightFacilityId { get; set; } 
+        [Column("WRF_ID")]
+        public int? WaterRightFacilityId { get; set; }
 
         [Key, Column("REF_WRF_ID")]
-        public int? ReferenceWaterRightFacilityId { get; set; } 
+        public int? ReferenceWaterRightFacilityId { get; set; }
 
-        [Column("REF_PCC"), StringLength(14)]        
-        public string ReferencePCC { get; set; } 
+        [Column("REF_PCC"), StringLength(14)]
+        public string ReferencePCC { get; set; }
 
         [Column("WTR_DEMAND")]
         public decimal? WaterDemand { get; set; }
 
-        [Key,NotMapped]
+        [NotMapped]
         public string DemandType => WaterDemand >= 0 ? "Source" : WaterDemand < 0 ? "Use" : null;
-
        
-
+        [NotMapped]
+        public long? DerivedId => WaterRightFacilityId != null && ReferenceWaterRightFacilityId != null ?
+            (long?)long.Parse(String.Format("{0}{1}{2}", WaterDemand > 0 ? 1 : WaterDemand < 0 ? -1 : 0, WaterRightFacilityId, ReferenceWaterRightFacilityId)) : null;
 
 
     }

@@ -82,5 +82,70 @@
         }
 
 
+        /// <summary>
+        /// Use this when you need to run an inline SQL query.
+        /// </summary>
+        /// <param name="id">Use the existing oracle function, get_pcc </param>
+        /// <returns>Scalar value PCC</returns>
+        
+        public static string GetPcc(int id)
+        {
+            using (var ctx = new OracleContext())
+            using (var cmd = ctx.Database.Connection.CreateCommand())
+            {
+                ctx.Database.Connection.Open();
+                cmd.CommandText = string.Format("select rgr_rpt.get_pcc({0}) as pcc from dual ", id);
+                var pcc= cmd.ExecuteScalar();
+
+                if (pcc == null)
+                    return null;
+
+                return pcc.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Use this when you need to run an inline SQL query.
+        /// </summary>
+        /// <param name="pcc">Use the existing oracle function, get_wrf_id </param>
+        /// <returns>Scalar value wrf_id</returns>
+
+        public static int? GetPcc(string pcc)
+        {
+            using (var ctx = new OracleContext())
+            using (var cmd = ctx.Database.Connection.CreateCommand())
+            {
+                ctx.Database.Connection.Open();
+                cmd.CommandText = string.Format("select rgr_rpt.get_wrf_id({0}) as WaterRightFacilityId from dual ", pcc);
+                var WaterRightFacilityId = cmd.ExecuteScalar();
+
+                if (WaterRightFacilityId == null)
+                    return null;
+
+                return int.Parse(WaterRightFacilityId.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Use this when you need to run an inline SQL query.
+        /// </summary>      
+        /// <returns>Return a new OracleID sequence number</returns>
+        public static int? NextVal()
+        {
+            using (var ctx = new OracleContext())
+            using (var cmd = ctx.Database.Connection.CreateCommand())
+            {
+                ctx.Database.Connection.Open();
+                cmd.CommandText = "select rgr_id_seq.nextval as WaterRightFacilityId from dual";
+                var WaterRightFacilityId = cmd.ExecuteScalar();
+
+                if (WaterRightFacilityId == null)
+                    return null;
+
+                return int.Parse(WaterRightFacilityId.ToString());
+            }
+        }
+
+
     }
 }

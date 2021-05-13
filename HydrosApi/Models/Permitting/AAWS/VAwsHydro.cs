@@ -116,9 +116,14 @@
         public string RegisteredGeologistRequired { get; set; }//REGISTERED_GEOLOGIST_REQ
 
         [Column("HYDRO_STUDY_SUBMITTED")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+
         public DateTime? HydroStudySubmitted { get; set; }//HYDRO_STUDY_SUBMITTED
 
         [Column("IMPACT_ANALYSIS_SUBMITTED")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? ImpactAnalysisSubmitted { get; set; }//IMPACT_ANALYSIS_SUBMITTED
 
         [Column("APPLICANT_PROJECTED_DEMAND")]

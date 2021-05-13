@@ -18,6 +18,9 @@ using Models.Permitting.AAWS;
         public List<VAwsWrfWrfDemand> Basis { get; set; }
         VAwsActiveManagementArea AmaDemand { get; set; }
 
+        public Dictionary<string,object> SupplementalValue { get; set; }
+        
+
         public AwsPhysicalAvailabilityViewModel()
         {
         }
@@ -33,13 +36,20 @@ using Models.Permitting.AAWS;
         /// </remarks>
         public AwsPhysicalAvailabilityViewModel(int id)
         {           
-            using (var context = new OracleContext())
-            {
+            
                 //AmaDemand = context.V_AWS_AMA.Where(x => x.WaterRightFacilityId == id).FirstOrDefault();
-                
-                var basis = context.VAwsWrfWrfDemand.Where(d => d.WaterRightFacilityId == id).Distinct().OrderByDescending(x => x.WaterDemand);
-                Basis = basis.ToList();
-            }
+                var basis = VAwsWrfWrfDemand.GetList(d => d.WaterRightFacilityId == id).Distinct().OrderByDescending(x => x.WaterDemand);
+                var hydro = VAwsHydro.Get(h => h.WaterRightFacilityId == id);
+
+                SupplementalValue= new Dictionary<string, object>();
+                SupplementalValue.Add("PhysAvailBasedOnPrevIssPhysAvailDem", hydro.PhysAvailBasedOnPrevIssPhysAvailDem);
+                SupplementalValue.Add("PhysAvailBasedOnPrevAnalysis", hydro.PhysAvailBasedOnPrevAnalysis);
+                SupplementalValue.Add("HydroDataOnFile", hydro.HydroDataOnFile);
+                SupplementalValue.Add("HydroStudyIncluded", hydro.HydroStudyIncluded);
+                SupplementalValue.Add("LegislatureSB1274", null);
+
+               Basis = basis.ToList();
+            
         }
     }
 }

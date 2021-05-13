@@ -1088,6 +1088,7 @@
             }
         }
 
+
         [HttpPost, Route("aws/customer/wrf")]
         public IHttpActionResult CreateWrfcust([FromBody] List<WaterRightFacilityCustomer> wrfcustList)
         {
@@ -1121,6 +1122,7 @@
                 }
 
             }
+          
             catch
             {
                 return InternalServerError();
@@ -1138,10 +1140,11 @@
         [HttpPut, Route("aws/updatehydro/")]
         public IHttpActionResult UpdateHydro([FromBody] VAwsHydro hydro)
         {
-            hydro.UserName= new GetBestUsername(User.Identity.Name).UserName;         
+            hydro.UserName= new GetBestUsername(User.Identity.Name).UserName;
+            var newHydro=VAwsHydro.Update(hydro);
 
-            var h = hydro;
-            return Ok(hydro);
+             
+            return Ok(newHydro);
         }
 
         [HttpGet, Route("aws/hydrobypcc/{pcc}")]
@@ -1155,8 +1158,16 @@
         [HttpGet, Route("aws/hydrobyid/{id}")]
         public IHttpActionResult GetHydroByWrfId(int id)
         {
-            return Ok(VAwsHydro.Get(h=>h.WaterRightFacilityId==id));
-            
+            return Ok(VAwsHydro.Get(h=>h.WaterRightFacilityId==id));            
+        }
+       
+        [HttpGet, Route("aws/physicalavail/{id}")]
+        public IHttpActionResult GetPhysicalAvailabilityBasis(int id)
+        {
+
+            return Ok(new AwsPhysicalAvailabilityViewModel(id));
+
+        
         }
 
 
