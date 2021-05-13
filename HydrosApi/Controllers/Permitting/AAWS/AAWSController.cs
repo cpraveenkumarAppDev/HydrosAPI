@@ -1103,7 +1103,7 @@
                         var customerExists = context.CUSTOMER.Where(x => x.Id == wrfcust.CustomerId).FirstOrDefault() != null;
                         var wrfExists = context.WRF_CUST.Where(x => x.WaterRightFacilityId == wrfcust.WaterRightFacilityId).FirstOrDefault() != null;
                         var count = WaterRightFacilityCustomer.GetList(x => x.WaterRightFacilityId == wrfcust.WaterRightFacilityId && x.CustomerId == wrfcust.CustomerId && x.CustomerTypeCode == wrfcust.CustomerTypeCode).Count();
-                        if (!customerExists || !wrfExists)
+                        if (!customerExists && !wrfExists)
                         {
                             return BadRequest("customer or wrf does not exist");
                         }
