@@ -366,7 +366,9 @@
                         GroundwaterUseType = la.GroundwaterUseType,
                         ProviderReceiverId = la.ProviderReceiverId,
                         WaterTypeCode = la.WaterTypeCode,
-                        AreaOfImpact = la.AreaOfImpact
+                        AreaOfImpact = la.AreaOfImpact,
+                        ContractNumber = la.ContractNumber,
+                        SurfaceWaterType = la.SurfaceWaterType
                     };
 
                     context.AW_LEGAL_AVAILABILITY.Add(LegalAvailability);
