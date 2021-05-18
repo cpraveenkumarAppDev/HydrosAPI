@@ -28,6 +28,10 @@ namespace HydrosApi.Models.Permitting.AAWS
         [StringLength(50)]
         public string ContractName { get; set; }
 
+        [Column("CONTRACT_NUMBER")]
+        [StringLength(25)]
+        public string ContractNumber { get; set; }
+
         [Column("AMOUNT")]
         public decimal? Amount { get; set; }
 
@@ -45,6 +49,10 @@ namespace HydrosApi.Models.Permitting.AAWS
         [Column("AREA_OF_IMPACT")]
         [StringLength(25)]
         public string AreaOfImpact { get; set; }
+
+        [Column("SURFACE_WATER_TYPE")]
+        [StringLength(25)]
+        public string SurfaceWaterType { get; set; }
 
         [Column("CREATEBY")]
         [StringLength(30)]
