@@ -194,6 +194,22 @@ namespace HydrosApi
             }
             return Ok(found.PCC);
         }
+        [HttpGet, Route("adwr/wrfbypcc/{inputPcc}")]
+        public IHttpActionResult GetWrfById(string inputPcc)
+        {
+            WaterRightFacility found;
+            try
+            {
+                PCC validPCC = new PCC(inputPcc);
+                found = WaterRightFacility.Get(x => x.Program == validPCC.Program && x.Certificate == validPCC.Certificate && x.Conveyance == validPCC.Conveyance);
+            }
+            catch
+            {
+                //log exception
+                return InternalServerError();
+            }
+            return Ok(found.Id);
+        }
 
         [HttpGet, Route("adwr/getWrfById/{id}")]
         public IHttpActionResult GetWrfById(int id)
