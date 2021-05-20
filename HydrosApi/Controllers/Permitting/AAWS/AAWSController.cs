@@ -322,7 +322,7 @@
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [HttpPut, Route("aws/updateLegalAvailability")]
+        [HttpPost, Route("aws/updateLegalAvailability")]
         public async Task<IHttpActionResult> UpdateLegalAvailability([FromBody] List<AwLegalAvailability> la)
         {
             try
@@ -335,7 +335,26 @@
                     foreach(var legalAvail in la)
                     {
                         existing = context.AW_LEGAL_AVAILABILITY.Where(x => x.Id == legalAvail.Id).FirstOrDefault();
-                        if (existing != null)
+                        if (existing == null)//add new record
+                        {
+                            existing = new AwLegalAvailability
+                            {
+                                CreateBy = User.Identity.Name.Replace("AZWATER0\\", ""),
+                                WaterRightFacilityId = legalAvail.WaterRightFacilityId,
+                                EffluentType = legalAvail.EffluentType,
+                                ContractName = legalAvail.ContractName,
+                                Amount = legalAvail.Amount,
+                                GroundwaterUseType = legalAvail.GroundwaterUseType,
+                                ProviderReceiverId = legalAvail.ProviderReceiverId,
+                                WaterTypeCode = legalAvail.WaterTypeCode,
+                                AreaOfImpact = legalAvail.AreaOfImpact,
+                                ContractNumber = legalAvail.ContractNumber,
+                                SurfaceWaterType = legalAvail.SurfaceWaterType
+                            };
+                            //updatedList.Add(existing);
+                            context.AW_LEGAL_AVAILABILITY.Add(existing);
+                        }
+                        else//update existing record
                         {
                             var props = existing.GetType().GetProperties().ToList();
                             foreach (var prop in props)
@@ -362,44 +381,44 @@
             }
         }
 
-        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [HttpPost, Route("aws/addLegalAvailability/{wrf:int}")]
-        public IHttpActionResult AddLegalAvailability([FromBody] List<AwLegalAvailability> la, int wrf)
-        {
-            try
-            {
-                using (var context = new OracleContext())
-                {
-                    var newList = new List<AwLegalAvailability>();
-                    foreach(var legalAvail in la)
-                    {
-                        var LegalAvailability = new AwLegalAvailability
-                        {
-                            CreateBy = User.Identity.Name.Replace("AZWATER0\\", ""),
-                            WaterRightFacilityId = wrf,
-                            EffluentType = legalAvail.EffluentType,
-                            ContractName = legalAvail.ContractName,
-                            Amount = legalAvail.Amount,
-                            GroundwaterUseType = legalAvail.GroundwaterUseType,
-                            ProviderReceiverId = legalAvail.ProviderReceiverId,
-                            WaterTypeCode = legalAvail.WaterTypeCode,
-                            AreaOfImpact = legalAvail.AreaOfImpact,
-                            ContractNumber = legalAvail.ContractNumber,
-                            SurfaceWaterType = legalAvail.SurfaceWaterType
-                        };
-                        newList.Add(LegalAvailability);
-                    }
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        //[HttpPost, Route("aws/newLegalAvailability/{wrf:int}")]
+        //public IHttpActionResult AddLegalAvailability([FromBody] List<AwLegalAvailability> la, int wrf)
+        //{
+        //    try
+        //    {
+        //        using (var context = new OracleContext())
+        //        {
+        //            var newList = new List<AwLegalAvailability>();
+        //            foreach(var legalAvail in la)
+        //            {
+        //                var LegalAvailability = new AwLegalAvailability
+        //                {
+        //                    CreateBy = User.Identity.Name.Replace("AZWATER0\\", ""),
+        //                    WaterRightFacilityId = wrf,
+        //                    EffluentType = legalAvail.EffluentType,
+        //                    ContractName = legalAvail.ContractName,
+        //                    Amount = legalAvail.Amount,
+        //                    GroundwaterUseType = legalAvail.GroundwaterUseType,
+        //                    ProviderReceiverId = legalAvail.ProviderReceiverId,
+        //                    WaterTypeCode = legalAvail.WaterTypeCode,
+        //                    AreaOfImpact = legalAvail.AreaOfImpact,
+        //                    ContractNumber = legalAvail.ContractNumber,
+        //                    SurfaceWaterType = legalAvail.SurfaceWaterType
+        //                };
+        //                newList.Add(LegalAvailability);
+        //            }
 
-                    context.AW_LEGAL_AVAILABILITY.AddRange(newList);
-                    context.SaveChanges();
-                    return Ok(newList);
-                }
-            }
-            catch (Exception exception)
-            {
-                return InternalServerError(exception);
-            }
-        }
+        //            context.AW_LEGAL_AVAILABILITY.AddRange(newList);
+        //            context.SaveChanges();
+        //            return Ok(newList);
+        //        }
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        return InternalServerError(exception);
+        //    }
+        //}
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpGet, Route("aws/amaDetail/{wrfid:int}")]
