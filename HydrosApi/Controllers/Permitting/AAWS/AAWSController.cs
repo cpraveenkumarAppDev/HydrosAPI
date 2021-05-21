@@ -1212,6 +1212,36 @@
         
         }
 
+        [HttpPost, Route("aws/legalAvail/remove")]
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        public IHttpActionResult DeleteLegalAvailability([FromBody] int[] deletionIds)
+        {
+            try
+            {
+                List<int> deleteSuccess = new List<int>();
+                using(var context = new OracleContext())
+                {
+                    foreach (var id in deletionIds)
+                    {
+                        var found = AwLegalAvailability.Get(x => x.Id == id, context);
+                        if (found != null)
+                        {
+                            context.AW_LEGAL_AVAILABILITY.Remove(found);
+                            deleteSuccess.Add(id);
+                        }
+                    }
+
+                    context.SaveChanges();
+
+                    return Ok(deleteSuccess);
+                }
+            }
+            catch(Exception exception)
+            {
+                //log
+                return InternalServerError(exception);
+            }
+        }
 
         //[HttpGet, Route("aws/anyquery")]
         //public IHttpActionResult TestAnyQuery()
