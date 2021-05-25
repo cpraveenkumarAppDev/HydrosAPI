@@ -17,6 +17,10 @@ namespace HydrosApi.Models.Permitting.AAWS
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [Column("SECTION")]
+        [StringLength(2)]
+        public string Section { get; set; }
+
         [Column("WRF_ID")]
         public int WaterRightFacilityId { get; set; }
 
