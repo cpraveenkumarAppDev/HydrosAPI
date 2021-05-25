@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using Models.Permitting.AAWS;
     using Data;
+    using System.Dynamic;
 
 
     public class AwsPhysicalAvailabilityViewModel
@@ -16,10 +17,10 @@ using Models.Permitting.AAWS;
         /// Basis of Physical Availability (on the hydros physical availability tag)
         /// </summary>
         public List<VAwsWrfWrfDemand> Basis { get; set; }
-        VAwsActiveManagementArea AmaDemand { get; set; }
+        public List<VAwsWellServing> WellServing { get; set; }
+        public VAwsActiveManagementArea AmaDemand { get; set; }
+        public VAwsHydro Hydrology { get; set; }
 
-        public Dictionary<string,object> SupplementalValue { get; set; }
-        
 
         public AwsPhysicalAvailabilityViewModel()
         {
@@ -40,16 +41,19 @@ using Models.Permitting.AAWS;
                 //AmaDemand = context.V_AWS_AMA.Where(x => x.WaterRightFacilityId == id).FirstOrDefault();
                 var basis = VAwsWrfWrfDemand.GetList(d => d.WaterRightFacilityId == id).Distinct().OrderByDescending(x => x.WaterDemand);
                 var hydro = VAwsHydro.Get(h => h.WaterRightFacilityId == id);
+                var wellServing=VAwsWellServing.GetList(x => x.WaterRightFacilityId == id);
+                var amaDemand=VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id);
 
-                SupplementalValue= new Dictionary<string, object>();
-                SupplementalValue.Add("PhysAvailBasedOnPrevIssPhysAvailDem", hydro.PhysAvailBasedOnPrevIssPhysAvailDem);
-                SupplementalValue.Add("PhysAvailBasedOnPrevAnalysis", hydro.PhysAvailBasedOnPrevAnalysis);
-                SupplementalValue.Add("HydroDataOnFile", hydro.HydroDataOnFile);
-                SupplementalValue.Add("HydroStudyIncluded", hydro.HydroStudyIncluded);
-                SupplementalValue.Add("LegislatureSB1274", null);
+           // SupplementalValue.Add("PhysAvailBasedOnPrevIssPhysAvailDem", hydro.PhysAvailBasedOnPrevIssPhysAvailDem);
+            //SupplementalValue.Add("PhysAvailBasedOnPrevAnalysis", hydro.PhysAvailBasedOnPrevAnalysis);
+          // SupplementalValue.Add("HydroDataOnFile", hydro.HydroDataOnFile);
+          //  SupplementalValue.Add("HydroStudyIncluded", hydro.HydroStudyIncluded);
+           // SupplementalValue.Add("LegislatureSB1274", null);
 
-               Basis = basis.ToList();
-            
+            Basis = basis.ToList();
+            Hydrology = hydro;
+            WellServing = wellServing.ToList();
+            AmaDemand = amaDemand;
         }
     }
 }

@@ -24,12 +24,8 @@
         public decimal? WaterDemand { get; set; }
 
         [NotMapped]
-        public string DemandType => WaterDemand >= 0 ? "Source" : WaterDemand < 0 ? "Use" : null;
+         public string AvailabilityType => WaterDemand < 0 ?  "Use" : "Source";
+
        
-        [NotMapped]
-        public long? DerivedId => WaterRightFacilityId != null && ReferenceWaterRightFacilityId != null ?
-            (long?)long.Parse(String.Format("{0}{1}{2}", WaterDemand > 0 ? 1 : WaterDemand < 0 ? -1 : 0, WaterRightFacilityId, ReferenceWaterRightFacilityId)) : null;
-
-
     }
 }
