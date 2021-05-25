@@ -1,6 +1,10 @@
 ﻿namespace HydrosApi.Data
 {
     using System.Collections.Generic;
+    using System.Data.Entity;
+    using System.Text.RegularExpressions;
+    using System;
+    
 
     public partial class QueryResult : Repository<QueryResult>
     {
@@ -8,6 +12,7 @@
         /// Use this when you need to run an inline SQL query.
         /// </summary>
         /// <param name="sql">Provide an SQL Statement (ideally you should only use this for select statements) </param>
+        /// <param name="ctx">Tge database context for the query</param>
         /// <returns>Returns the result with the database column names or aliases provided in the query</returns>
         /// <remarks>
         /// <para>
@@ -20,9 +25,20 @@
 
         public static List<dynamic> RunAnyQuery(string sql)
         {
+            return RunAnyQuery(sql, new OracleContext());
+        }
+
+        public static List<dynamic> RunAnyQuery(string sql, DbContext ctx=null)
+        {
             var result = new List<dynamic>();
 
-            using (var ctx = new OracleContext())
+            if (ctx == null)
+            {
+                ctx = new OracleContext();
+            }
+
+            using (ctx)
+             
             using (var cmd = ctx.Database.Connection.CreateCommand())
             {
                 ctx.Database.Connection.Open();
@@ -88,7 +104,7 @@
         /// <param name="id">Use the existing oracle function, get_pcc </param>
         /// <returns>Scalar value PCC</returns>
         
-        public static string GetPcc(int id)
+        public static string RgrRptGet(int id)
         {
             using (var ctx = new OracleContext())
             using (var cmd = ctx.Database.Connection.CreateCommand())
@@ -110,13 +126,23 @@
         /// <param name="pcc">Use the existing oracle function, get_wrf_id </param>
         /// <returns>Scalar value wrf_id</returns>
 
-        public static int? GetPcc(string pcc)
+        public static int? RgrRptGet(string pcc)
         {
+            if (pcc == null)
+                return null;
+
+            Regex regex = new Regex(@"(\d{2})\D?(\d{6})\D?(\d{4})");
+            pcc = regex.Replace(pcc, "$1-$2.$3");
+
+            if (pcc.Length != 14)
+                return null;            
+          
+
             using (var ctx = new OracleContext())
             using (var cmd = ctx.Database.Connection.CreateCommand())
             {
                 ctx.Database.Connection.Open();
-                cmd.CommandText = string.Format("select rgr_rpt.get_wrf_id({0}) as WaterRightFacilityId from dual ", pcc);
+                cmd.CommandText = string.Format("select rgr_rpt.get_wrf_id('{0}') as WaterRightFacilityId from dual", pcc);
                 var WaterRightFacilityId = cmd.ExecuteScalar();
 
                 if (WaterRightFacilityId == null)
@@ -132,6 +158,7 @@
         /// <returns>Return a new OracleID sequence number</returns>
         public static int? NextVal()
         {
+            
             using (var ctx = new OracleContext())
             using (var cmd = ctx.Database.Connection.CreateCommand())
             {
@@ -146,6 +173,18 @@
             }
         }
 
+        public static string BundleExceptions(Exception exception)
+        {
+            string fullException = exception.Message;
+            if (exception.InnerException != null)
+            {
+                fullException += BundleExceptions(exception.InnerException);
+            }
+
+            return fullException;
+        }
+
+        
 
     }
 }

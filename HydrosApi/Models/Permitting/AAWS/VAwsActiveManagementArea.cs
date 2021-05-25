@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
+﻿
 
 namespace HydrosApi.Models.Permitting.AAWS
 {
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using Data;
+
+
     [Table("AWS.V_AWS_AMA")]
-    public class VAwsActiveManagementArea//V_AWS_AMA
+    public class VAwsActiveManagementArea: Repository<VAwsActiveManagementArea>
     {
         [Key, Column("WRFID", Order = 1)]
         public int? WaterRightFacilityId { get; set; }//WRFID

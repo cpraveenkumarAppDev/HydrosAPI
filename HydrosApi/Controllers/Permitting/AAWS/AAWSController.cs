@@ -1149,6 +1149,7 @@
             return Ok(newHydro);
         }
 
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpGet, Route("aws/hydrobypcc/{pcc}")]
         public IHttpActionResult GetHydroByPcc(string pcc)
         {
@@ -1157,21 +1158,73 @@
             return Ok(VAwsHydro.Get(h =>h.PCC == pcc));
         }
 
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpGet, Route("aws/hydrobyid/{id}")]
         public IHttpActionResult GetHydroByWrfId(int id)
         {
             return Ok(VAwsHydro.Get(h=>h.WaterRightFacilityId==id));            
         }
-       
-        [HttpGet, Route("aws/physicalavail/{id}")]
-        public IHttpActionResult GetPhysicalAvailabilityBasis(int id)
-        {
 
-            return Ok(new AwsPhysicalAvailabilityViewModel(id));
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpGet, Route("aws/physavail/{id}")]
+        public IHttpActionResult GetPhysicalAvailability(int id)
+        {
+            var phys = new AwsPhysicalAvailabilityViewModel(id);
+            return Ok(phys);
 
         
         }
 
+        [HttpGet, Route("aws/getwrfid/{pcc}")]
+        public IHttpActionResult GetWrfId(string pcc)
+        {
+            int? waterRightFacilityId;
+            if (pcc == null)
+            {
+                return BadRequest("Please provide a PCC");
+            }
+
+            try
+            {
+                Regex regex = new Regex(@"(\d{2})\D?(\d{6})\D?(\d{4})");
+                pcc = regex.Replace(pcc, "$1-$2.$3");
+                if (pcc.Length != 14)
+                    return BadRequest("Invalid PCC format was submitted.");
+
+                waterRightFacilityId = QueryResult.RgrRptGet(pcc);
+
+                if(waterRightFacilityId==null)
+                    return BadRequest("PCC does not exist.");
+
+                return Ok(waterRightFacilityId);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(QueryResult.BundleExceptions(exception));
+            }
+        }
+
+        [HttpGet, Route("aws/getpcc/{id}")]
+        public IHttpActionResult GetPcc(int? id)
+        {
+            string pcc;
+            if (id == null)
+            {
+                return BadRequest("Please provide a valid id");
+            }
+
+            try
+            {
+                var wrfid = id ?? 0;
+
+                pcc = QueryResult.RgrRptGet(wrfid);
+                return Ok(pcc);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(QueryResult.BundleExceptions(exception));
+            }
+        }
 
         //[HttpGet, Route("aws/anyquery")]
         //public IHttpActionResult TestAnyQuery()
