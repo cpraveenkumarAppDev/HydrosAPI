@@ -1184,7 +1184,6 @@
         {
             hydro.UserName= new GetBestUsername(User.Identity.Name).UserName;
             var newHydro=VAwsHydro.Update(hydro);
-
              
             return Ok(newHydro);
         }
@@ -1210,9 +1209,7 @@
         public IHttpActionResult GetPhysicalAvailability(int id)
         {
             var phys = new AwsPhysicalAvailabilityViewModel(id);
-            return Ok(phys);
-
-        
+            return Ok(phys);        
         }
 
         [HttpGet, Route("aws/getwrfid/{pcc}")]
@@ -1242,16 +1239,7 @@
             {
                 return BadRequest(QueryResult.BundleExceptions(exception));
             }
-        }
-
-        [HttpGet, Route("aws/getpcc/{id}")]
-        public IHttpActionResult GetPcc(int? id)
-        {
-            string pcc;
-            if (id == null)
-            {
-                return BadRequest("Please provide a valid id");
-            }
+        }               
 
         [HttpPost, Route("aws/legalAvail/remove")]
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
@@ -1282,19 +1270,8 @@
                 //log
                 return InternalServerError(exception);
             }
-        }
-            try
-            {
-                var wrfid = id ?? 0;
-
-                pcc = QueryResult.RgrRptGet(wrfid);
-                return Ok(pcc);
-            }
-            catch (Exception exception)
-            {
-                return BadRequest(QueryResult.BundleExceptions(exception));
-            }
-        }
+        }         
+       
 
         //[HttpGet, Route("aws/anyquery")]
         //public IHttpActionResult TestAnyQuery()
