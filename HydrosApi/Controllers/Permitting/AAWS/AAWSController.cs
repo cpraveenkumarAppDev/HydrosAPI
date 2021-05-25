@@ -322,63 +322,103 @@
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [HttpPut, Route("aws/updateLegalAvailability/{id}")]
-        public async Task<IHttpActionResult> UpdateLegalAvailability([FromBody] AwLegalAvailability la, int id)
-        {
-            la.UpdateBy = User.Identity.Name.Replace("AZWATER0\\", "");
-            AwLegalAvailability laData;
-
-            using (var context = new OracleContext())
-            {
-                laData = context.AW_LEGAL_AVAILABILITY.Where(x => x.Id == id).FirstOrDefault();
-                if (laData != null)
-                {
-                    var props = laData.GetType().GetProperties().ToList();
-                    foreach (var prop in props)
-                    {
-                        var value = prop.GetValue(la);
-                        if ((value != null) && (prop.Name != "Id") && (prop.Name != "WaterRightFacilityId"))
-                        {
-                            prop.SetValue(laData, value);
-                        }
-                    }
-                    await context.SaveChangesAsync();
-                }
-                return Ok(laData);
-            }
-        }
-
-        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
-        [HttpPost, Route("aws/addLegalAvailability/{wrf}")]
-        public IHttpActionResult AddLegalAvailability([FromBody] AwLegalAvailability la, int wrf)
+        [HttpPost, Route("aws/updateLegalAvailability")]
+        public async Task<IHttpActionResult> UpdateLegalAvailability([FromBody] List<AwLegalAvailability> la)
         {
             try
             {
+                AwLegalAvailability existing = new AwLegalAvailability();
+                var updatedList = new List<AwLegalAvailability>();
+
                 using (var context = new OracleContext())
                 {
-                    var LegalAvailability = new AwLegalAvailability
+                    foreach(var legalAvail in la)
                     {
-                        CreateBy = User.Identity.Name.Replace("AZWATER0\\", ""),
-                        WaterRightFacilityId = wrf,
-                        EffluentType = la.EffluentType,
-                        ContractName = la.ContractName,
-                        Amount = la.Amount,
-                        GroundwaterUseType = la.GroundwaterUseType,
-                        ProviderReceiverId = la.ProviderReceiverId,
-                        WaterTypeCode = la.WaterTypeCode,
-                        AreaOfImpact = la.AreaOfImpact
-                    };
-
-                    context.AW_LEGAL_AVAILABILITY.Add(LegalAvailability);
-                    context.SaveChanges();
-                    return Ok(LegalAvailability);
+                        existing = context.AW_LEGAL_AVAILABILITY.Where(x => x.Id == legalAvail.Id).FirstOrDefault();
+                        if (existing == null)//add new record
+                        {
+                            existing = new AwLegalAvailability
+                            {
+                                CreateBy = User.Identity.Name.Replace("AZWATER0\\", ""),
+                                WaterRightFacilityId = legalAvail.WaterRightFacilityId,
+                                EffluentType = legalAvail.EffluentType,
+                                ContractName = legalAvail.ContractName,
+                                Amount = legalAvail.Amount,
+                                GroundwaterUseType = legalAvail.GroundwaterUseType,
+                                ProviderReceiverId = legalAvail.ProviderReceiverId,
+                                WaterTypeCode = legalAvail.WaterTypeCode,
+                                AreaOfImpact = legalAvail.AreaOfImpact,
+                                ContractNumber = legalAvail.ContractNumber,
+                                SurfaceWaterType = legalAvail.SurfaceWaterType
+                            };
+                            //updatedList.Add(existing);
+                            context.AW_LEGAL_AVAILABILITY.Add(existing);
+                        }
+                        else//update existing record
+                        {
+                            var props = existing.GetType().GetProperties().ToList();
+                            foreach (var prop in props)
+                            {
+                                var value = prop.GetValue(legalAvail);
+                                if ((value != null) && (prop.Name != "Id") && (prop.Name != "WaterRightFacilityId")
+                                    && (prop.Name != "PCC") && (prop.Name != "UpdateBy") && (prop.Name != "UpdateDt")
+                                    && (prop.Name != "CreateBy") && (prop.Name != "CreateDt"))
+                                {
+                                    prop.SetValue(existing, value);
+                                }
+                            }
+                            existing.UpdateBy = User.Identity.Name.Replace("AZWATER0\\", "");
+                            updatedList.Add(existing);
+                        }
+                    }
+                    await context.SaveChangesAsync();               
+                    return Ok(updatedList);
                 }
             }
-            catch (Exception exception)
+            catch(Exception exception)
             {
-                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+                return InternalServerError(exception);
             }
         }
+
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        //[HttpPost, Route("aws/newLegalAvailability/{wrf:int}")]
+        //public IHttpActionResult AddLegalAvailability([FromBody] List<AwLegalAvailability> la, int wrf)
+        //{
+        //    try
+        //    {
+        //        using (var context = new OracleContext())
+        //        {
+        //            var newList = new List<AwLegalAvailability>();
+        //            foreach(var legalAvail in la)
+        //            {
+        //                var LegalAvailability = new AwLegalAvailability
+        //                {
+        //                    CreateBy = User.Identity.Name.Replace("AZWATER0\\", ""),
+        //                    WaterRightFacilityId = wrf,
+        //                    EffluentType = legalAvail.EffluentType,
+        //                    ContractName = legalAvail.ContractName,
+        //                    Amount = legalAvail.Amount,
+        //                    GroundwaterUseType = legalAvail.GroundwaterUseType,
+        //                    ProviderReceiverId = legalAvail.ProviderReceiverId,
+        //                    WaterTypeCode = legalAvail.WaterTypeCode,
+        //                    AreaOfImpact = legalAvail.AreaOfImpact,
+        //                    ContractNumber = legalAvail.ContractNumber,
+        //                    SurfaceWaterType = legalAvail.SurfaceWaterType
+        //                };
+        //                newList.Add(LegalAvailability);
+        //            }
+
+        //            context.AW_LEGAL_AVAILABILITY.AddRange(newList);
+        //            context.SaveChanges();
+        //            return Ok(newList);
+        //        }
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        return InternalServerError(exception);
+        //    }
+        //}
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpGet, Route("aws/amaDetail/{wrfid:int}")]
@@ -1213,6 +1253,36 @@
                 return BadRequest("Please provide a valid id");
             }
 
+        [HttpPost, Route("aws/legalAvail/remove")]
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        public IHttpActionResult DeleteLegalAvailability([FromBody] int[] deletionIds)
+        {
+            try
+            {
+                List<int> deleteSuccess = new List<int>();
+                using(var context = new OracleContext())
+                {
+                    foreach (var id in deletionIds)
+                    {
+                        var found = AwLegalAvailability.Get(x => x.Id == id, context);
+                        if (found != null)
+                        {
+                            context.AW_LEGAL_AVAILABILITY.Remove(found);
+                            deleteSuccess.Add(id);
+                        }
+                    }
+
+                    context.SaveChanges();
+
+                    return Ok(deleteSuccess);
+                }
+            }
+            catch(Exception exception)
+            {
+                //log
+                return InternalServerError(exception);
+            }
+        }
             try
             {
                 var wrfid = id ?? 0;
