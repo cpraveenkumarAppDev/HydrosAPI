@@ -89,6 +89,10 @@ namespace HydrosApi.Models.Permitting.AAWS
                 else
                     return WaterRightFacility.Get(f => f.Id == ProviderReceiverId).PCC;
             }
+            set
+            {
+                this.ProviderReceiverId = QueryResult.RgrRptGet(value);
+            }
         }
 
     }
