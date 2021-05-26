@@ -349,7 +349,10 @@
                                 WaterTypeCode = legalAvail.WaterTypeCode,
                                 AreaOfImpact = legalAvail.AreaOfImpact,
                                 ContractNumber = legalAvail.ContractNumber,
-                                SurfaceWaterType = legalAvail.SurfaceWaterType
+                                SurfaceWaterType = legalAvail.SurfaceWaterType,
+                                Section = legalAvail.Section,
+                                StorageFacilityName = legalAvail.StorageFacilityName,
+                                PledgedAmount = legalAvail.PledgedAmount
                             };
                             //updatedList.Add(existing);
                             context.AW_LEGAL_AVAILABILITY.Add(existing);
@@ -362,7 +365,7 @@
                                 var value = prop.GetValue(legalAvail);
                                 if ((value != null) && (prop.Name != "Id") && (prop.Name != "WaterRightFacilityId")
                                     && (prop.Name != "PCC") && (prop.Name != "UpdateBy") && (prop.Name != "UpdateDt")
-                                    && (prop.Name != "CreateBy") && (prop.Name != "CreateDt"))
+                                    && (prop.Name != "CreateBy") && (prop.Name != "CreateDt") && (prop.Name != "Section"))
                                 {
                                     prop.SetValue(existing, value);
                                 }

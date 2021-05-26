@@ -58,6 +58,13 @@ namespace HydrosApi.Models.Permitting.AAWS
         [StringLength(25)]
         public string SurfaceWaterType { get; set; }
 
+        [Column("STORAGE_FACILITY_NAME")]
+        [StringLength(50)]
+        public string StorageFacilityName { get; set; }
+
+        [Column("PLEDGED_AMOUNT")]
+        public decimal? PledgedAmount { get; set; }
+
         [Column("CREATEBY")]
         [StringLength(30)]
         public string CreateBy { get; set; }
