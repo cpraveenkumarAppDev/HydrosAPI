@@ -136,6 +136,9 @@ using System.Data.Entity.Infrastructure;
             }
         }
 
+        
+
+
         public static T UpdateSome(T entity, params Expression<Func<T, object>>[] updatedProperties)
         {         
              

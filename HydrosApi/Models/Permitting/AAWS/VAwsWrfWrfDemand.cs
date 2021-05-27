@@ -23,9 +23,10 @@
         [Column("WTR_DEMAND")]
         public decimal? WaterDemand { get; set; }
 
-        [NotMapped]
-         public string AvailabilityType => WaterDemand < 0 ?  "Use" : "Source";
+        [Column("AVAILABILITY_TYPE")]
+        public string AvailabilityType { get; set; }
 
-       
+
+
     }
 }

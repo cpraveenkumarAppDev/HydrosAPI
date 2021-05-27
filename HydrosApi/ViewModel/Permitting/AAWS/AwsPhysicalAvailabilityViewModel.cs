@@ -14,8 +14,7 @@ using Models.Permitting.AAWS;
         /// <summary>
         /// Basis of Physical Availability (on the hydros physical availability tag)
         /// </summary>
-        public List<VAwsWrfWrfDemand> Basis { get; set; }
-        public List<VAwsWellServing> WellServing { get; set; }
+        public List<VAwsWrfWrfDemand> Basis { get; set; }        
         public VAwsActiveManagementArea AmaDemand { get; set; }
         public VAwsHydro Hydrology { get; set; }
 

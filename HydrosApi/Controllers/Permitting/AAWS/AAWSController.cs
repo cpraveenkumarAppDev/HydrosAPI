@@ -1238,6 +1238,63 @@
             return Ok(phys);
         }
 
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpPost, Route("aws/savephysavail/{id}")]
+        public IHttpActionResult SavePhysicalAvailability(int id, [FromBody] AwsPhysicalAvailabilityViewModel physical)
+        {
+            try
+            {
+
+               
+
+                var currentBasis = VAwsWrfWrfDemand.GetList(d => d.WaterRightFacilityId == id && d.AvailabilityType=="Source");
+                var insertBasis = new List<VAwsWrfWrfDemand>(); 
+
+                //insert
+                if(physical != null && physical.Basis != null)
+                {
+                    if(currentBasis==null)
+                    {                         
+                        VAwsWrfWrfDemand.AddAll(physical.Basis);
+                    }
+                    else
+                    {
+                        var refIdList = currentBasis.Select(b => b.ReferenceWaterRightFacilityId).ToArray();
+                        var newBasis = physical.Basis.Where(b => !refIdList.Contains(b.ReferenceWaterRightFacilityId)).ToList();
+
+                        if (newBasis != null)
+                        {
+                            VAwsWrfWrfDemand.AddAll(newBasis);
+                        }
+
+                        var updateBasis= physical.Basis.Where(b => refIdList.Contains(b.ReferenceWaterRightFacilityId)).ToList();
+                        if(updateBasis != null)
+                        {
+                            foreach(var b in updateBasis)
+                            {
+                                VAwsWrfWrfDemand.Update(b);
+
+                            }
+                        }
+
+                    }
+                }
+
+
+
+                var updatedPhys=VAwsWrfWrfDemand.GetList(d => d.WaterRightFacilityId == id && d.AvailabilityType == "Source");
+
+                return Ok(updatedPhys);
+            }
+
+            catch (Exception exception)
+            {
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+                //log error
+                //return InternalServerError(exception);
+            }
+        }
+
         [HttpGet, Route("aws/getwrfid/{pcc}")]
         public IHttpActionResult GetWrfId(string pcc)
         {
