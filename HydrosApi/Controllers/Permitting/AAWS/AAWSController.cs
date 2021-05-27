@@ -236,7 +236,7 @@
         {
             try
             {
-                var qryString = "select * from cad.cadastral t, LIB.COUNTY c "+
+                var qryString = "select * from cad.cadastral t, LIB.COUNTY c " +
                                 "where t.cadastral_hook in ('A17022013000', 'C01001034000', 'A02002001AB0') and sde.st_intersects(t.shape, c.shape) = 1";
 
                 var cadastralData = QueryResult.RunAnyQuery(qryString);
@@ -332,7 +332,7 @@
 
                 using (var context = new OracleContext())
                 {
-                    foreach(var legalAvail in la)
+                    foreach (var legalAvail in la)
                     {
                         existing = context.AW_LEGAL_AVAILABILITY.Where(x => x.Id == legalAvail.Id).FirstOrDefault();
                         if (existing == null)//add new record
@@ -371,11 +371,11 @@
                             updatedList.Add(existing);
                         }
                     }
-                    await context.SaveChangesAsync();               
+                    await context.SaveChangesAsync();
                     return Ok(updatedList);
                 }
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 return InternalServerError(exception);
             }
@@ -873,9 +873,9 @@
                 string userName = new GetBestUsername(User.Identity.Name).UserName;  //Set to Oracle ID if possible
 
                 var createDt = DateTime.Now;
-                string appendCompanyName = "";                
-                          
-                if(customer.Customer== null || customer.Waterrights==null)
+                string appendCompanyName = "";
+
+                if (customer.Customer == null || customer.Waterrights == null)
                 {
                     return BadRequest("Mandatory information for customer was not provided.");
                 }
@@ -962,14 +962,14 @@
                     }
 
                     var waterRights = customer.Waterrights.Select(w =>
-                      {
-                          w.CustomerId = customerID ?? -1;
-                          w.IsActive = w.IsActive ?? "Y";
-                          w.LineNum = ((from f in existingCustomers where f.CustomerTypeCode == w.CustomerTypeCode && f.WaterRightFacilityId == w.WaterRightFacilityId select f).Max(l => (int?)l.LineNum) ?? 0) + 1; // Set line num 
-                          w.CreateBy = userName;
-                          w.CreateDt = createDt;
-                          return w;
-                      }).ToList();
+                    {
+                        w.CustomerId = customerID ?? -1;
+                        w.IsActive = w.IsActive ?? "Y";
+                        w.LineNum = ((from f in existingCustomers where f.CustomerTypeCode == w.CustomerTypeCode && f.WaterRightFacilityId == w.WaterRightFacilityId select f).Max(l => (int?)l.LineNum) ?? 0) + 1; // Set line num 
+                        w.CreateBy = userName;
+                        w.CreateDt = createDt;
+                        return w;
+                    }).ToList();
 
                     if (waterRights == null)
                     {
@@ -996,7 +996,7 @@
         {
             try
             {
-                string userName = new GetBestUsername(User.Identity.Name).UserName;   
+                string userName = new GetBestUsername(User.Identity.Name).UserName;
                 var currentDt = DateTime.Now;
                 var requestMethod = ActionContext.Request.Method.ToString().ToUpper(); //POST, DELETE ETC.
 
@@ -1061,10 +1061,10 @@
 
                     //get customer properties
                     var custPropList = customer.Customer.GetType().GetProperties().ToList();
-                    
+
                     foreach (var prop in custPropList)
-                    {                      
-                        var tempVal = prop.GetValue(customer.Customer);             
+                    {
+                        var tempVal = prop.GetValue(customer.Customer);
                         var hasTrim = prop.PropertyType.GetMethods().Where(i => i.Name == "Trim"); //use the trim method if one exists                          
 
                         if (hasTrim != null && tempVal != null)
@@ -1073,7 +1073,7 @@
                         }
 
                         var originalValue = prop.GetValue(foundUser);
-                       
+
                         if (!Object.Equals(tempVal, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : prop.GetValue(foundUser))))
                         {
                             if (prop.Name != "CustomerId" && prop.Name != "CustomerTypeCode")//can't update the DB Key
@@ -1094,7 +1094,7 @@
                             var newValue = Object.Equals(tempValue, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : incomingValue));
 
                             //if (tempValue != (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : incomingValue))
-                            if(!Object.Equals(tempValue, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : incomingValue)))
+                            if (!Object.Equals(tempValue, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : incomingValue)))
                             {
                                 if (prop.Name != "WaterRightFacilityId" && prop.Name != "CustomerId" && prop.Name != "CustomerTypeCode" && prop.Name != "LineNum")
                                 {
@@ -1163,7 +1163,7 @@
                 }
 
             }
-          
+
             catch
             {
                 return InternalServerError();
@@ -1180,12 +1180,34 @@
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpPut, Route("aws/updatehydro/")]
-        public IHttpActionResult UpdateHydro([FromBody] VAwsHydro hydro)
+        public IHttpActionResult UpdateHydro([FromBody] AwsHydrologyViewModel wHydro)
         {
-            hydro.UserName= new GetBestUsername(User.Identity.Name).UserName;
-            var newHydro=VAwsHydro.Update(hydro);
-             
-            return Ok(newHydro);
+            var hydroVm = new AwsHydrologyViewModel();
+            if (wHydro == null)
+            {
+                return BadRequest("Hydrology updates error");
+            }
+            var userName= new GetBestUsername(User.Identity.Name).UserName;
+            var hydro =  wHydro.Hydrology ?? null;
+            var wellServing = wHydro.WellServing ?? null;
+
+            if (hydro != null)
+            {
+                hydro.UserName = userName;
+                hydroVm.Hydrology = hydro;
+                VAwsHydro.Update(hydro);
+                              
+
+            }
+
+            if(wellServing != null)
+            {
+                hydroVm.WellServing = wellServing;
+
+            }
+
+
+            return Ok(hydroVm);
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
@@ -1194,14 +1216,15 @@
         {
             Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
             pcc = regex.Replace(pcc, "$1-$2.$3");
-            return Ok(VAwsHydro.Get(h =>h.PCC == pcc));
+            return Ok(VAwsHydro.Get(h => h.PCC == pcc));
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpGet, Route("aws/hydrobyid/{id}")]
         public IHttpActionResult GetHydroByWrfId(int id)
         {
-            return Ok(VAwsHydro.Get(h=>h.WaterRightFacilityId==id));            
+            var hydro= new AwsHydrologyViewModel(id);
+            return Ok(hydro);
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
@@ -1209,7 +1232,7 @@
         public IHttpActionResult GetPhysicalAvailability(int id)
         {
             var phys = new AwsPhysicalAvailabilityViewModel(id);
-            return Ok(phys);        
+            return Ok(phys);
         }
 
         [HttpGet, Route("aws/getwrfid/{pcc}")]
@@ -1230,7 +1253,7 @@
 
                 waterRightFacilityId = QueryResult.RgrRptGet(pcc);
 
-                if(waterRightFacilityId==null)
+                if (waterRightFacilityId == null)
                     return BadRequest("PCC does not exist.");
 
                 return Ok(waterRightFacilityId);
@@ -1239,7 +1262,7 @@
             {
                 return BadRequest(QueryResult.BundleExceptions(exception));
             }
-        }               
+        }
 
         [HttpPost, Route("aws/legalAvail/remove")]
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
@@ -1248,7 +1271,7 @@
             try
             {
                 List<int> deleteSuccess = new List<int>();
-                using(var context = new OracleContext())
+                using (var context = new OracleContext())
                 {
                     foreach (var id in deletionIds)
                     {
@@ -1265,13 +1288,13 @@
                     return Ok(deleteSuccess);
                 }
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 //log
                 return InternalServerError(exception);
             }
-        }         
-       
+        }
+
 
         //[HttpGet, Route("aws/anyquery")]
         //public IHttpActionResult TestAnyQuery()

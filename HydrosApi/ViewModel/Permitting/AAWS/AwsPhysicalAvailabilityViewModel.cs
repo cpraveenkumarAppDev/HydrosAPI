@@ -1,12 +1,10 @@
 ﻿namespace HydrosApi.ViewModel.Permitting.AAWS
 {
-    using System;
+ 
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Linq; 
 using Models.Permitting.AAWS;
-    using Data;
-    using System.Dynamic;
+    
 
 
     public class AwsPhysicalAvailabilityViewModel
@@ -41,7 +39,7 @@ using Models.Permitting.AAWS;
                 //AmaDemand = context.V_AWS_AMA.Where(x => x.WaterRightFacilityId == id).FirstOrDefault();
                 var basis = VAwsWrfWrfDemand.GetList(d => d.WaterRightFacilityId == id).Distinct().OrderByDescending(x => x.WaterDemand);
                 var hydro = VAwsHydro.Get(h => h.WaterRightFacilityId == id);
-                var wellServing=VAwsWellServing.GetList(x => x.WaterRightFacilityId == id);
+               
                 var amaDemand=VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id);
 
            // SupplementalValue.Add("PhysAvailBasedOnPrevIssPhysAvailDem", hydro.PhysAvailBasedOnPrevIssPhysAvailDem);
@@ -51,8 +49,7 @@ using Models.Permitting.AAWS;
            // SupplementalValue.Add("LegislatureSB1274", null);
 
             Basis = basis.ToList();
-            Hydrology = hydro;
-            WellServing = wellServing.ToList();
+            Hydrology = hydro;            
             AmaDemand = amaDemand;
         }
     }
