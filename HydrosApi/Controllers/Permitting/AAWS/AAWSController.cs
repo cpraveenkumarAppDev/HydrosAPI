@@ -210,8 +210,7 @@
                 }
                 catch (Exception exception)
                 {
-                    //log error
-                    return InternalServerError();
+                    return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
                 }
             }
         }
@@ -226,8 +225,7 @@
             }
             catch (Exception exception)
             {
-                //log error
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -244,8 +242,7 @@
             }
             catch (Exception exception)
             {
-                //log error
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -259,8 +256,7 @@
             }
             catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(wellServingList);
         }
@@ -284,8 +280,7 @@
             }
             catch (Exception exception)
             {
-                //log exception
-                return InternalServerError(exception);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -299,8 +294,7 @@
             }
             catch (Exception exception)
             {
-                //log exception
-                return InternalServerError(exception);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(longTermStorageCreditsList);
         }
@@ -315,8 +309,7 @@
             }
             catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(LegalAvailabilityList);
         }
@@ -380,7 +373,7 @@
             }
             catch (Exception exception)
             {
-                return InternalServerError(exception);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -437,7 +430,7 @@
             }
             catch (Exception exception)
             {
-                return InternalServerError(exception);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -529,7 +522,7 @@
             }
             catch (Exception exception)
             {
-                return InternalServerError(exception);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -554,7 +547,7 @@
             }
             catch (Exception exception)
             {
-                return InternalServerError(exception);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -579,10 +572,9 @@
             {
                 activities = AwAppActivityTrk.GetList(x => x.WaterRightFacilityId == wrf && x.ActivityCode == activity).FirstOrDefault();
             }
-            catch
+            catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(activities);
         }
@@ -596,10 +588,9 @@
             {
                 activities = AwAppActivityTrk.GetList(x => x.WaterRightFacilityId == wrf && new List<string> { "ISSD", "IADQ", "IIAD" }.Contains(x.ActivityCode)).OrderByDescending(x => x.CreateDt).ToList();
             }
-            catch
+            catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(activities.FirstOrDefault());
         }
@@ -621,10 +612,9 @@
                 AwAppActivityTrk.Add(record);
                 return Ok("Created");
             }
-            catch
+            catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -647,10 +637,9 @@
                         Date = act.CreateDt
                     });
             }
-            catch
+            catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(activitiesDescribed);
         }
@@ -664,10 +653,9 @@
             {
                 codes = CdAwAppActivity.GetList(x => x.AlsoFileStatus == "Y");
             }
-            catch
+            catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(codes);
         }
@@ -679,14 +667,11 @@
                 var info = new Common_ViewModel();
                 return Ok(info);
             }
-            catch
+            catch (Exception exception)
             {
-                //log error
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
-
-
 
         /// <summary>
         /// aws/company/{company} Search for a company (COMPANY_LONG_NAME) field.
@@ -723,10 +708,9 @@
                 var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x));
                 return Ok(custWrfViewModelList);
             }
-            catch //(Exception exception)
+            catch (Exception exception)
             {
-                //log error
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));                
             }
         }
 
@@ -987,10 +971,7 @@
             }
             catch (Exception exception)
             {
-
-                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
-                //log error
-                //return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));                
             }
         }
 
@@ -1131,7 +1112,6 @@
             }
         }
 
-
         [HttpPost, Route("aws/customer/wrf")]
         [Authorize]
         public IHttpActionResult CreateWrfcust([FromBody] List<WaterRightFacilityCustomer> wrfcustList)
@@ -1164,7 +1144,6 @@
                     context.SaveChanges();
                     return Ok(wrfcustList);
                 }
-
             }
 
             catch
@@ -1198,18 +1177,13 @@
             {
                 hydro.UserName = userName;
                 hydroVm.Hydrology = hydro;
-                VAwsHydro.Update(hydro);
-                              
-
+                VAwsHydro.Update(hydro);                             
             }
 
             if(wellServing != null)
             {
                 hydroVm.WellServing = wellServing;
-
             }
-
-
             return Ok(hydroVm);
         }
 
@@ -1240,58 +1214,25 @@
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpPost, Route("aws/savephysavail/{id}")]
-        public IHttpActionResult SavePhysicalAvailability(int id, [FromBody] AwsPhysicalAvailabilityViewModel physical)
+        public IHttpActionResult SavePhysicalAvailability(int? id, [FromBody] AwsPhysicalAvailabilityViewModel physical)
         {
             try
             {
+                var userName = new GetBestUsername(User.Identity.Name).UserName;
 
-               
-
-                var currentBasis = VAwsWrfWrfDemand.GetList(d => d.WaterRightFacilityId == id && d.AvailabilityType=="Source");
-                var insertBasis = new List<VAwsWrfWrfDemand>(); 
-
-                //insert
-                if(physical != null && physical.Basis != null)
+                if (id==null)
                 {
-                    if(currentBasis==null)
-                    {                         
-                        VAwsWrfWrfDemand.AddAll(physical.Basis);
-                    }
-                    else
-                    {
-                        var refIdList = currentBasis.Select(b => b.ReferenceWaterRightFacilityId).ToArray();
-                        var newBasis = physical.Basis.Where(b => !refIdList.Contains(b.ReferenceWaterRightFacilityId)).ToList();
+                    return BadRequest("Invalid WaterRightFacilityId");
+                }               
 
-                        if (newBasis != null)
-                        {
-                            VAwsWrfWrfDemand.AddAll(newBasis);
-                        }
+                var phys=new AwsPhysicalAvailabilityViewModel((id ?? -1), physical, userName);
 
-                        var updateBasis= physical.Basis.Where(b => refIdList.Contains(b.ReferenceWaterRightFacilityId)).ToList();
-                        if(updateBasis != null)
-                        {
-                            foreach(var b in updateBasis)
-                            {
-                                VAwsWrfWrfDemand.Update(b);
-
-                            }
-                        }
-
-                    }
-                }
-
-
-
-                var updatedPhys=VAwsWrfWrfDemand.GetList(d => d.WaterRightFacilityId == id && d.AvailabilityType == "Source");
-
-                return Ok(updatedPhys);
+                return Ok(phys);
             }
 
             catch (Exception exception)
             {
-                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
-                //log error
-                //return InternalServerError(exception);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));                
             }
         }
 

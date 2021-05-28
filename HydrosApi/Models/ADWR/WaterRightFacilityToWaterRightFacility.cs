@@ -1,14 +1,17 @@
-﻿using System;
+﻿namespace HydrosApi.Models.ADWR
+{
+    using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using Data;
 
-namespace HydrosApi.Models.ADWR
-{
+ 
     [Table("RGR.WRF_WRF")]
-    public class WaterRightFacilityToWaterRightFacility//WRF_WRF
+    public class WaterRightFacilityToWaterRightFacility: Repository<WaterRightFacilityToWaterRightFacility>
+    //WRF_WRF
     {
         [Key, Column("WRF_ID_FROM", Order = 0)]
         public int WaterRightFacilityIdFrom { get; set; }//WRF_ID_FROM
