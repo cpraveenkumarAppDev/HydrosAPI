@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Linq; 
 using Models.Permitting.AAWS;
-    using System.Dynamic;
+    using Data;
     using Models.ADWR;
     using System;
     
@@ -49,7 +49,11 @@ using Models.Permitting.AAWS;
 
         public  AwsPhysicalAvailabilityViewModel(int id, AwsPhysicalAvailabilityViewModel awsPhysicalAvailabilityViewModel, string user)
         {           
-            var data = awsPhysicalAvailabilityViewModel;          
+            var data = awsPhysicalAvailabilityViewModel;
+
+            var hydro = new VAwsHydro();
+            var amaDemand = new VAwsActiveManagementArea();
+
 
             userName = user;
             currentDate = DateTime.Now;
@@ -90,18 +94,33 @@ using Models.Permitting.AAWS;
                 if(data.Hydrology != null)
                 {
                     data.Hydrology.UserName = userName;
-                    VAwsHydro.Update(data.Hydrology);
+                    hydro=VAwsHydro.Update(data.Hydrology);
+                }
+                else
+                {
+                    hydro = VAwsHydro.Get(h => h.WaterRightFacilityId == id);
+                }
+
+                if(data.AmaDemand != null)
+                {
+                    if(data.AmaDemand.WaterRightFacilityId==null)
+                    {
+                        data.AmaDemand.WaterRightFacilityId = id;
+                        //var pcc=QueryResult.RgrRptGet(id);
+                       
+                    }
+                    amaDemand = VAwsActiveManagementArea.Update(data.AmaDemand);                   
+                }
+                else
+                {
+                    amaDemand = VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id);
                 }
             }
 
             var basis = VAwsWrfWrfDemand.GetList(d => d.WaterRightFacilityId == id).Distinct().OrderByDescending(x => x.WaterDemand).ToList();
-            var hydro = VAwsHydro.Get(h => h.WaterRightFacilityId == id);
-            var amaDemand = VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id);
-
             Basis = basis;
             Hydrology = hydro;
-            AmaDemand = amaDemand;
-            // new AwsPhysicalAvailabilityViewModel(id);
+            AmaDemand = amaDemand;         
         }
 
         private void BasisAction(List<VAwsWrfWrfDemand> deleteBasis, int id)

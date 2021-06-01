@@ -83,7 +83,7 @@ namespace HydrosApi.Models.Permitting.AAWS
         public string LuDemand { get; set; }//LUDEMAND
 
         [Column("TOTAL_NON_RES_DEMAND")]
-        public int? TotalNonResidentialDemand { get; set; }//TOTAL_NON_RES_DEMAND
+        public decimal? TotalNonResidentialDemand { get; set; }//TOTAL_NON_RES_DEMAND
 
         [Column("TOTALDEMAND"), StringLength(50)]
         public string TotalDemand { get; set; }//TOTALDEMAND
@@ -113,7 +113,7 @@ namespace HydrosApi.Models.Permitting.AAWS
         public string ApplicantEstimate { get; set; }//APPLICANT_ESTIMATE
 
         [Column("DISTRIBUTION_LOSS_TOTAL")]
-        public int? DistributionLossTotal { get; set; }//DISTRIBUTION_LOSS_TOTAL
+        public decimal? DistributionLossTotal { get; set; }//DISTRIBUTION_LOSS_TOTAL
 
         [Column("DISTRIBUTION_LOSS_FACTOR")]
         public int? DistributionLossFactor { get; set; }//DISTRIBUTION_LOSS_FACTOR
@@ -122,22 +122,22 @@ namespace HydrosApi.Models.Permitting.AAWS
         public int? ConstructionNumberOfLots { get; set; }//CONSTRUCTION_NUM_LOTS
 
         [Column("CONSTRUCTION_DEMAND")]
-        public int? ConstructionDemand { get; set; }//CONSTRUCTION_DEMAND
+        public decimal? ConstructionDemand { get; set; }//CONSTRUCTION_DEMAND
 
         [Column("CONSTRUCTION_DEMAND_100YR")]
-        public int? ConstructionDemand100Yr { get; set; }//CONSTRUCTION_DEMAND_100YR
+        public decimal? ConstructionDemand100Yr { get; set; }//CONSTRUCTION_DEMAND_100YR
 
         [Column("CURRENT_DEMAND")]
-        public int? CurrentDemand { get; set; }//CURRENT_DEMAND
+        public decimal? CurrentDemand { get; set; }//CURRENT_DEMAND
 
         [Column("CURRENT_DEMAND_YEAR")]
         public int? CurrentDemandYear { get; set; }//CURRENT_DEMAND_YEAR
 
         [Column("COMMITTED_DEMAND")]
-        public int? CommittedDemand { get; set; }//COMMITTED_DEMAND
+        public decimal? CommittedDemand { get; set; }//COMMITTED_DEMAND
 
         [Column("PROJECTED_DEMAND")]
-        public int? ProjectedDemand { get; set; }//PROJECTED_DEMAND
+        public decimal? ProjectedDemand { get; set; }//PROJECTED_DEMAND
 
         [Column("PROJECTED_DEMAND_YEAR")]
         public int? ProjectedDemandYear { get; set; }//PROJECTED_DEMAND_YEAR
@@ -147,6 +147,21 @@ namespace HydrosApi.Models.Permitting.AAWS
 
         [Column("DEDICATION_LTSC"), StringLength(1)]
         public string DedicationLongTermStorageCredits { get; set; }//DEDICATION_LTSC
+
+        [Column("GROUNDWATER_AF_YR")]
+        public decimal? GroundWaterAfYr { get; set; }//EFFLUENT_AF_YR
+
+        [Column("EFFLUENT_AF_YR")]
+        public decimal? EffluentAfYr { get; set; }//EFFLUENT_AF_YR
+
+        [Column("SURFACEWATER_AF_YR")]
+        public decimal? SurfaceWaterAfYr { get; set; }//SURFACEWATER_AF_YR
+
+        [Column("CAPWATER_AF_YR")]
+        public decimal? CapWaterAfYr { get; set; }//CAPWATER_AF_YR
+
+        [Column("COLORADORIVERWATER_AF_YR")]
+        public decimal? ColoradoRiverWaterAfYr { get; set; }//COLORADORIVERWATER_AF_YR
 
 
     }
