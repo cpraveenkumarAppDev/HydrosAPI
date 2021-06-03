@@ -2,6 +2,7 @@
 
 namespace HydrosApi.Models.Permitting.AAWS
 {
+    using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using Data;
@@ -148,6 +149,13 @@ namespace HydrosApi.Models.Permitting.AAWS
         [Column("DEDICATION_LTSC"), StringLength(1)]
         public string DedicationLongTermStorageCredits { get; set; }//DEDICATION_LTSC
 
+        [Column("EXEMPTCREDITS_AF_YR")]
+        public int? ExemptCreditsAfYr { get; set; }
 
+        [Column("POORQUALITY_EXEMPT_AR_YR")]
+        public int? PoorQualityExemptArYr { get; set; }
+
+        [Column("AMA_COMPLIANCE_STATUS_DATE")]
+        public DateTime? AmaComplianceStatusDate { get; set; }
     }
 }
