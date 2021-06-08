@@ -170,22 +170,6 @@ namespace HydrosApi.Models.Permitting.AAWS
         public decimal? ColoradoRiverWaterAfYr { get; set; }//COLORADORIVERWATER_AF_YR
 
 
-        [Column("GROUNDWATER_AF_YR")]
-        public decimal? GroundWaterAfYr { get; set; }//EFFLUENT_AF_YR
-
-        [Column("EFFLUENT_AF_YR")]
-        public decimal? EffluentAfYr { get; set; }//EFFLUENT_AF_YR
-
-        [Column("SURFACEWATER_AF_YR")]
-        public decimal? SurfaceWaterAfYr { get; set; }//SURFACEWATER_AF_YR
-
-        [Column("CAPWATER_AF_YR")]
-        public decimal? CapWaterAfYr { get; set; }//CAPWATER_AF_YR
-
-        [Column("COLORADORIVERWATER_AF_YR")]
-        public decimal? ColoradoRiverWaterAfYr { get; set; }//COLORADORIVERWATER_AF_YR
-
-
         [Column("AMA_COMPLIANCE_STATUS_DATE")]
         public DateTime? AmaComplianceStatusDate { get; set; }
     }
