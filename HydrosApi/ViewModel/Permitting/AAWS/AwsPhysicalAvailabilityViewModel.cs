@@ -1,14 +1,11 @@
 ﻿namespace HydrosApi.ViewModel.Permitting.AAWS
 {
  
-using System.Collections.Generic;
-using System.Linq; 
-using Models.Permitting.AAWS;
-    using Data;
+    using System.Collections.Generic;
+    using System.Linq; 
+    using Models.Permitting.AAWS; 
     using Models.ADWR;
     using System;
-    
-
 
     public class AwsPhysicalAvailabilityViewModel
     {

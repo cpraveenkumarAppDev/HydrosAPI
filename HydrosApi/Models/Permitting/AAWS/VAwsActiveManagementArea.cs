@@ -149,6 +149,12 @@ namespace HydrosApi.Models.Permitting.AAWS
         [Column("DEDICATION_LTSC"), StringLength(1)]
         public string DedicationLongTermStorageCredits { get; set; }//DEDICATION_LTSC
 
+        [Column("EXEMPTCREDITS_AF_YR")]
+        public int? ExemptCreditsAfYr { get; set; }
+
+        [Column("POORQUALITY_EXEMPT_AR_YR")]
+        public int? PoorQualityExemptArYr { get; set; }
+
         [Column("GROUNDWATER_AF_YR")]
         public decimal? GroundWaterAfYr { get; set; }//EFFLUENT_AF_YR
 
