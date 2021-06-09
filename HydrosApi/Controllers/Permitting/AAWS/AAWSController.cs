@@ -631,18 +631,6 @@
             }
         }
 
-        /* [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
-         [HttpPut, Route("aws/updateapp")]
-         public IHttpActionResult UpdateApp([FromBody] AAWSProgramInfoViewModel paramValues) //New file
-         {
-
-             var user = User.Identity.Name;
-             var savedApplication = AAWSProgramInfoViewModel.OnUpdate(paramValues, user.Replace("AZWATER0\\",""));
-
-
-             return Ok(savedApplication);
-         }*/
-
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpGet, Route("aws/activity/{wrf}/{activity}")]
         public IHttpActionResult GetActivity(int wrf, string activity)
@@ -1391,45 +1379,6 @@
              }
          }*/
 
-
-        [HttpPut, Route("aws/ConsistManage/{id}")]
-        public IHttpActionResult UpdateConsistManage(VAwsActiveManagementArea consistManage, int id)
-        {
-            try
-            {
-                var props = typeof(VAwsActiveManagementArea).GetProperties().ToList();
-                using (var context = new OracleContext())
-                {
-                    var consist = VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id);
-                    var changesOccurred = false;
-
-                    foreach (var prop in props)
-                    {
-                        var newValue = prop.GetValue(consistManage);
-                        var oldValue = prop.GetValue(consist);
-
-                        if (!Object.Equals(newValue, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : oldValue)))
-                        {
-                            prop.SetValue(consist, newValue);
-                            changesOccurred = true;
-                        }
-                    }
-                    if (changesOccurred == true)
-                    {
-                        context.SaveChanges();
-                        return Ok(consist);
-                    }
-                    else
-                    {
-                        return Ok("Changes not made");
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
-                return BadRequest(QueryResult.BundleExceptions(exception));
-            }
-        }
 
         //[HttpGet, Route("aws/anyquery")]
         //public IHttpActionResult TestAnyQuery()
