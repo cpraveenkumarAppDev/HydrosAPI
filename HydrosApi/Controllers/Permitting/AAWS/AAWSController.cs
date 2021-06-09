@@ -210,8 +210,7 @@
                 }
                 catch (Exception exception)
                 {
-                    //log error
-                    return InternalServerError();
+                    return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
                 }
             }
         }
@@ -226,8 +225,7 @@
             }
             catch (Exception exception)
             {
-                //log error
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -338,8 +336,7 @@
             }
             catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(wellServingList);
         }
@@ -363,8 +360,7 @@
             }
             catch (Exception exception)
             {
-                //log exception
-                return InternalServerError(exception);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -378,8 +374,7 @@
             }
             catch (Exception exception)
             {
-                //log exception
-                return InternalServerError(exception);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(longTermStorageCreditsList);
         }
@@ -394,8 +389,7 @@
             }
             catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(LegalAvailabilityList);
         }
@@ -459,7 +453,7 @@
             }
             catch (Exception exception)
             {
-                return InternalServerError(exception);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -516,7 +510,7 @@
             }
             catch (Exception exception)
             {
-                return InternalServerError(exception);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -608,7 +602,7 @@
             }
             catch (Exception exception)
             {
-                return InternalServerError(exception);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -633,7 +627,7 @@
             }
             catch (Exception exception)
             {
-                return InternalServerError(exception);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -658,10 +652,9 @@
             {
                 activities = AwAppActivityTrk.GetList(x => x.WaterRightFacilityId == wrf && x.ActivityCode == activity).FirstOrDefault();
             }
-            catch
+            catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(activities);
         }
@@ -675,10 +668,9 @@
             {
                 activities = AwAppActivityTrk.GetList(x => x.WaterRightFacilityId == wrf && new List<string> { "ISSD", "IADQ", "IIAD" }.Contains(x.ActivityCode)).OrderByDescending(x => x.CreateDt).ToList();
             }
-            catch
+            catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(activities.FirstOrDefault());
         }
@@ -700,10 +692,9 @@
                 AwAppActivityTrk.Add(record);
                 return Ok("Created");
             }
-            catch
+            catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -726,10 +717,9 @@
                         Date = act.CreateDt
                     });
             }
-            catch
+            catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(activitiesDescribed);
         }
@@ -743,10 +733,9 @@
             {
                 codes = CdAwAppActivity.GetList(x => x.AlsoFileStatus == "Y");
             }
-            catch
+            catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
             return Ok(codes);
         }
@@ -758,14 +747,11 @@
                 var info = new Common_ViewModel();
                 return Ok(info);
             }
-            catch
+            catch (Exception exception)
             {
-                //log error
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
-
-
 
         /// <summary>
         /// aws/company/{company} Search for a company (COMPANY_LONG_NAME) field.
@@ -802,10 +788,9 @@
                 var custWrfViewModelList = customerList.Select(x => new Aws_customer_wrf_ViewModel(x));
                 return Ok(custWrfViewModelList);
             }
-            catch //(Exception exception)
+            catch (Exception exception)
             {
-                //log error
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -1066,10 +1051,7 @@
             }
             catch (Exception exception)
             {
-
                 return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
-                //log error
-                //return InternalServerError();
             }
         }
 
@@ -1210,7 +1192,6 @@
             }
         }
 
-
         [HttpPost, Route("aws/customer/wrf")]
         [Authorize]
         public IHttpActionResult CreateWrfcust([FromBody] List<WaterRightFacilityCustomer> wrfcustList)
@@ -1243,7 +1224,6 @@
                     context.SaveChanges();
                     return Ok(wrfcustList);
                 }
-
             }
 
             catch
@@ -1269,8 +1249,8 @@
             {
                 return BadRequest("Hydrology updates error");
             }
-            var userName= new GetBestUsername(User.Identity.Name).UserName;
-            var hydro =  wHydro.Hydrology ?? null;
+            var userName = new GetBestUsername(User.Identity.Name).UserName;
+            var hydro = wHydro.Hydrology ?? null;
             var wellServing = wHydro.WellServing ?? null;
 
             if (hydro != null)
@@ -1278,17 +1258,12 @@
                 hydro.UserName = userName;
                 hydroVm.Hydrology = hydro;
                 VAwsHydro.Update(hydro);
-                              
-
             }
 
-            if(wellServing != null)
+            if (wellServing != null)
             {
                 hydroVm.WellServing = wellServing;
-
             }
-
-
             return Ok(hydroVm);
         }
 
@@ -1305,7 +1280,7 @@
         [HttpGet, Route("aws/hydrobyid/{id}")]
         public IHttpActionResult GetHydroByWrfId(int id)
         {
-            var hydro= new AwsHydrologyViewModel(id);
+            var hydro = new AwsHydrologyViewModel(id);
             return Ok(hydro);
         }
 
@@ -1315,6 +1290,30 @@
         {
             var phys = new AwsPhysicalAvailabilityViewModel(id);
             return Ok(phys);
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
+        [HttpPost, Route("aws/savephysavail/{id}")]
+        public IHttpActionResult SavePhysicalAvailability(int? id, [FromBody] AwsPhysicalAvailabilityViewModel physical)
+        {
+            try
+            {
+                var userName = new GetBestUsername(User.Identity.Name).UserName;
+
+                if (id == null)
+                {
+                    return BadRequest("Invalid WaterRightFacilityId");
+                }
+
+                var phys = new AwsPhysicalAvailabilityViewModel((id ?? -1), physical, userName);
+
+                return Ok(phys);
+            }
+
+            catch (Exception exception)
+            {
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+            }
         }
 
         [HttpGet, Route("aws/getwrfid/{pcc}")]
@@ -1377,6 +1376,60 @@
             }
         }
 
+
+        /* [HttpGet, Route("aws/getConsistManage/{id}")]
+         public IHttpActionResult GetConsistManage(int id)
+         {
+             try
+             {
+                 return Ok(VAwsActiveManagementArea.GetCAGRDInfo(id));
+             }
+             catch (Exception exception)
+             {
+                 //log exception
+                 return InternalServerError();
+             }
+         }*/
+
+
+        [HttpPut, Route("aws/ConsistManage/{id}")]
+        public IHttpActionResult UpdateConsistManage(VAwsActiveManagementArea consistManage, int id)
+        {
+            try
+            {
+                var props = typeof(VAwsActiveManagementArea).GetProperties().ToList();
+                using (var context = new OracleContext())
+                {
+                    var consist = VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id);
+                    var changesOccurred = false;
+
+                    foreach (var prop in props)
+                    {
+                        var newValue = prop.GetValue(consistManage);
+                        var oldValue = prop.GetValue(consist);
+
+                        if (!Object.Equals(newValue, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : oldValue)))
+                        {
+                            prop.SetValue(consist, newValue);
+                            changesOccurred = true;
+                        }
+                    }
+                    if (changesOccurred == true)
+                    {
+                        context.SaveChanges();
+                        return Ok(consist);
+                    }
+                    else
+                    {
+                        return Ok("Changes not made");
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(QueryResult.BundleExceptions(exception));
+            }
+        }
 
         //[HttpGet, Route("aws/anyquery")]
         //public IHttpActionResult TestAnyQuery()
