@@ -308,7 +308,9 @@
                             prop.SetValue(consist, newValue);
                             changesOccurred = true;
                         }
+
                     }
+                   
                     if (changesOccurred == true)
                     {
                         context.SaveChanges();
