@@ -348,6 +348,7 @@
     <Compile Include="Models\Permitting\AAWS\AwFile.cs" />
     <Compile Include="Models\Permitting\AAWS\AwWellServing.cs" />
     <Compile Include="Models\Permitting\AAWS\AwWrfWrfDemand.cs" />
+    <Compile Include="Models\Permitting\AAWS\AwAreaOfImpact100.cs" />
     <Compile Include="Models\Permitting\AAWS\CdAwAppActivity.cs" />
     <Compile Include="Models\Permitting\AAWS\CdAwCity.cs" />
     <Compile Include="Models\Permitting\AAWS\CdAwCommentType.cs" />

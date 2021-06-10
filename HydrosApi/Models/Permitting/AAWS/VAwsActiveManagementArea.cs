@@ -155,7 +155,7 @@ namespace HydrosApi.Models.Permitting.AAWS
         [Column("POORQUALITY_EXEMPT_AR_YR")]
         public int? PoorQualityExemptArYr { get; set; }
         [Column("GROUNDWATER_AF_YR")]
-        public decimal? GroundWaterAfYr { get; set; }//EFFLUENT_AF_YR
+        public decimal? GroundwaterAfYr { get; set; }//EFFLUENT_AF_YR
 
         [Column("EFFLUENT_AF_YR")]
         public decimal? EffluentAfYr { get; set; }//EFFLUENT_AF_YR
