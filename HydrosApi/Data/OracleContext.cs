@@ -69,6 +69,8 @@ namespace HydrosApi.Data
         //public virtual DbSet<QueryResult> QueryResult { get; set; }
 
         public virtual DbSet<VAwsActiveManagementArea> V_AWS_AMA { get; set; }
+
+        public virtual DbSet<AwAreaOfImpact100> AwAreaOfImpact100 { get; set; }
         public object AwsComments { get; internal set; }
 
 

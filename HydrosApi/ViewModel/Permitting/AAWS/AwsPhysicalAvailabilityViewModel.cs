@@ -12,7 +12,9 @@
         /// <summary>
         /// Basis of Physical Availability (on the hydros physical availability tag)
         /// </summary>
-        public List<VAwsWrfWrfDemand> Basis { get; set; }        
+        public List<VAwsWrfWrfDemand> Basis { get; set; }
+
+        public AwAreaOfImpact100 WtrImpact { get; set; }
         public VAwsActiveManagementArea AmaDemand { get; set; }
         public VAwsHydro Hydrology { get; set; }         
         private Dictionary<string,object> ActionStatus { get; set; }
@@ -38,10 +40,12 @@
             var basis = VAwsWrfWrfDemand.GetList(d => d.WaterRightFacilityId == id).Distinct().OrderByDescending(x => x.WaterDemand).ToList();
             var hydro = VAwsHydro.Get(h => h.WaterRightFacilityId == id);               
             var amaDemand=VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id);
+            var wtrImpact = AwAreaOfImpact100.Get(x => x.WaterRightFacilityId == id);
 
             Basis = basis;
             Hydrology = hydro;            
             AmaDemand = amaDemand;
+            WtrImpact = wtrImpact;
         }                
 
         public  AwsPhysicalAvailabilityViewModel(int id, AwsPhysicalAvailabilityViewModel awsPhysicalAvailabilityViewModel, string user)
@@ -50,7 +54,7 @@
 
             var hydro = new VAwsHydro();
             var amaDemand = new VAwsActiveManagementArea();
-
+            var impact = new AwAreaOfImpact100();
 
             userName = user;
             currentDate = DateTime.Now;
@@ -98,27 +102,58 @@
                     hydro = VAwsHydro.Get(h => h.WaterRightFacilityId == id);
                 }
 
-                if(data.AmaDemand != null)
+                if (data.AmaDemand != null)
                 {
-                    if(data.AmaDemand.WaterRightFacilityId==null)
+                    if (data.AmaDemand.WaterRightFacilityId == null)
                     {
                         data.AmaDemand.WaterRightFacilityId = id;
                         //var pcc=QueryResult.RgrRptGet(id);
-                       
                     }
-                    amaDemand = VAwsActiveManagementArea.Update(data.AmaDemand);                   
+                    amaDemand = VAwsActiveManagementArea.Update(data.AmaDemand);
                 }
                 else
                 {
                     amaDemand = VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id);
+                }
+
+                impact=AwAreaOfImpact100.Get(a => a.WaterRightFacilityId == id);
+
+                if (data.WtrImpact != null)
+                {
+                    var wtrImpact = data.WtrImpact;
+                    wtrImpact.WaterRightFacilityId = id;
+
+                    if (!(wtrImpact.GroundwaterAreaOfImpact == null && wtrImpact.SurfaceWaterAreaOfImpact == null && wtrImpact.EffluentAreaOfImpact == null && wtrImpact.CAPAreaOfImpact == null && wtrImpact.ColoradoRiverAreaOfImpact == null))
+                    {                       
+
+                        if(impact != null)
+                        {
+                            wtrImpact.UpdateBy = userName;
+                            wtrImpact.UpdateDt = currentDate;                           
+                            impact = AwAreaOfImpact100.Update(wtrImpact);
+                        }
+
+                       else
+                        {
+
+                            wtrImpact.CreateBy = userName;
+                            wtrImpact.CreateDt = currentDate;
+                            wtrImpact.WaterRightFacilityId = id;                           
+                            AwAreaOfImpact100.Add(wtrImpact);
+                            impact = wtrImpact;
+                            impact = wtrImpact;
+                        }
+
+                    }
                 }
             }
 
             var basis = VAwsWrfWrfDemand.GetList(d => d.WaterRightFacilityId == id).Distinct().OrderByDescending(x => x.WaterDemand).ToList();
             Basis = basis;
             Hydrology = hydro;
-            AmaDemand = amaDemand;         
-        }
+            AmaDemand = amaDemand;
+            WtrImpact = impact;           
+        }        
 
         private void BasisAction(List<VAwsWrfWrfDemand> deleteBasis, int id)
         {
