@@ -229,20 +229,100 @@
             }
         }
 
-        [HttpGet, Route("aws/getPlaces/{cad}")]
-        public IHttpActionResult GetAwCity(string cad)
+        //[HttpGet, Route("aws/getPlaces/{cad}")]
+        //public IHttpActionResult GetAwCity(string cad)
+        //{
+        //    try
+        //    {
+        //        var qryString = "select * from cad.cadastral t, LIB.COUNTY c " +
+        //                        "where t.cadastral_hook in ('A17022013000', 'C01001034000', 'A02002001AB0') and sde.st_intersects(t.shape, c.shape) = 1";
+
+        //        var cadastralData = QueryResult.RunAnyQuery(qryString);
+        //        return Ok(cadastralData);
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        //log error
+        //        return InternalServerError();
+        //    }
+        //}
+        [HttpGet, Route("aws/getConsistManage/{id}")]
+        public IHttpActionResult GetConsistManage(int id)
         {
             try
             {
-                var qryString = "select * from cad.cadastral t, LIB.COUNTY c " +
-                                "where t.cadastral_hook in ('A17022013000', 'C01001034000', 'A02002001AB0') and sde.st_intersects(t.shape, c.shape) = 1";
-
-                var cadastralData = QueryResult.RunAnyQuery(qryString);
-                return Ok(cadastralData);
+                return Ok(VAwsActiveManagementArea.GetCAGRDInfo(id));
             }
             catch (Exception exception)
             {
-                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+                //log exception
+                return InternalServerError();
+            }
+        }
+
+        //[HttpPut, Route("aws/ConsistManage/{id}")]
+        //public IHttpActionResult UpdateConsistManage(VAwsActiveManagementArea consistManage, int id)
+        //{
+        //    try
+        //    {
+        //        using (var context = new OracleContext())
+        //        {
+        //            var consist = VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id);
+        //            var props = consist.GetType().GetProperties().ToList();
+        //            foreach (var prop in props)
+        //            {
+        //                var value = prop.GetValue(consistManage);
+        //                if (value != null)
+        //                {
+        //                    prop.SetValue(consist, value);
+        //                }
+        //            }
+        //             context.SaveChanges();
+        //            return Ok(consist);
+        //        }
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        //log exception
+        //        return InternalServerError();
+        //    }
+        //}
+        [HttpPut, Route("aws/ConsistManage/{id}")]
+        public IHttpActionResult UpdateConsistManage(VAwsActiveManagementArea consistManage, int id)
+        {
+            try
+            {
+                var props = typeof(VAwsActiveManagementArea).GetProperties().ToList();
+                using (var context = new OracleContext())
+                {
+                    var consist = VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id, context);
+                    var changesOccurred = false;
+
+                    foreach (var prop in props)
+                    {
+                        var newValue = prop.GetValue(consistManage);
+                        var oldValue = prop.GetValue(consist);
+
+                        if (newValue != null && !Object.Equals(newValue, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : oldValue)))
+                        {
+                            prop.SetValue(consist, newValue);
+                            changesOccurred = true;
+                        }
+                    }
+                    if (changesOccurred == true)
+                    {
+                        context.SaveChanges();
+                        return Ok(consist);
+                    }
+                    else
+                    {
+                        return Ok("Changes not made");
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(QueryResult.BundleExceptions(exception));
             }
         }
 
@@ -550,18 +630,6 @@
                 return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
-
-        /* [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
-         [HttpPut, Route("aws/updateapp")]
-         public IHttpActionResult UpdateApp([FromBody] AAWSProgramInfoViewModel paramValues) //New file
-         {
-
-             var user = User.Identity.Name;
-             var savedApplication = AAWSProgramInfoViewModel.OnUpdate(paramValues, user.Replace("AZWATER0\\",""));
-
-
-             return Ok(savedApplication);
-         }*/
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpGet, Route("aws/activity/{wrf}/{activity}")]
@@ -1311,45 +1379,6 @@
              }
          }*/
 
-
-        [HttpPut, Route("aws/ConsistManage/{id}")]
-        public IHttpActionResult UpdateConsistManage(VAwsActiveManagementArea consistManage, int id)
-        {
-            try
-            {
-                var props = typeof(VAwsActiveManagementArea).GetProperties().ToList();
-                using (var context = new OracleContext())
-                {
-                    var consist = VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id);
-                    var changesOccurred = false;
-
-                    foreach (var prop in props)
-                    {
-                        var newValue = prop.GetValue(consistManage);
-                        var oldValue = prop.GetValue(consist);
-
-                        if (!Object.Equals(newValue, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : oldValue)))
-                        {
-                            prop.SetValue(consist, newValue);
-                            changesOccurred = true;
-                        }
-                    }
-                    if (changesOccurred == true)
-                    {
-                        context.SaveChanges();
-                        return Ok(consist);
-                    }
-                    else
-                    {
-                        return Ok("Changes not made");
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
-                return BadRequest(QueryResult.BundleExceptions(exception));
-            }
-        }
 
         //[HttpGet, Route("aws/anyquery")]
         //public IHttpActionResult TestAnyQuery()

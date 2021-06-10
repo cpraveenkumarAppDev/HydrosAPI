@@ -116,6 +116,10 @@
 
         [Column("DEMAND_CALCULATOR")]
         public string DemandCalculator { get; set; }//Demand_Calculator
+        [Column("MEM_CAGRD")]
+        public string MemberCAGRD { get; set; }//Demand_Calculator    
+        [Column("DATE_CAGRD")]
+        public DateTime? DateCAGRD { get; set; }//Demand_Calculator
 
         [Column("WATER_QUALITY")]
         public string WaterQuality { get; set; }//Water_Quality
