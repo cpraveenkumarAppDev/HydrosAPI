@@ -409,6 +409,11 @@
                 {
                     foreach (var legalAvail in la)
                     {
+                        //check for a valid PCC
+                        //if (legalAvail.Section == "SW")
+                        if (new[] { "SW", "G", "ST", "R", "L" }.Contains(legalAvail.Section))
+                            if (legalAvail.ProviderReceiverId == null)
+                                throw new InvalidOperationException("Legal Availability("+ legalAvail.Section + ") Invalid PCC number");
                         existing = context.AW_LEGAL_AVAILABILITY.Where(x => x.Id == legalAvail.Id).FirstOrDefault();
                         if (existing == null)//add new record
                         {
@@ -439,7 +444,7 @@
                             {
                                 var value = prop.GetValue(legalAvail);
                                 if ((value != null) && (prop.Name != "Id") && (prop.Name != "WaterRightFacilityId")
-                                    && (prop.Name != "PCC") && (prop.Name != "UpdateBy") && (prop.Name != "UpdateDt")
+                                    && (prop.Name != "UpdateBy") && (prop.Name != "UpdateDt")// && (prop.Name != "PCC") 
                                     && (prop.Name != "CreateBy") && (prop.Name != "CreateDt") && (prop.Name != "Section"))
                                 {
                                     prop.SetValue(existing, value);
