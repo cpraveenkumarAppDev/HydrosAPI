@@ -151,7 +151,7 @@ namespace HydrosApi
             using (var context = new OracleContext())
             {
                 hydrosManager = context.HYDROS_MANAGER.Where(x => x.Id == id).FirstOrDefault();
-                if (hydrosManager != null && hydrosManager.Status !=man.Status)
+                if (hydrosManager != null && hydrosManager.Status != man.Status)
                 {
                     hydrosManager.Status = man.Status;
                     hydrosManager.UserName = user;
@@ -365,6 +365,55 @@ namespace HydrosApi
                 return InternalServerError();
             }
         }
+
+
+        [HttpGet, Route("adwr/getplaces/{cads}")]
+        public IHttpActionResult GetPlaces(string cads)
+        {
+          
+            try
+            {
+                using (var context = new SDEContext())
+                {
+                    var qryString = "select OBJECTID, CITY_NAME, COUNTY_NAME,BASIN_NAME, SUB_NAME from" +
+                                      " (" +
+                                      " select distinct cnty.OBJECTID, null as CITY_NAME, NAME as COUNTY_NAME,null as BASIN_NAME, null as SUB_NAME from cad.CADASTRAL c, lib.county cnty" +
+                                      " where c.cadastral_hook in " + cads + " and sde.st_intersects(c.shape, cnty.shape) = 1" +
+                                      " union" +
+                                      " select distinct cnty.OBJECTID, null as CITY_NAME, NAME as COUNTY_NAME,null as BASIN_NAME, null as SUB_NAME from lib.PLSTOWNSHIP t, lib.county cnty" +
+                                      " where t.township_hook in " + cads + " and sde.st_intersects(t.shape, cnty.shape) = 1" +
+                                      " union" +
+                                      " select distinct city.OBJECTID, NAME as CITY_NAME, null as COUNTY_NAME,null as BASIN_NAME, null as SUB_NAME from cad.CADASTRAL c, lib.cityincorp city" +
+                                      " where c.cadastral_hook in " + cads + " and sde.st_intersects(c.shape, city.shape) = 1" +
+                                      " union" +
+                                      " select distinct city.OBJECTID, NAME as CITY_NAME, null as COUNTY_NAME,null as BASIN_NAME, null as SUB_NAME from lib.PLSTOWNSHIP t, lib.cityincorp city" +
+                                      " where t.township_hook in " + cads + " and sde.st_intersects(t.shape, city.shape) = 1" +
+                                      " union" +
+                                      " select distinct basin.OBJECTID, null as CITY_NAME, null as COUNTY_NAME, basin.BASIN_NAME as BASIN_NAME, null as SUB_NAME from cad.CADASTRAL c, lib.groundwaterbasinadwr basin"+
+                                      " where c.cadastral_hook in " + cads + " and sde.st_intersects(c.shape, basin.shape) = 1" +
+                                      " union" +
+                                      " select distinct basin.OBJECTID, null as CITY_NAME, null as COUNTY_NAME, basin.BASIN_NAME as BASIN_NAME, null as SUB_NAME from lib.PLSTOWNSHIP t, lib.groundwaterbasinadwr basin" +
+                                      " where t.township_hook in " + cads + " and sde.st_intersects(t.shape, basin.shape) = 1" +
+                                      " union" +
+                                      " select distinct sbasin.OBJECTID, null as CITY_NAME, null as COUNTY_NAME,null as BASIN_NAME, SUBBASIN_NAME as SUB_NAME from cad.CADASTRAL c, lib.groundwatersubbasinadwr sbasin" +
+                                      " where c.cadastral_hook in " + cads + " and sde.st_intersects(c.shape, sbasin.shape) = 1" +
+                                      " union" +
+                                      " select distinct sbasin.OBJECTID, null as CITY_NAME, null as COUNTY_NAME,null as BASIN_NAME, SUBBASIN_NAME as SUB_NAME from lib.PLSTOWNSHIP t, lib.groundwatersubbasinadwr sbasin" +
+                                      " where t.township_hook in " + cads + " and sde.st_intersects(t.shape, sbasin.shape) = 1" +
+                                      " )";
+   
+                    var data = QueryResult.RunAnyQuery(qryString, context);
+                    return Ok(data);
+                }
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError(exception);
+            }
+        }
+
+
     }
 
 
