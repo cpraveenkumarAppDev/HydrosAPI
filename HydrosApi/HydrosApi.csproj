@@ -380,6 +380,7 @@
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\PCC.cs" />
     <Compile Include="ViewModel\ADWR\GeoBoundaryViewModel.cs" />
+    <Compile Include="ViewModel\Permitting\AAWS\AwsConsistencyViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AwsHydrologyViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AwsPhysicalAvailabilityViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWSNewApp.cs" />
