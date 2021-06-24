@@ -49,6 +49,7 @@
         [HttpGet]
         public IHttpActionResult GetGeneralInfo()
         {
+
             return Ok(VAwsGeneralInfo.GetAll());
         }
 
@@ -56,6 +57,7 @@
         [HttpGet]
         public IHttpActionResult GetGeneralInfo(string name = null)
         {
+
             return Ok(VAwsGeneralInfo.Get(p => p.FileReviewer == name));
         }
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
@@ -135,12 +137,20 @@
             //this will format any pcc as long as the pattern is two numbers, six numbers, four numbers in it
             //so it can be all numbers or have characters as long as the character are in the correct locations
             //I'm sorry to change it
+            try
+            {
 
-            Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
-            var pcc = regex.Replace(id, "$1-$2.$3");
-            // var pcc = regex.Replace("~", ".");
-            var found = VAwsGeneralInfo.GetGeneralInformation(pcc);
-            return Ok(found);
+                Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
+                var pcc = regex.Replace(id, "$1-$2.$3");
+                // var pcc = regex.Replace("~", ".");
+                var found = VAwsGeneralInfo.GetGeneralInformation(pcc);
+                return Ok(found);
+            }
+            catch (Exception exception)
+            {
+
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+            }
         }
         [HttpGet, Route("aws/getCommentTypes")]
         public IHttpActionResult GetCommentTypes()
@@ -229,29 +239,12 @@
             }
         }
 
-        //[HttpGet, Route("aws/getPlaces/{cad}")]
-        //public IHttpActionResult GetAwCity(string cad)
-        //{
-        //    try
-        //    {
-        //        var qryString = "select * from cad.cadastral t, LIB.COUNTY c " +
-        //                        "where t.cadastral_hook in ('A17022013000', 'C01001034000', 'A02002001AB0') and sde.st_intersects(t.shape, c.shape) = 1";
-
-        //        var cadastralData = QueryResult.RunAnyQuery(qryString);
-        //        return Ok(cadastralData);
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        //log error
-        //        return InternalServerError();
-        //    }
-        //}
         [HttpGet, Route("aws/getConsistManage/{id}")]
         public IHttpActionResult GetConsistManage(int id)
         {
             try
             {
-                return Ok(VAwsActiveManagementArea.GetCAGRDInfo(id));
+                return Ok(new AwsConsistencyViewModel(id));
             }
             catch (Exception exception)
             {
@@ -260,65 +253,14 @@
             }
         }
 
-        //[HttpPut, Route("aws/ConsistManage/{id}")]
-        //public IHttpActionResult UpdateConsistManage(VAwsActiveManagementArea consistManage, int id)
-        //{
-        //    try
-        //    {
-        //        using (var context = new OracleContext())
-        //        {
-        //            var consist = VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id);
-        //            var props = consist.GetType().GetProperties().ToList();
-        //            foreach (var prop in props)
-        //            {
-        //                var value = prop.GetValue(consistManage);
-        //                if (value != null)
-        //                {
-        //                    prop.SetValue(consist, value);
-        //                }
-        //            }
-        //             context.SaveChanges();
-        //            return Ok(consist);
-        //        }
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        //log exception
-        //        return InternalServerError();
-        //    }
-        //}
         [HttpPut, Route("aws/ConsistManage/{id}")]
-        public IHttpActionResult UpdateConsistManage(VAwsActiveManagementArea consistManage, int id)
+        public IHttpActionResult UpdateConsistManage(int id, AwsConsistencyViewModel consistManage)
         {
             try
             {
-                var props = typeof(VAwsActiveManagementArea).GetProperties().ToList();
-                using (var context = new OracleContext())
-                {
-                    var consist = VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id, context);
-                    var changesOccurred = false;
 
-                    foreach (var prop in props)
-                    {
-                        var newValue = prop.GetValue(consistManage);
-                        var oldValue = prop.GetValue(consist);
-
-                        if (newValue != null && !Object.Equals(newValue, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : oldValue)))
-                        {
-                            prop.SetValue(consist, newValue);
-                            changesOccurred = true;
-                        }
-                    }
-                    if (changesOccurred == true)
-                    {
-                        context.SaveChanges();
-                        return Ok(consist);
-                    }
-                    else
-                    {
-                        return Ok("Changes not made");
-                    }
-                }
+                //throw new InvalidOperationException("Logfile cannot be read-only");
+                return Ok(new AwsConsistencyViewModel(id, consistManage));
             }
             catch (Exception exception)
             {
@@ -407,6 +349,11 @@
                 {
                     foreach (var legalAvail in la)
                     {
+                        //check for a valid PCC
+                        //if (legalAvail.Section == "SW")
+                        if (new[] { "SW", "G", "ST", "R", "L" }.Contains(legalAvail.Section))
+                            if (legalAvail.ProviderReceiverId == null)
+                                throw new InvalidOperationException("Legal Availability("+ legalAvail.Section + ") Invalid PCC number");
                         existing = context.AW_LEGAL_AVAILABILITY.Where(x => x.Id == legalAvail.Id).FirstOrDefault();
                         if (existing == null)//add new record
                         {
@@ -437,7 +384,7 @@
                             {
                                 var value = prop.GetValue(legalAvail);
                                 if ((value != null) && (prop.Name != "Id") && (prop.Name != "WaterRightFacilityId")
-                                    && (prop.Name != "PCC") && (prop.Name != "UpdateBy") && (prop.Name != "UpdateDt")
+                                    && (prop.Name != "UpdateBy") && (prop.Name != "UpdateDt")// && (prop.Name != "PCC") 
                                     && (prop.Name != "CreateBy") && (prop.Name != "CreateDt") && (prop.Name != "Section"))
                                 {
                                     prop.SetValue(existing, value);

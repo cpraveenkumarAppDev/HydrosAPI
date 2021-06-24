@@ -9,7 +9,7 @@ namespace HydrosApi.Models.Permitting.AAWS
 
 
     [Table("AWS.V_AWS_AMA")]
-    public class VAwsActiveManagementArea: Repository<VAwsActiveManagementArea>
+    public class VAwsActiveManagementArea : Repository<VAwsActiveManagementArea>
     {
         [Key, Column("WRFID", Order = 1)]
         public int? WaterRightFacilityId { get; set; }//WRFID
@@ -172,23 +172,6 @@ namespace HydrosApi.Models.Permitting.AAWS
 
         [Column("AMA_COMPLIANCE_STATUS_DATE")]
         public DateTime? AmaComplianceStatusDate { get; set; }
-        [NotMapped]
-        public string MemberCAGRD { get; set; }//Demand_Calculator    
-
-        [NotMapped]
-        public DateTime? DateCAGRD { get; set; }//Demand_Calculator
-
-        public static VAwsActiveManagementArea GetCAGRDInfo(int id)
-        {
-            var generalInfo = VAwsGeneralInfo.Get(g => g.WaterRightFacilityId == id);
-            var AwsAMA = VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id);
-            if (generalInfo != null)
-            {
-                AwsAMA.MemberCAGRD = generalInfo.MemberCAGRD;
-                AwsAMA.DateCAGRD = generalInfo.DateCAGRD;
-            }
-
-            return AwsAMA;
-        }
+       
     }
 }

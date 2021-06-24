@@ -6,6 +6,7 @@
     using Models.Permitting.AAWS;
     using Models.ADWR;
     using System;
+    using HydrosApi.Data;
 
     public class AwsConsistencyViewModel
     {
@@ -19,7 +20,7 @@
         public AwsConsistencyViewModel(int id)
         {
             //AmaDemand = context.V_AWS_AMA.Where(x => x.WaterRightFacilityId == id).FirstOrDefault();
-             
+
             var amaConsistent = VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id);
             var amaGeneralInfo = VAwsGeneralInfo.Get(x => x.WaterRightFacilityId == id);
 
@@ -32,28 +33,56 @@
 
             AmaConsistent = amaConsistent;
             AmaGeneralInfo = d;
-            
+
         }
 
         public AwsConsistencyViewModel(int id, AwsConsistencyViewModel data)
         {
-            var amaConsistent=new VAwsActiveManagementArea();
 
             if (data.AmaConsistent != null)
-            { 
-                amaConsistent = VAwsActiveManagementArea.Update(data.AmaConsistent);
-                AmaConsistent = amaConsistent;
+            {
+                using (var context = new OracleContext())
+                {
+                    var consist = VAwsActiveManagementArea.Get(x => x.WaterRightFacilityId == id, context);
+                    var props = typeof(VAwsActiveManagementArea).GetProperties().ToList();
+
+                    foreach (var prop in props)
+                    {
+                        var newValue = prop.GetValue(data.AmaConsistent);
+                        var oldValue = prop.GetValue(consist);
+
+                        if (newValue != null && !Object.Equals(newValue, (prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : oldValue)))
+                        {
+                            prop.SetValue(consist, newValue);
+
+                        }
+
+                    }
+                    context.SaveChanges();
+                }
+                AmaConsistent = data.AmaConsistent;
             }
 
-            if(data.AmaGeneralInfo != null)
+            if (data.AmaGeneralInfo != null)
             {
-                var gen = VAwsGeneralInfo.Get(g => g.WaterRightFacilityId == id);
-                gen.MemberCAGRD = data.AmaGeneralInfo["MemberCAGRD"].ToString();
-                gen.DateCAGRD = DateTime.Parse(data.AmaGeneralInfo["DateCAGRD"].ToString());
+                VAwsGeneralInfo genInfo;
+                using (var context = new OracleContext())
+                {
+                    genInfo = context.V_AWS_GENERAL_INFO.Where(x => x.WaterRightFacilityId == id).FirstOrDefault();
+                    if (data.AmaGeneralInfo.ContainsKey("MemberCAGRD"))
+                    {
+                        genInfo.MemberCAGRD = data.AmaGeneralInfo["MemberCAGRD"].ToString();
+                    }
+                    if (data.AmaGeneralInfo.ContainsKey("DateCAGRD"))
+                    {
+                        genInfo.DateCAGRD = DateTime.Parse(data.AmaGeneralInfo["DateCAGRD"].ToString());
+                    }
+                    context.SaveChanges();
+                }
+                //    var gen = VAwsGeneralInfo.Get(g => g.WaterRightFacilityId == id);
 
-                VAwsGeneralInfo.Update(gen);
+                //VAwsGeneralInfo.Update(gen);
                 AmaGeneralInfo = data.AmaGeneralInfo;
-
 
             }
 

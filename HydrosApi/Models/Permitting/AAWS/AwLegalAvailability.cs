@@ -87,11 +87,41 @@ namespace HydrosApi.Models.Permitting.AAWS
                 if (ProviderReceiverId == null)
                     return null;
                 else
+                    if (Section == "SW")
+                {
+                    using (var ctx = new OracleContext())
+                    using (var cmd = ctx.Database.Connection.CreateCommand())
+                    {
+                        ctx.Database.Connection.Open();
+                        cmd.CommandText = string.Format("select t.art_program||'-'||t.art_appli_no||'.'||t.art_convy_no pcc " +
+                                                        "  from ADWR.SW_APPL_REGRY t where t.art_idno = {0}", ProviderReceiverId);
+                        var pcc = cmd.ExecuteScalar();
+                        if (pcc != null)
+                            return pcc.ToString();
+                        else
+                            return null;//send error
+                    }
+                }
+                else
                     return WaterRightFacility.Get(f => f.Id == ProviderReceiverId).PCC;
             }
             set
             {
-                this.ProviderReceiverId = QueryResult.RgrRptGet(value);
+                if (Section == "SW")
+                {
+                    using (var ctx = new OracleContext())
+                    using (var cmd = ctx.Database.Connection.CreateCommand())
+                    {
+                        ctx.Database.Connection.Open();
+                        cmd.CommandText = string.Format("select t.art_idno id from ADWR.SW_APPL_REGRY t " +
+                                                        " where t.art_program || '-' || t.art_appli_no || '.' || t.art_convy_no = '{0}'", value);
+                        var id = cmd.ExecuteScalar();
+                        if (id != null)
+                            this.ProviderReceiverId = Convert.ToInt32(id);
+                    }
+                }
+                else
+                    this.ProviderReceiverId = QueryResult.RgrRptGet(value);
             }
         }
 
