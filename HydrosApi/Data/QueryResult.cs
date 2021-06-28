@@ -128,27 +128,34 @@
 
         public static int? RgrRptGet(string pcc)
         {
-            if (pcc == null)
-                return null;
-
-            Regex regex = new Regex(@"(\d{2})\D?(\d{6})\D?(\d{4})");
-            pcc = regex.Replace(pcc, "$1-$2.$3");
-
-            if (pcc.Length != 14)
-                return null;            
-          
-
-            using (var ctx = new OracleContext())
-            using (var cmd = ctx.Database.Connection.CreateCommand())
+            try
             {
-                ctx.Database.Connection.Open();
-                cmd.CommandText = string.Format("select rgr_rpt.get_wrf_id('{0}') as WaterRightFacilityId from dual", pcc);
-                var WaterRightFacilityId = cmd.ExecuteScalar();
-
-                if (WaterRightFacilityId == null)
+                if (pcc == null)
                     return null;
 
-                return int.Parse(WaterRightFacilityId.ToString());
+                Regex regex = new Regex(@"(\d{2})\D?(\d{6})\D?(\d{4})");
+                pcc = regex.Replace(pcc, "$1-$2.$3");
+
+                if (pcc.Length != 14)
+                    return null;
+
+
+                using (var ctx = new OracleContext())
+                using (var cmd = ctx.Database.Connection.CreateCommand())
+                {
+                    ctx.Database.Connection.Open();
+                    cmd.CommandText = string.Format("select rgr_rpt.get_wrf_id('{0}') as WaterRightFacilityId from dual", pcc);
+                    var WaterRightFacilityId = cmd.ExecuteScalar();
+
+                    if (WaterRightFacilityId == null)
+                        return null;
+
+                    return int.Parse(WaterRightFacilityId.ToString());
+                }
+            }
+            catch(Exception exception)
+            {
+                return null;
             }
         }
 
