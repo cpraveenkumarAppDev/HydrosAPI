@@ -17,6 +17,7 @@
     using System.Net.Http;
     using System.Net;
     using HydrosApi.Services;
+    using HydrosApi.ViewModel.ADWR;
 
     public class AAWSController : ApiController
     {
@@ -202,6 +203,7 @@
             {
                 try
                 {
+           
                     aw_file = context.AW_FILE.Where(x => x.WaterRightFacilityId == id).FirstOrDefault();
                     if (aw_file != null)
                     {
@@ -216,6 +218,10 @@
                         }
                         await context.SaveChangesAsync();
                     }
+                    else
+                    {
+                        throw new InvalidOperationException("No Aw File found for WaterRightFacilityId");
+                    }
                     return Ok(aw_file);
                 }
                 catch (Exception exception)
@@ -224,7 +230,7 @@
                 }
             }
         }
-
+       
         [HttpGet, Route("aws/getAwCity")]
         public IHttpActionResult GetAwCity()
         {
@@ -248,8 +254,7 @@
             }
             catch (Exception exception)
             {
-                //log exception
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 

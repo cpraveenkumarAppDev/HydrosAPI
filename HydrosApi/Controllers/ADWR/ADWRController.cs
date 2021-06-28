@@ -16,7 +16,16 @@ namespace HydrosApi
 
     public class ADWRController : ApiController
     {
+        private static string BundleExceptions(Exception exception)
+        {
+            string fullException = exception.Message;
+            if (exception.InnerException != null)
+            {
+                fullException += BundleExceptions(exception.InnerException);
+            }
 
+            return fullException;
+        }
         [HttpGet]
         [Route("adwr/windows")]
         [System.Web.Http.Authorize]
@@ -139,8 +148,8 @@ namespace HydrosApi
             }
             catch (Exception exception)
             {
-                //log error
-                return InternalServerError(exception);
+
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
@@ -281,27 +290,19 @@ namespace HydrosApi
                 return InternalServerError();
             }
         }
-
-        [HttpGet, Route("adwr/locationByWrf/{wrf}")]
-        public IHttpActionResult LocationByWrf(int wrf)
+        [HttpGet, Route("adwr/getLocation/{id}")]
+        public IHttpActionResult GetLocation(int id)
         {
             try
             {
-                var locationList = Location.GetList(x => x.WaterRightFacilityId == wrf);
-                ////List<Aws_customer_wrf_ViewModel> customerList = new List<Aws_customer_wrf_ViewModel>();
-                //foreach (var custId in custIdList)
-                //{
-                //    customerList.Add(new Aws_customer_wrf_ViewModel(custId, wrf, custType));
-                //}
-                return Ok(locationList);
+                return Ok(new LocationViewModel(id));
             }
-            catch
+            catch (Exception exception)
             {
-                //log error
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
-
+       
         [HttpPost, Route("adwr/addCadastralByWrf/{wrf}")]
         public IHttpActionResult AddCadastralByWrf([FromBody] List<Location> LocationList, int wrf)
         {
@@ -334,9 +335,9 @@ namespace HydrosApi
                 }
 
             }
-            catch
+            catch (Exception exception)
             {
-                return InternalServerError();
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
         [HttpPost, Route("adwr/deleteCadastralByWrf/{wrf}")]
@@ -417,8 +418,8 @@ namespace HydrosApi
             }
             catch (Exception exception)
             {
-                //log exception
-                return InternalServerError(exception);
+
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
 
