@@ -118,6 +118,10 @@ namespace HydrosApi.Models.Permitting.AAWS
                         var id = cmd.ExecuteScalar();
                         if (id != null)
                             this.ProviderReceiverId = Convert.ToInt32(id);
+                        else
+                            this.ProviderReceiverId = null;
+
+                        
                     }
                 }
                 else
