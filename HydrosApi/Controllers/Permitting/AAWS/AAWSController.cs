@@ -140,7 +140,7 @@
             //I'm sorry to change it
             try
             {
-
+                //throw new InvalidOperationException("Logfile cannot be read-only");
                 Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
                 var pcc = regex.Replace(id, "$1-$2.$3");
                 // var pcc = regex.Replace("~", ".");
