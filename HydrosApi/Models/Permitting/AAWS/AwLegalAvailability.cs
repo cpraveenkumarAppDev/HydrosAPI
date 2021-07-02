@@ -44,7 +44,7 @@ namespace HydrosApi.Models.Permitting.AAWS
         public string GroundwaterUseType { get; set; }
 
         [Column("WATER_TYPE_CODE")]
-        [StringLength(4)]
+        [StringLength(25)]
         public string WaterTypeCode { get; set; }
 
         [Column("PROVIDER_RECEIVER_ID")]
@@ -118,6 +118,10 @@ namespace HydrosApi.Models.Permitting.AAWS
                         var id = cmd.ExecuteScalar();
                         if (id != null)
                             this.ProviderReceiverId = Convert.ToInt32(id);
+                        else
+                            this.ProviderReceiverId = null;
+
+                        
                     }
                 }
                 else
