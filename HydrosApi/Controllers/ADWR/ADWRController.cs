@@ -208,18 +208,25 @@ namespace HydrosApi
         [HttpGet, Route("adwr/wrfbypcc/{inputPcc}")]
         public IHttpActionResult GetWrfById(string inputPcc)
         {
-            WaterRightFacility found;
+            
             try
             {
                 PCC validPCC = new PCC(inputPcc);
-                found = WaterRightFacility.Get(x => x.Program == validPCC.Program && x.Certificate == validPCC.Certificate && x.Conveyance == validPCC.Conveyance);
+                var found = WaterRightFacility.Get(x => x.Program == validPCC.Program && x.Certificate == validPCC.Certificate && x.Conveyance == validPCC.Conveyance);
+                
+                if(found == null)
+                {
+                    return BadRequest("The PCC/Right entered could not be found");
+                }
+
+                return Ok(found.Id);
+
             }
             catch (Exception exception)
-            {
-
-                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+            { 
+                return BadRequest(string.Format("Error: {0}", QueryResult.BundleExceptions(exception)));
             }
-            return Ok(found.Id);
+            
         }
 
         [HttpGet, Route("adwr/getWrfById/{id}")]
