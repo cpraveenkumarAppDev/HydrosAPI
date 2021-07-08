@@ -63,6 +63,7 @@ namespace HydrosApi.Data
         public virtual DbSet<VAwsWellServing> V_AWS_WELL_SERVING { get; set; }
         public virtual DbSet<VAwsLongTermStorageCredits> V_AWS_LTSC { get; set; }
         public virtual DbSet<AwLegalAvailability> AW_LEGAL_AVAILABILITY { get; set; }
+        public virtual DbSet<LTFHistory> LTFHistory { get; set; }
 
         public virtual DbSet<WaterRightFacilityToWaterRightFacility> WRF_WRF { get; set; }
 

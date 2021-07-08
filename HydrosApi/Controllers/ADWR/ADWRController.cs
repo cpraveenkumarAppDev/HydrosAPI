@@ -302,7 +302,8 @@ namespace HydrosApi
                 return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
-       
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpPost, Route("adwr/addCadastralByWrf/{wrf}")]
         public IHttpActionResult AddCadastralByWrf([FromBody] List<Location> LocationList, int wrf)
         {
@@ -340,6 +341,8 @@ namespace HydrosApi
                 return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         [HttpPost, Route("adwr/deleteCadastralByWrf/{wrf}")]
         public IHttpActionResult DeleteCadastralByWrf([FromBody] List<Location> LocationList, int wrf)
         {
