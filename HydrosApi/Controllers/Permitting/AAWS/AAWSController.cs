@@ -1220,10 +1220,10 @@
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
-        [HttpPut, Route("aws/updatehydro/")]
-        public IHttpActionResult UpdateHydro([FromBody] AwsHydrologyViewModel wHydro)
+        [HttpPost, Route("aws/updatehydro/{wrf}")]
+        public IHttpActionResult UpdateHydro(int wrf, [FromBody] AwsHydrologyViewModel wHydro)
         {
-            int? wrf = null;
+            
             try
             {
                 var hydroVm = new AwsHydrologyViewModel();
@@ -1244,9 +1244,9 @@
                     VAwsHydro.Update(hydro);
                 }
 
-                if (wellServing != null)
+                if (wellServing != null && wellServing.Count() > 0)
                 {
-                    wrf = wrf ?? wellServing.FirstOrDefault().WaterRightFacilityId;
+                    
                     var deletes = wellServing.Where(d => d.Id == -1);
                     var adds = wellServing.Where(d => d.Id != -1).ToList();
                     var wellList = new List<AwWellServing>();                   
@@ -1279,7 +1279,7 @@
 
                 }
               
-                return Ok(new AwsHydrologyViewModel(wrf ?? -1));
+                return Ok(new AwsHydrologyViewModel(wrf));
             }
 
             catch(Exception exception)
