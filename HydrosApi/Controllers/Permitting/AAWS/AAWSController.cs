@@ -349,25 +349,42 @@
             {
                 AwLegalAvailability existing = new AwLegalAvailability();
                 var updatedList = new List<AwLegalAvailability>();
+                int actionCount = 0;
+
+                var d = new Dictionary<string, string>();
+
+
 
                 using (var context = new OracleContext())
                 {
                     foreach (var legalAvail in la)
                     {
+                        int addCount = 0;
                         //check for a valid PCC
                         //if (legalAvail.Section == "SW")
                         if (new[] { "SW", "G", "ST", "R", "L" }.Contains(legalAvail.Section))
-                            if (legalAvail.ProviderReceiverId == null)
-                            {
+                            if (legalAvail.ProviderReceiverId == null && legalAvail.PCC != null) 
+                            { 
                                 //throw new InvalidOperationException("Legal Availability("+ legalAvail.Section + ") Invalid PCC number");
                                 return BadRequest("Error: PCC not found");
                             }
                     
-                    existing = context.AW_LEGAL_AVAILABILITY.Where(x => x.Id == legalAvail.Id).FirstOrDefault();
-                        if (existing == null)//add new record
-                        {
+                        existing = context.AW_LEGAL_AVAILABILITY.Where(x => x.Id == legalAvail.Id).FirstOrDefault();
+
+                            //make sure something has been added
+                            if (!(existing==null && legalAvail.EffluentType == null && legalAvail.ContractName == null && legalAvail.Amount == null && legalAvail.GroundwaterUseType == null &&
+                               legalAvail.WaterTypeCode == null && legalAvail.AreaOfImpact == null && legalAvail.ContractNumber == null && legalAvail.SurfaceWaterType == null &&
+                               legalAvail.StorageFacilityName == null && legalAvail.PledgedAmount == null && legalAvail.ProviderReceiverId==null))
+                            {
+                                addCount++;
+                            }
+
+                            if (existing == null )//add new record
+                            { 
+                          
                             existing = new AwLegalAvailability
                             {
+                                
                                 CreateBy = User.Identity.Name.Replace("AZWATER0\\", ""),
                                 WaterRightFacilityId = legalAvail.WaterRightFacilityId,
                                 EffluentType = legalAvail.EffluentType,
@@ -383,28 +400,46 @@
                                 StorageFacilityName = legalAvail.StorageFacilityName,
                                 PledgedAmount = legalAvail.PledgedAmount
                             };
-                            //updatedList.Add(existing);
-                            context.AW_LEGAL_AVAILABILITY.Add(existing);
+
+                            if(addCount > 0)
+                            {
+                                actionCount++;
+                                context.AW_LEGAL_AVAILABILITY.Add(existing);
+                            }
                         }
                         else//update existing record
                         {
+                           
                             var props = existing.GetType().GetProperties().ToList();
+                          
                             foreach (var prop in props)
                             {
+                                var prevValue = prop.GetValue(existing);
                                 var value = prop.GetValue(legalAvail);
-                                if ((value != null) && (prop.Name != "Id") && (prop.Name != "WaterRightFacilityId")
-                                    && (prop.Name != "UpdateBy") && (prop.Name != "UpdateDt")// && (prop.Name != "PCC") 
-                                    && (prop.Name != "CreateBy") && (prop.Name != "CreateDt") && (prop.Name != "Section"))
+
+                                //make sure something has changed
+                                if (!Object.Equals(prevValue, value) && (prop.Name != "Id") && (prop.Name != "WaterRightFacilityId")
+                                && (prop.Name != "UpdateBy") && (prop.Name != "UpdateDt")// && (prop.Name != "PCC") 
+                                && (prop.Name != "CreateBy") && (prop.Name != "CreateDt") && (prop.Name != "Section"))
                                 {
+                                    actionCount++;
                                     prop.SetValue(existing, value);
                                 }
                             }
                             existing.UpdateBy = User.Identity.Name.Replace("AZWATER0\\", "");
-                            updatedList.Add(existing);
+                            updatedList.Add(existing);     
                         }
                     }
-                    await context.SaveChangesAsync();
-                    return Ok(updatedList);
+
+                    if (actionCount > 0) //make sure SOMETHING changed
+                    {
+                        await context.SaveChangesAsync();
+                        return Ok(updatedList);
+                    }
+                    else
+                    {
+                        return BadRequest("Nothing was changed because no values were provided.");
+                    }
                 }
             }
             catch (Exception exception)
@@ -1188,27 +1223,72 @@
         [HttpPut, Route("aws/updatehydro/")]
         public IHttpActionResult UpdateHydro([FromBody] AwsHydrologyViewModel wHydro)
         {
-            var hydroVm = new AwsHydrologyViewModel();
-            if (wHydro == null)
+            int? wrf = null;
+            try
             {
-                return BadRequest("Hydrology updates error");
-            }
-            var userName = new GetBestUsername(User.Identity.Name).UserName;
-            var hydro = wHydro.Hydrology ?? null;
-            var wellServing = wHydro.WellServing ?? null;
+                var hydroVm = new AwsHydrologyViewModel();
+                if (wHydro == null)
+                {
+                    return BadRequest("Hydrology updates error");
+                }
+                var userName = new GetBestUsername(User.Identity.Name).UserName;
+                var hydro = wHydro.Hydrology ?? null;
+                var wellServing = wHydro.WellServing ?? null;
 
-            if (hydro != null)
-            {
-                hydro.UserName = userName;
-                hydroVm.Hydrology = hydro;
-                VAwsHydro.Update(hydro);
+
+                if (hydro != null)
+                {
+                    wrf = hydro.WaterRightFacilityId;
+                    hydro.UserName = userName;
+                    hydroVm.Hydrology = hydro;
+                    VAwsHydro.Update(hydro);
+                }
+
+                if (wellServing != null)
+                {
+                    wrf = wrf ?? wellServing.FirstOrDefault().WaterRightFacilityId;
+                    var deletes = wellServing.Where(d => d.Id == -1);
+                    var adds = wellServing.Where(d => d.Id != -1).ToList();
+                    var wellList = new List<AwWellServing>();                   
+
+                    if (deletes != null)
+                    {
+
+                        foreach (var d in deletes)
+                        {
+                            var item = AwWellServing.Get(i => i.WaterRightFacilityId == d.WaterRightFacilityId && i.WellRegistryId == d.WellRegistryId);
+                            AwWellServing.Delete(item);
+                        }
+
+                    }
+
+                    if (adds != null)
+                    {
+                        foreach (var a in adds)
+                        {
+                            AwWellServing.Add(new AwWellServing()
+                            {
+                                WaterRightFacilityId = a.WaterRightFacilityId,
+                                CreateBy = userName,
+                                CreateDt = DateTime.Now,
+                                WellRegistryId = a.WellRegistryId
+
+                            }); ;
+                        }
+                    }
+
+                }
+              
+                return Ok(new AwsHydrologyViewModel(wrf ?? -1));
             }
 
-            if (wellServing != null)
+            catch(Exception exception)
+
             {
-                hydroVm.WellServing = wellServing;
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+                //log error
+                //return InternalServerError(exception);
             }
-            return Ok(hydroVm);
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
