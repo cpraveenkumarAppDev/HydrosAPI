@@ -9,7 +9,7 @@ using System.Web;
 
 namespace HydrosApi.Models.ADWR
 {
-    [Table("ADWR_ADMIN.HYDROS_MANAGER")]
+    [Table("ADWR_ADMIN.LTFHistory")]
     public class LTFHistory : Repository<LTFHistory>
     {
         [Column("ID")]
