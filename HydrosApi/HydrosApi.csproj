@@ -338,6 +338,7 @@
     <Compile Include="Models\ADWR\Customer.cs" />
     <Compile Include="Models\ADWR\HydrosManager.cs" />
     <Compile Include="Models\ADWR\Location.cs" />
+    <Compile Include="Models\ADWR\LTFHistory.cs" />
     <Compile Include="Models\ADWR\WaterRightFacilityCustomer.cs" />
     <Compile Include="Models\ADWR\WaterRightFacilityToWaterRightFacility.cs" />
     <Compile Include="Models\ADWR\WaterRightFacility.cs" />
