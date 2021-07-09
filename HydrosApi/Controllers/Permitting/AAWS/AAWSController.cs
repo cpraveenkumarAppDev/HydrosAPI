@@ -347,13 +347,14 @@
         {
             try
             {
+                if (!(la != null && la.Count() > 0))
+                    return Ok();
+
                 AwLegalAvailability existing = new AwLegalAvailability();
                 var updatedList = new List<AwLegalAvailability>();
                 int actionCount = 0;
 
                 var d = new Dictionary<string, string>();
-
-
 
                 using (var context = new OracleContext())
                 {
@@ -409,7 +410,7 @@
                         }
                         else//update existing record
                         {
-                           
+                            actionCount++;
                             var props = existing.GetType().GetProperties().ToList();
                           
                             foreach (var prop in props)
@@ -422,7 +423,7 @@
                                 && (prop.Name != "UpdateBy") && (prop.Name != "UpdateDt")// && (prop.Name != "PCC") 
                                 && (prop.Name != "CreateBy") && (prop.Name != "CreateDt") && (prop.Name != "Section"))
                                 {
-                                    actionCount++;
+                                    
                                     prop.SetValue(existing, value);
                                 }
                             }
