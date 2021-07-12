@@ -426,6 +426,35 @@ namespace HydrosApi
             }
         }
 
+        [HttpGet, Route("adwr/GetLTF/{pcc}")]
+        public IHttpActionResult GetLTF(string pcc)
+        {
+            //format pcc
+            Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
+            var fpcc = regex.Replace(pcc, "$1-$2.$3");
+
+            //get TT appId
+            using (var ctx = new OracleContext())
+            using (var cmd = ctx.Database.Connection.CreateCommand())
+            {
+                ctx.Database.Connection.Open();
+                cmd.CommandText = string.Format("select t.id from ADWR_ADMIN.TT_APPLICATIONS t where t.entity_id = '{0}'", fpcc);
+                var appId = cmd.ExecuteScalar();
+                int? appid2 = Convert.ToInt32(appId);//how should this and the above statements be combined?
+
+                //Get LTF HIstory List
+                List<LTFHistory> LTFHistoryList;
+                try
+                {
+                    LTFHistoryList = LTFHistory.GetList(x => x.AppId == appid2);
+                }
+                catch (Exception exception)
+                {
+                    return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+                }
+                return Ok(LTFHistoryList);
+            }
+        }
 
     }
 
