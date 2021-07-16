@@ -25,10 +25,16 @@
 
         public static List<dynamic> RunAnyQuery(string sql)
         {
-            return RunAnyQuery(sql, new OracleContext());
+            return RunAnyQuery(sql, new OracleContext(),true);
         }
 
-        public static List<dynamic> RunAnyQuery(string sql, DbContext ctx=null)
+        public static List<dynamic> RunAnyQuery(string sql, bool addHeader)
+        {
+            return RunAnyQuery(sql, new OracleContext(), addHeader);
+        }
+
+
+        public static List<dynamic> RunAnyQuery(string sql, DbContext ctx=null,bool addHeader=true)
         {
             var result = new List<dynamic>();
 
@@ -59,7 +65,7 @@
                         {
                             //create a header row with a rowindex of -1 that describes the data types of each column
                            
-                            if (rowIndex < 2)
+                            if (rowIndex < 2 && addHeader==true)
                             {
                                 if (i == 0)
                                 {
@@ -85,7 +91,7 @@
                             data.Add(reader.GetName(i), value);
                         }
 
-                        if (rowIndex == 1)
+                        if (rowIndex == 1 && addHeader == true)
                         {
                             result.Add(header);
                         }

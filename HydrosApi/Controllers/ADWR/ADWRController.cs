@@ -456,6 +456,32 @@ namespace HydrosApi
             }
         }
 
+        [HttpGet, Route("adwr/GetNextLTF/{id}")]
+        public IHttpActionResult GetNextLTF(int id)
+        {
+            try
+            {
+                using (var context = new OracleContext())
+                {
+                    var qryString = string.Format("select r.id, r.ltf_period_id, r.description, r.from_act_id, r.to_act_id, r.clock, r.limit_change " +
+                    "  from tt_applications ap, ltf_period p, ltf_action_rules r, ltf_cd_action a " +
+                    " where ap.id = '{0}' " +
+                    "   and ap.app_type_code = p.app_type_code " +
+                    "   and r.to_act_id = a.id " +
+                    "   and r.ltf_period_id = p.id " +
+                    "   and r.from_act_id = " +
+                    "       (select act_id from ltf_history h where h.app_id = '{0}'" +
+                    "        order by applied_date desc fetch first 1 rows only)", id);
+
+                    var data = QueryResult.RunAnyQuery(qryString, context, false);
+                    return Ok(data);
+                }
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+            }
+        }
     }
 
 

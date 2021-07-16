@@ -43,5 +43,45 @@ namespace HydrosApi.Models.ADWR
         [Column("COMMENTS")]
         [StringLength(30)]
         public string Comments { get; set; }
+
+        [NotMapped]
+        public string ActionDescription
+        {
+            get
+            {
+                using (var ctx = new OracleContext())
+                using (var cmd = ctx.Database.Connection.CreateCommand())
+                {
+                    ctx.Database.Connection.Open();
+                    cmd.CommandText = string.Format("select t.description " +
+                                                    "  from ADWR_ADMIN.LTF_CD_ACTION t where t.id = {0}", ActId);
+                    var ActDescription = cmd.ExecuteScalar();
+                    if (ActDescription != null)
+                        return ActDescription.ToString();
+                    else
+                        return null;//send error
+                }
+            }
+        }
+
+        [NotMapped]
+        public string PeriodDescription
+        {
+            get
+            {
+                using (var ctx = new OracleContext())
+                using (var cmd = ctx.Database.Connection.CreateCommand())
+                {
+                    ctx.Database.Connection.Open();
+                    cmd.CommandText = string.Format("select p.description from ltf_cd_action a, adwr_admin.ltf_period p " +
+                                                    "  where a.ltf_period_id = p.id and a.id = {0}", ActId);
+                    var PeriodDescr = cmd.ExecuteScalar();
+                    if (PeriodDescr != null)
+                        return PeriodDescr.ToString();
+                    else
+                        return null;//send error
+                }
+            }
+        }
     }
 }
