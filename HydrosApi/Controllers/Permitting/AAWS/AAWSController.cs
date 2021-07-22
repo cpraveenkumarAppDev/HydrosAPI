@@ -93,42 +93,53 @@
         [HttpGet, Route("aws/getAmaCountyBasin/{amacode?}")]
         public IHttpActionResult GetAMACountyBasin(string amacode = null)
         {
-            var infoList = amacode == null ? AwAmaCountyBasinSubbasin.GetAll() :
-                AwAmaCountyBasinSubbasin.GetList(a => a.AmaCode == amacode.ToUpper());
-
-            return Ok(infoList.GroupBy(g => new
+            try
             {
-                g.AMA,
-                g.AmaCode,
-                g.AmaInaType
-                ,
-                DefaultBasinCode = g.AmaCode.Replace("X", "0") != "0" ? g.BasinCode : null //When AMA/INA already has basin/subbasin assigned
-                ,
-                DefaultBasinName = g.AmaCode.Replace("X", "0") != "0" ? g.BasinName : null
-            })
-              .Select(a => new
-              {
-                  a.Key.AMA,
-                  a.Key.AmaCode,
-                  a.Key.AmaInaType,
-                  a.Key.DefaultBasinCode,
-                  a.Key.DefaultBasinName,
-                  AMAInfo = a.GroupBy(g => new { g.County, g.CountyCode })
-              .Select(c => new
-              {
-                  c.Key.County,
-                  c.Key.CountyCode,
-                  Basin = c.GroupBy(g => new { g.BasinCode, g.BasinName, HasSubbasin = g.SubbasinCode != g.BasinCode && true }).Distinct().OrderBy(o => o.Key.BasinName)
-                .Select(i => new
+
+
+                var infoList = amacode == null ? AwAmaCountyBasinSubbasin.GetAll() :
+                    AwAmaCountyBasinSubbasin.GetList(a => a.AmaCode == amacode.ToUpper());
+
+                return Ok(infoList.GroupBy(g => new
                 {
-                    i.Key.BasinCode,
-                    i.Key.BasinName,
-                    i.Key.HasSubbasin
-                ,
-                    Subbasin = i.Select(s => new { s.BasinCode, s.BasinName, s.SubbasinCode, s.SubbasinName }).Distinct().OrderBy(o => o.SubbasinName)
-                }).Distinct()
-              }).OrderBy(o => o.County)
-              }).OrderBy(o => o.AMA != "OUTSIDE OF AMA OR INA" ? "_" + o.AMA : o.AMA).ToList());
+                    g.AMA,
+                    g.AmaCode,
+                    g.AmaInaType
+                    ,
+                    DefaultBasinCode = g.AmaCode.Replace("X", "0") != "0" ? g.BasinCode : null //When AMA/INA already has basin/subbasin assigned
+                    ,
+                    DefaultBasinName = g.AmaCode.Replace("X", "0") != "0" ? g.BasinName : null
+                })
+                  .Select(a => new
+                  {
+                      a.Key.AMA,
+                      a.Key.AmaCode,
+                      a.Key.AmaInaType,
+                      a.Key.DefaultBasinCode,
+                      a.Key.DefaultBasinName,
+                      AMAInfo = a.GroupBy(g => new { g.County, g.CountyCode })
+                  .Select(c => new
+                  {
+                      c.Key.County,
+                      c.Key.CountyCode,
+                      Basin = c.GroupBy(g => new { g.BasinCode, g.BasinName, HasSubbasin = g.SubbasinCode != g.BasinCode && true }).Distinct().OrderBy(o => o.Key.BasinName)
+                    .Select(i => new
+                    {
+                        i.Key.BasinCode,
+                        i.Key.BasinName,
+                        i.Key.HasSubbasin
+                    ,
+                        Subbasin = i.Select(s => new { s.BasinCode, s.BasinName, s.SubbasinCode, s.SubbasinName }).Distinct().OrderBy(o => o.SubbasinName)
+                    }).Distinct()
+                  }).OrderBy(o => o.County)
+                  }).OrderBy(o => o.AMA != "OUTSIDE OF AMA OR INA" ? "_" + o.AMA : o.AMA).ToList());
+            }
+            
+          catch (Exception exception)
+            {
+
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+            }
         }
 
         //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
@@ -352,7 +363,9 @@
 
                 AwLegalAvailability existing = new AwLegalAvailability();
                 var updatedList = new List<AwLegalAvailability>();
+              
                 int actionCount = 0;
+                int wrf = la.FirstOrDefault().WaterRightFacilityId;
 
                 var d = new Dictionary<string, string>();
 
@@ -363,14 +376,14 @@
                         int addCount = 0;
                         //check for a valid PCC
                         //if (legalAvail.Section == "SW")
-                        if (new[] { "SW", "G", "ST", "R", "L" }.Contains(legalAvail.Section))
+                        if (new[] { "SW", "G", "ST", "R", "L", "E", "W" }.Contains(legalAvail.Section))
                             if (legalAvail.ProviderReceiverId == null && legalAvail.PCC != null) 
-                            { 
+                            {                                 
                                 //throw new InvalidOperationException("Legal Availability("+ legalAvail.Section + ") Invalid PCC number");
                                 return BadRequest("Error: PCC not found");
                             }
                     
-                        existing = context.AW_LEGAL_AVAILABILITY.Where(x => x.Id == legalAvail.Id).FirstOrDefault();
+                            existing = context.AW_LEGAL_AVAILABILITY.Where(x => x.Id == legalAvail.Id).FirstOrDefault();
 
                             //make sure something has been added
                             if (!(existing==null && legalAvail.EffluentType == null && legalAvail.ContractName == null && legalAvail.Amount == null && legalAvail.GroundwaterUseType == null &&
@@ -406,6 +419,7 @@
                             {
                                 actionCount++;
                                 context.AW_LEGAL_AVAILABILITY.Add(existing);
+                               
                             }
                         }
                         else//update existing record
@@ -419,7 +433,7 @@
                                 var value = prop.GetValue(legalAvail);
 
                                 //make sure something has changed
-                                if (!Object.Equals(prevValue, value) && (prop.Name != "Id") && (prop.Name != "WaterRightFacilityId")
+                                if (!Object.Equals(prevValue, value) && (prop.Name != "Id") && (prop.Name != "WaterRightFacilityId")                                    
                                 && (prop.Name != "UpdateBy") && (prop.Name != "UpdateDt")// && (prop.Name != "PCC") 
                                 && (prop.Name != "CreateBy") && (prop.Name != "CreateDt") && (prop.Name != "Section"))
                                 {
@@ -435,7 +449,8 @@
                     if (actionCount > 0) //make sure SOMETHING changed
                     {
                         await context.SaveChangesAsync();
-                        return Ok(updatedList);
+                        var newLegalRecords = AwLegalAvailability.GetList(l => l.WaterRightFacilityId == wrf);
+                        return Ok(newLegalRecords);
                     }
                     else
                     {
@@ -505,6 +520,49 @@
                 return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
+
+
+
+         
+        [HttpGet, Route("aws/conveyance/{id}")]
+        public IHttpActionResult GetConveyance(int? id) //New conveyance
+        {
+            try
+            {
+                if(id==null)
+                {
+                    return BadRequest("Id was not submitted for this request");
+                }
+                return Ok(new AwsConveyViewModel(id));
+            }
+
+
+             catch (Exception exception)
+            {
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+            }
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
+        [HttpPost, Route("aws/saveconveyance/{id}")]
+        public IHttpActionResult SaveConveyance(int id, [FromBody] AwsConveyViewModel conveyance) //New conveyance
+        {
+            try
+            {
+
+                var user = User.Identity.Name.Replace("AZWATER0\\", "");
+                var convey = new AwsConveyViewModel(id, conveyance, user);
+                return Ok(new AwsConveyViewModel(id));
+            }
+
+
+            catch (Exception exception)
+            {
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+            }
+        }
+
+
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
         [HttpGet, Route("aws/diagram/{id}")]
@@ -1370,6 +1428,7 @@
             }
         }
 
+
         [HttpPost, Route("aws/legalAvail/remove")]
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]
         public IHttpActionResult DeleteLegalAvailability([FromBody] int[] deletionIds)
@@ -1379,19 +1438,29 @@
                 List<int> deleteSuccess = new List<int>();
                 using (var context = new OracleContext())
                 {
-                    foreach (var id in deletionIds)
+                    var found = AwLegalAvailability.GetList(x => deletionIds.Contains(x.Id), context);
+                    var wrf = found.FirstOrDefault().WaterRightFacilityId;
+
+                    foreach (var f in found)
                     {
-                        var found = AwLegalAvailability.Get(x => x.Id == id, context);
-                        if (found != null)
+                        
+                        if (f != null)
                         {
-                            context.AW_LEGAL_AVAILABILITY.Remove(found);
-                            deleteSuccess.Add(id);
+                            context.AW_LEGAL_AVAILABILITY.Remove(f);
+                            deleteSuccess.Add(f.Id);
                         }
                     }
 
                     context.SaveChanges();
 
-                    return Ok(deleteSuccess);
+                    var updates = AwLegalAvailability.GetList(l => l.WaterRightFacilityId == wrf);
+
+                    if (updates != null)
+                    {
+                        return Ok(updates);
+                    }
+
+                    return BadRequest(String.Format("Unable to delete values {0}", deletionIds));
                 }
             }
             catch (Exception exception)
@@ -1401,7 +1470,7 @@
             }
         }
 
-
+     
         /* [HttpGet, Route("aws/getConsistManage/{id}")]
          public IHttpActionResult GetConsistManage(int id)
          {

@@ -4,7 +4,8 @@
     using System.Data.Entity;
     using System.Text.RegularExpressions;
     using System;
-    
+    using System.Globalization;
+    using Models.ADWR;
 
     public partial class QueryResult : Repository<QueryResult>
     {
@@ -26,9 +27,9 @@
         public static List<dynamic> RunAnyQuery(string sql)
         {
             return RunAnyQuery(sql, new OracleContext());
-        }
+        }        
 
-        public static List<dynamic> RunAnyQuery(string sql, DbContext ctx=null)
+        public static List<dynamic> RunAnyQuery(string sql, DbContext ctx=null, bool addHeader=true)
         {
             var result = new List<dynamic>();
 
@@ -59,7 +60,7 @@
                         {
                             //create a header row with a rowindex of -1 that describes the data types of each column
                            
-                            if (rowIndex < 2)
+                            if (rowIndex < 2 && addHeader==true)
                             {
                                 if (i == 0)
                                 {
@@ -85,7 +86,7 @@
                             data.Add(reader.GetName(i), value);
                         }
 
-                        if (rowIndex == 1)
+                        if (rowIndex == 1 && addHeader==true)
                         {
                             result.Add(header);
                         }
@@ -191,7 +192,60 @@
             return fullException;
         }
 
-        
 
+        public static string TitleFormat(string val)
+        {
+            TextInfo ti = new CultureInfo("en-US", true).TextInfo;
+
+            if (val != null)
+            {
+                return ti.ToTitleCase(val.ToLower());
+
+            }
+            return null;
+        }
+
+        public static WaterRightFacility GetWrfRecord(string id)
+        {
+            try
+            {
+
+               // if (id == null)
+                   // return BadRequest("Please enter a PCC or WaterRightFacilityId");
+
+                Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
+                var pcc = regex.Replace(id, "$1-$2.$3");
+
+                if (pcc.Length == 14)
+                {
+                    var program = regex.Replace(pcc, "$1");
+                    var certificate = regex.Replace(pcc, "$2");
+                    var conveyance = regex.Replace(pcc, "$3");
+                    return WaterRightFacility.Get(w => w.Program == program && w.Certificate == certificate && w.Conveyance == conveyance);
+                }
+                else
+                {
+                    int wrfId;
+                    bool validId = Int32.TryParse(id, out wrfId);
+
+                    if (validId)
+                    {
+                       return WaterRightFacility.Get(w => w.Id == wrfId);
+                    }
+
+                }
+                // var info = new GeoBoundaryViewModel();
+                //return Ok(info);
+
+                return null;
+            }
+            catch (Exception exception)
+            {
+                return null;
+            }
+
+
+        }
+      
     }
 }

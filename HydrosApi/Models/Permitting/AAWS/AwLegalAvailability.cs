@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Web;
+using System.Globalization;
+//using System.Text.RegularExpressions;
 
 namespace HydrosApi.Models.Permitting.AAWS
 {
@@ -59,7 +60,6 @@ namespace HydrosApi.Models.Permitting.AAWS
         public string SurfaceWaterType { get; set; }
 
         [Column("STORAGE_FACILITY_NAME")]
-        [StringLength(50)]
         public string StorageFacilityName { get; set; }
 
         [Column("PLEDGED_AMOUNT")]
@@ -79,15 +79,15 @@ namespace HydrosApi.Models.Permitting.AAWS
         [Column("UPDATEDT")]
         public DateTime? UpdateDt { get; set; }
 
+
         [NotMapped]
         public string PCC
         {
             get
             {
-                if (ProviderReceiverId == null)
+                if (ProviderReceiverId == null || Section== null)
                     return null;
-                else
-                    if (Section == "SW")
+                else if (Section == "SW")
                 {
                     using (var ctx = new OracleContext())
                     using (var cmd = ctx.Database.Connection.CreateCommand())
@@ -103,7 +103,20 @@ namespace HydrosApi.Models.Permitting.AAWS
                     }
                 }
                 else
-                    return WaterRightFacility.Get(f => f.Id == ProviderReceiverId).PCC;
+                {
+                    var wrf = WaterRightFacility.Get(f => f.Id == ProviderReceiverId);
+                    if (Section.ToUpper() == "ST" && wrf != null)
+                    {
+                        StorageFacilityName = wrf.WaterRightFacilityName;
+                    }
+
+                    if (wrf == null)
+                    {
+                        return null;
+                    }
+
+                    return wrf.PCC;
+                }
             }
             set
             {
@@ -121,13 +134,25 @@ namespace HydrosApi.Models.Permitting.AAWS
                         else
                             this.ProviderReceiverId = null;
 
-                        
                     }
                 }
                 else
+                {
+                    
                     this.ProviderReceiverId = QueryResult.RgrRptGet(value);
+
+                    if (Section == "ST" && ProviderReceiverId != null)
+                    {
+                        var wrf = WaterRightFacility.Get(f => f.Id == ProviderReceiverId);
+                        if(wrf != null)
+                        {
+                            StorageFacilityName = wrf.WaterRightFacilityName;
+                        }
+                    }
+
+                }                    
             }
         }
-
-    }
+    }        
+      
 }

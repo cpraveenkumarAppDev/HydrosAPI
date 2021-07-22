@@ -15,9 +15,9 @@ namespace HydrosApi.ViewModel.ADWR
 
         public GeoBoundaryViewModel()
         {
-            this.SubbasinList = VAwsSubbasin.GetAll();
-            this.AmaIna = CD_AMA_INA.GetAll();
+            this.SubbasinList = VAwsSubbasin.GetAll();            
             this.CountyBasinList = VAwsCountyBasin.GetAll();
+            this.AmaIna = CD_AMA_INA.GetAll();
         }
     }
 }

@@ -354,11 +354,13 @@
     <Compile Include="Models\Permitting\AAWS\CdAwCity.cs" />
     <Compile Include="Models\Permitting\AAWS\CdAwCommentType.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsActiveManagementArea.cs" />
+    <Compile Include="Models\Permitting\AAWS\VAwsConveyFile.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsCountyBasin.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsCustomer.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsCustomerLongName.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsHydro.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsLongTermStorageCredits.cs" />
+    <Compile Include="Models\Permitting\AAWS\VAwsOriginalFile.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsProvider.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsSubbasin.cs" />
     <Compile Include="Models\Permitting\AAWS\VAwsWellServing.cs" />
@@ -383,6 +385,7 @@
     <Compile Include="ViewModel\ADWR\GeoBoundaryViewModel.cs" />
     <Compile Include="ViewModel\ADWR\LocationViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AwsConsistencyViewModel.cs" />
+    <Compile Include="ViewModel\Permitting\AAWS\AwsConveyViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AwsHydrologyViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AwsPhysicalAvailabilityViewModel.cs" />
     <Compile Include="ViewModel\Permitting\AAWS\AWSNewApp.cs" />

@@ -21,13 +21,17 @@ using System.Data.Entity.Infrastructure;
 
     public class Repository<T> : IRepository<T> where T : class
     {
+        
+
         public static List<T> GetAll()
         {
-            using (var databaseContext = new OracleContext())
-            {
-                var query = databaseContext.Set<T>();
-                return query.ToList();
-            }
+             
+                using (var databaseContext = new OracleContext())
+                {
+                    var query = databaseContext.Set<T>();
+                    return query.ToList();
+                }
+           
         }
 
         public static List<T> GetAll(OracleContext databaseContext)
@@ -38,9 +42,17 @@ using System.Data.Entity.Infrastructure;
 
         public static List<T> GetList(Expression<Func<T, bool>> predicate)
         {
-            using (var databaseContext = new OracleContext())
+            try
             {
-                return databaseContext.Set<T>().Where(predicate).ToList();
+                using (var databaseContext = new OracleContext())
+                {
+                    return databaseContext.Set<T>().Where(predicate).ToList();
+                }
+            }
+            catch(Exception exception)
+            {                
+                return null;
+                
             }
         }
         public static void Delete(T entity)
@@ -51,6 +63,16 @@ using System.Data.Entity.Infrastructure;
                 databaseContext.SaveChanges();
             }
         }
+        public static void Delete(List<T> entity)
+        {
+            using (var databaseContext = new OracleContext())
+            {
+                databaseContext.Entry(entity).State = EntityState.Deleted;
+                databaseContext.SaveChanges();
+            }
+        }
+
+
         public static List<T> GetList(Expression<Func<T, bool>> predicate, Expression<Func<T, byte>> orderByPredicate)
         {
             using (var databaseContext = new OracleContext())
@@ -120,7 +142,7 @@ using System.Data.Entity.Infrastructure;
             databaseContext.Set<T>().Add(entity);
             return entity;
         }
-
+      
         public static void Remove(T entity, OracleContext databaseContext)
         {
             databaseContext.Set<T>().Remove(entity);
