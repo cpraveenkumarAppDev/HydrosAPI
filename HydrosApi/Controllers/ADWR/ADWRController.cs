@@ -225,7 +225,8 @@ namespace HydrosApi
             catch (Exception exception)
             { 
                 return BadRequest(string.Format("Error: {0}", QueryResult.BundleExceptions(exception)));
-            }            
+            }
+            
         }
 
         [HttpGet, Route("adwr/getWrfById/{id}")]
@@ -283,64 +284,12 @@ namespace HydrosApi
                 var info = new GeoBoundaryViewModel();
                 return Ok(info);
             }
-            catch (Exception exception)
+            catch
             {
-                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+                //log error
+                return InternalServerError();
             }
         }
-
-        [HttpGet, Route("adwr/getWrfRecord/{id}")]
-        public IHttpActionResult GetWrfRecord(string id)
-        {
-            try
-            {
-                 
-                if (id == null)
-                    return BadRequest("Please enter a PCC or WaterRightFacilityId");
-
-                var wrfRecord = QueryResult.GetWrfRecord(id);
-
-                if(wrfRecord== null)
-                {
-                    return BadRequest(string.Format("Could not find a record for the value {0} provided ",id));
-                }
-
-                return Ok(wrfRecord);
-
-                /*Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
-                var pcc = regex.Replace(id, "$1-$2.$3");
-                
-                if(pcc.Length==14)
-                {
-                    var program = regex.Replace(pcc, "$1");
-                    var certificate = regex.Replace(pcc, "$2");
-                    var conveyance = regex.Replace(pcc, "$3");
-                    return Ok(WaterRightFacility.Get(w => w.Program==program && w.Certificate==certificate && w.Conveyance==conveyance));                    
-                }
-                else
-                {
-                    int wrfId;
-                    bool validId = Int32.TryParse(id, out wrfId);
-
-                    if(validId)
-                    {
-                        return Ok(WaterRightFacility.Get(w => w.Id == wrfId));
-                    }
-
-                }
-                // var info = new GeoBoundaryViewModel();
-                //return Ok(info);
-
-                return BadRequest(string.Format("Cound not find record for {0} entered", pcc.Length == 14 ? "PCC" : "WaterRightFacilityId"));*/
-            }
-            catch (Exception exception)
-            {
-                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
-            }
-
-            
-        }
-
         [HttpGet, Route("adwr/getLocation/{id}")]
         public IHttpActionResult GetLocation(int id)
         {
@@ -476,44 +425,68 @@ namespace HydrosApi
                 return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
-    
 
-    [HttpGet, Route("adwr/GetLTF/{pcc}")]
-    public IHttpActionResult GetLTF(string pcc)
-    {
-        //format pcc
-        Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
-        var fpcc = regex.Replace(pcc, "$1-$2.$3");
-
-        //get TT appId
-        using (var ctx = new OracleContext())
-        using (var cmd = ctx.Database.Connection.CreateCommand())
+        [HttpGet, Route("adwr/GetLTF/{pcc}")]
+        public IHttpActionResult GetLTF(string pcc)
         {
-            ctx.Database.Connection.Open();
-            cmd.CommandText = string.Format("select t.id from ADWR_ADMIN.TT_APPLICATIONS t where t.entity_id = '{0}'", fpcc);
-            var appId = cmd.ExecuteScalar();
-            int? appid2 = Convert.ToInt32(appId);//how should this and the above statements be combined?
+            //format pcc
+            Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
+            var fpcc = regex.Replace(pcc, "$1-$2.$3");
 
-            //Get LTF HIstory List
-            List<LTFHistory> LTFHistoryList;
+            //get TT appId
+            using (var ctx = new OracleContext())
+            using (var cmd = ctx.Database.Connection.CreateCommand())
+            {
+                ctx.Database.Connection.Open();
+                cmd.CommandText = string.Format("select t.id from ADWR_ADMIN.TT_APPLICATIONS t where t.entity_id = '{0}'", fpcc);
+                var appId = cmd.ExecuteScalar();
+                int? appid2 = Convert.ToInt32(appId);//how should this and the above statements be combined?
+
+                //Get LTF HIstory List
+                List<LTFHistory> LTFHistoryList;
+                try
+                {
+                    LTFHistoryList = LTFHistory.GetList(x => x.AppId == appid2);
+                }
+                catch (Exception exception)
+                {
+                    return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+                }
+                return Ok(LTFHistoryList);
+            }
+        }
+
+        [HttpGet, Route("adwr/GetNextLTF/{id}")]
+        public IHttpActionResult GetNextLTF(int id)
+        {
             try
             {
-                LTFHistoryList = LTFHistory.GetList(x => x.AppId == appid2);
+                using (var context = new OracleContext())
+                {
+                    var qryString = string.Format("select r.id, r.ltf_period_id, r.description, r.from_act_id, r.to_act_id, r.clock, r.limit_change " +
+                    "  from tt_applications ap, ltf_period p, ltf_action_rules r, ltf_cd_action a " +
+                    " where ap.id = '{0}' " +
+                    "   and ap.app_type_code = p.app_type_code " +
+                    "   and r.to_act_id = a.id " +
+                    "   and r.ltf_period_id = p.id " +
+                    "   and r.from_act_id = " +
+                    "       (select act_id from ltf_history h where h.app_id = '{0}'" +
+                    "        order by applied_date desc fetch first 1 rows only)", id);
+
+                    var data = QueryResult.RunAnyQuery(qryString, context, false);
+                    return Ok(data);
+                }
             }
             catch (Exception exception)
             {
                 return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
-            return Ok(LTFHistoryList);
         }
     }
 
-}
 
-
-
-
-public class ActivePage    {
+    public class ActivePage
+    {
         public string Page { get; set; }
         public bool Online { get; set; }
     }
