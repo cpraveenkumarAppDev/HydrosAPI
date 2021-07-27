@@ -550,9 +550,11 @@
             try
             {
 
-                var user = User.Identity.Name.Replace("AZWATER0\\", "");
+                 
+                var user = new GetBestUsername(User.Identity.Name).UserName;  //Set to Oracle ID if possible
+
                 var convey = new AwsConveyViewModel(id, conveyance, user);
-                return Ok(new AwsConveyViewModel(id));
+                return Ok(convey);
             }
 
 

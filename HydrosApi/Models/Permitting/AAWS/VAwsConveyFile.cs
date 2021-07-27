@@ -15,13 +15,13 @@
         public int? FakeId { get; set; }
 
         [Key, Column("SEARCH_WRF_ID", Order = 0)]
-        public int? SearchWaterRightFacilityId { get; set; }
+        public int SearchWaterRightFacilityId { get; set; }
 
         [Column("SEARCH_FILE_NO")]
         public string SearchFileNo { get; set; } //the primary pcc in the hydros app
 
         [Key, Column("CONVEYING_WRF_ID", Order = 1)]
-        public int? ConveyingWaterRightFacilityId { get; set; }
+        public int ConveyingWaterRightFacilityId { get; set; }
 
         [Column("CONVEYING_FILE_NO")]
         public string ConveyingFileNo { get; set; } 

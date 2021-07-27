@@ -19,7 +19,7 @@
         [Key, Column("CWFT_CODE", Order = 1), StringLength(4)]
         public string RelationshipTypeCode { get; set; }//CWFT_CODE
 
-        [Column("WRF_ID_TO")]
+        [Key, Column("WRF_ID_TO", Order = 2)]
         public int WaterRightFacilityIdTo { get; set; }//WRF_ID_TO
 
         [Column("IS_ACTIVE"), StringLength(1)]

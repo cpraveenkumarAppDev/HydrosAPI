@@ -1,17 +1,17 @@
 ﻿namespace HydrosApi.Data
 {
     using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Linq.Expressions;
-using HydrosApi.Models;
-using Oracle.ManagedDataAccess.Client;
-using System.Data.SqlClient;
-using System.Reflection;
-using System.Data.Entity.Core.Objects;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Web;
+    using System.Linq.Expressions;
+    using HydrosApi.Models;
+    using Oracle.ManagedDataAccess.Client;
+    using System.Data.SqlClient;
+    using System.Reflection;
+    using System.Data.Entity.Core.Objects;
+    using System.Data.Entity;
+    using System.Data.Entity.Infrastructure;
     using System.Web.Http;
 
     public interface IRepository<TEntity>
@@ -21,17 +21,17 @@ using System.Data.Entity.Infrastructure;
 
     public class Repository<T> : IRepository<T> where T : class
     {
-        
+
 
         public static List<T> GetAll()
         {
-             
-                using (var databaseContext = new OracleContext())
-                {
-                    var query = databaseContext.Set<T>();
-                    return query.ToList();
-                }
-           
+
+            using (var databaseContext = new OracleContext())
+            {
+                var query = databaseContext.Set<T>();
+                return query.ToList();
+            }
+
         }
 
         public static List<T> GetAll(OracleContext databaseContext)
@@ -49,10 +49,10 @@ using System.Data.Entity.Infrastructure;
                     return databaseContext.Set<T>().Where(predicate).ToList();
                 }
             }
-            catch(Exception exception)
-            {                
+            catch (Exception exception)
+            {
                 return null;
-                
+
             }
         }
         public static void Delete(T entity)
@@ -131,7 +131,7 @@ using System.Data.Entity.Infrastructure;
         }
 
         public static List<T> AddAll(List<T> entity, OracleContext databaseContext)
-        {            
+        {
             databaseContext.Set<T>().AddRange(entity);
             databaseContext.SaveChanges();
             return entity;
@@ -142,36 +142,36 @@ using System.Data.Entity.Infrastructure;
             databaseContext.Set<T>().Add(entity);
             return entity;
         }
-      
+
         public static void Remove(T entity, OracleContext databaseContext)
         {
             databaseContext.Set<T>().Remove(entity);
         }
-         public static T Update(T entity) //updates all values
+        public static T Update(T entity) //updates all values
         {
             using (var databaseContext = new OracleContext())
             {
                 databaseContext.Set<T>().Attach(entity);
                 databaseContext.Entry(entity).State = EntityState.Modified;
-                databaseContext.SaveChanges();                
+                databaseContext.SaveChanges();
                 return entity;
             }
         }
 
         public static T UpdateSome(T entity, params Expression<Func<T, object>>[] updatedProperties)
-        {         
-             
+        {
+
             //Ensure only modified fields are updated.
             using (var databaseContext = new OracleContext())
             {
                 var dbEntry = databaseContext.Entry(entity);
 
-                foreach(var property in dbEntry.OriginalValues.PropertyNames)
+                foreach (var property in dbEntry.OriginalValues.PropertyNames)
                 {
                     var original = dbEntry.OriginalValues.GetValue<object>(property);
                     var current = dbEntry.CurrentValues.GetValue<object>(property);
 
-                    if(original != null && !original.Equals(current))
+                    if (original != null && !original.Equals(current))
                     {
                         dbEntry.Property(property).IsModified = true;
                     }
@@ -201,7 +201,7 @@ using System.Data.Entity.Infrastructure;
                 return databaseContext.Database.SqlQuery<T>(sqlStatement, parameters).ToList();
             }
         }
-       
+
         public static void ExecuteEmptyStoredProcedure(string sqlStatement, params object[] parameters)
         {
             using (var databaseContext = new OracleContext())

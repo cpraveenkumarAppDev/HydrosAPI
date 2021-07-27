@@ -4,16 +4,18 @@
     using System.Collections.Generic;
     using System.Linq;
     using Models.Permitting.AAWS;
-     using Models.ADWR;
+    using Models.ADWR;
     using Data;
     using System;
-    
+ 
+
+
     public class AwsConveyViewModel
     {
         public VAwsOriginalFile OriginalFile { get; set; }
         public List<VAwsConveyFile> ConveyFile { get; set; }
-        public List<string> StatusReport { get; set; }
-       
+        public Dictionary<string,object> StatusReport { get; set; }
+
 
         public AwsConveyViewModel()
         {
@@ -22,7 +24,7 @@
         public AwsConveyViewModel(int? id)
         {
             var originalFile = VAwsOriginalFile.Get(o => o.SearchWaterRightFacilityId == id);
-            var conveyFile = VAwsConveyFile.GetList(c => c.SearchWaterRightFacilityId == id).OrderBy(c=>c.ConveyingFileNo).ToList();
+            var conveyFile = VAwsConveyFile.GetList(c => c.SearchWaterRightFacilityId == id).OrderBy(c => c.ConveyingFileNo).ToList();
             OriginalFile = originalFile;
             ConveyFile = conveyFile;
         }
@@ -34,174 +36,138 @@
 
             if (id != null && conveyance != null)
             {
-                using (var context = new OracleContext())
-                {
-
-                if (conveyance.OriginalFile != null)
-                {
-                    if(conveyance.OriginalFile.OriginalFileNo !=null && conveyance.OriginalFile.OriginalFileDate !=null)
-                    {
-                        var originalNo = conveyance.OriginalFile.OriginalFileNo;
-                        var originalDate = conveyance.OriginalFile.OriginalFileDate;
-                        var record = QueryResult.GetWrfRecord(originalNo);
-
-                        if (record != null)
-                        {
-                            var existing = originalNo != null ? context.WRF_WRF.Where(x => x.WaterRightFacilityIdFrom == id && x.RelationshipTypeCode == "AWOF").FirstOrDefault() : null;
-
-                            if (existing != null)
-                            {
-                                existing.WaterRightFacilityIdTo = record.Id;
-                                existing.UpdateBy = user;
-                                existing.UpdateDt = currentDate;
-                            }
-
-                            else
-                            {
-                                var addItem = new WaterRightFacilityToWaterRightFacility()
-                                {
-                                    WaterRightFacilityIdFrom = id ?? -1,
-                                    WaterRightFacilityIdTo = record.Id,
-                                    RelationshipTypeCode = "AWOF",
-                                    CreateBy = user,
-                                    CreateDt = currentDate
-                                };
-
-                                context.WRF_WRF.Add(addItem);
-
-                            }
-
-                            var addActivity = new AwAppActivityTrk()
-                            {
-                                WaterRightFacilityId=record.Id,
-                                ActivityTrackDate=originalDate,
-                                ActivityCode="ISSD",
-                                CreateDt=currentDate,
-                                CreateBy=user
-                            };
-
-                            context.AW_APP_ACTIVITY_TRK.Add(addActivity);
-                            actionCount++;
-                        }
-                        else
-                        {
-                            StatusReport.Add(string.Format("Error: The conveying file number {0} could not be found, ", originalNo));
-                        }
-                    }
-                }
-
-                if (conveyance.ConveyFile != null)
-                {
-                   
-                    foreach (var c in conveyance.ConveyFile)
-                    {
-                        if (c.DeleteItem == 1)
-                        {
-                            var deleteItem = context.WRF_WRF.Where(w => w.WaterRightFacilityIdFrom == c.SearchWaterRightFacilityId && w.WaterRightFacilityIdTo == c.ConveyingWaterRightFacilityId && w.RelationshipTypeCode == "AWPF").FirstOrDefault();
-
-                            if (deleteItem != null)
-                            {
-                                context.WRF_WRF.Remove(deleteItem);
-                                actionCount++;
-                            }
-                            else
-                            {
-                                StatusReport.Add(string.Format("Error: Could not delete {0}", c.ConveyingFileNo));
-                            }
-                        }
-
-                        else
-                        {
-                            var record = QueryResult.GetWrfRecord(c.ConveyingFileNo);
-                            if (record != null)
-                            {
-                                var addItem = new WaterRightFacilityToWaterRightFacility()
-                                {
-                                    WaterRightFacilityIdFrom = c.SearchWaterRightFacilityId ?? -1,
-                                    WaterRightFacilityIdTo = record.Id,
-                                    RelationshipTypeCode = "AWPF",
-                                    CreateBy = user,
-                                    CreateDt = currentDate
-                                };
-                                context.WRF_WRF.Add(addItem);
-                                actionCount++;
-                            }
-                            else
-                            {
-                                StatusReport.Add(string.Format("Error: The conveying file number {0} could not be found, ", c.ConveyingFileNo));
-                            }
-                        }
-                        if (actionCount > 0)
-                        {
-                            context.SaveChangesAsync();
-                        }
-                    }
-                }
-                   
-            }
-                //  var deletes = conveyance.ConveyFile.Where(c => c.DeleteItem == 1);
-                // var adds = conveyance.ConveyFile.Where(c => !(c.DeleteItem == 1));
-
-                /*if (deletes != null)
-                {
-                    var deleteIds = deletes.Select(i => i.ConveyingWaterRightFacilityId).ToArray();
-                    var deleteRecords = WaterRightFacilityToWaterRightFacility.GetList(ww => ww.WaterRightFacilityIdFrom == id && deleteIds.Contains(ww.WaterRightFacilityIdTo) && ww.RelationshipTypeCode == "AWPF");
-
-                    foreach(var d in deleteRecords)
-                    {
-                        WaterRightFacilityToWaterRightFacility.Delete(d);
-                    }                        
-                }
-                if (adds != null)
-                {
-                    var validAdds = new List<WaterRightFacilityToWaterRightFacility>();
-                    foreach (var a in adds)
-                    {
-                        if (a.ConveyingFileNo != null)
-                        {
-                            var record = QueryResult.GetWrfRecord(a.ConveyingFileNo);
-
-
-                            if (record == null)
-                            {
-                                StatusReport.Add(string.Format("Error: The file number {0} is invalid, ", a.ConveyingFileNo));
-
-                            }
-                            else
-                            {
-                                StatusReport.Add(string.Format("Valid: The file number {0} was added, ", a.ConveyingFileNo));
-
-                                validAdds.Add(new WaterRightFacilityToWaterRightFacility()
-                                {
-                                    WaterRightFacilityIdFrom = id ?? -1,
-                                    WaterRightFacilityIdTo = record.Id,
-                                    RelationshipTypeCode = "AWPF",
-                                    CreateBy = user,
-                                    CreateDt = DateTime.Now
-                                });
-                            }
-                        }
-                    }
-
-                    var error = StatusReport.Where(s => s.Contains("Error"));
-
-                    if (!(error != null && error.Count() > 0))
-                    {
-                        StatusReport = null;
-                    }
-
-                    if (validAdds != null && validAdds.Count() > 0)
-                    {
-
-                        WaterRightFacilityToWaterRightFacility.AddAll(validAdds);
-                    }
-                }                    
-
-            }
-        }*/
+                var wrf_id = id ?? -1;    
                 
+                if(conveyance.OriginalFile != null && conveyance.OriginalFile.OriginalFileNo != null)                    
+                {
+                    UpdateOriginalFile(wrf_id, conveyance.OriginalFile.OriginalFileNo, user, currentDate);
+                }
 
+                if (conveyance.ConveyFile != null && conveyance.ConveyFile.Count() > 0)
+                {
+                    var deletes = conveyance.ConveyFile.Where(d => d.DeleteItem == 1).Select(d => d.ConveyingWaterRightFacilityId).ToArray();
+                    var adds = conveyance.ConveyFile.Where(a => !(a.DeleteItem == 1)).ToList();
+
+                    if (deletes != null && deletes.Count() > 0)
+                    {
+                        actionCount += DeleteConveyance(wrf_id, deletes, user);                        
+                    }
+
+                    if (adds != null && adds.Count() > 0)
+                    {
+                        actionCount+=AddConveyance(wrf_id, adds, user, currentDate);
+                    }
+                }
+            }
+
+            var originalFile = VAwsOriginalFile.Get(o => o.SearchWaterRightFacilityId == id);
+            var conveyFile = VAwsConveyFile.GetList(c => c.SearchWaterRightFacilityId == id).OrderBy(c => c.ConveyingFileNo).ToList();
+            OriginalFile = originalFile;
+            ConveyFile = conveyFile;
+        }
+        
+
+        private void UpdateOriginalFile(int id, string originalFile, string user, DateTime currentDate)
+        {
+            
+            var record = QueryResult.GetWrfRecord(originalFile);
+            if(record==null || originalFile==null)
+            {
+                StatusReport.Add("OriginalFileNumber", "Invalid Original File Number");
+            }
+
+            else
+            {
+                var activityRecord=AwAppActivityTrk.Get(a => a.ActivityCode == "ISSD" && a.WaterRightFacilityId == record.Id);
+
+                if (activityRecord != null)
+                {
+                    var orig = WaterRightFacilityToWaterRightFacility.GetList(o => o.WaterRightFacilityIdFrom == id && o.RelationshipTypeCode == "AWOF");
+                    var exact = orig.Where(o => o.WaterRightFacilityIdTo == record.Id);
+
+                    if (orig != null && exact == null)
+                    {
+                        var origItem = orig.FirstOrDefault();
+                        origItem.WaterRightFacilityIdTo = record.Id;
+                        origItem.UpdateBy = user;
+                        origItem.UpdateDt = currentDate;
+                        WaterRightFacilityToWaterRightFacility.Update(origItem);
+                    }
+
+                    else if (orig == null)
+                    {
+                        var item = new WaterRightFacilityToWaterRightFacility()
+                        {
+                            WaterRightFacilityIdFrom = id,
+                            WaterRightFacilityIdTo = record.Id,
+                            RelationshipTypeCode = "AWOF",
+                            IsActive = "Y",
+                            CreateBy = user,
+                            CreateDt = currentDate
+                        };
+                    }
+                }
+                else
+                {
+                    StatusReport.Add("OriginalFileActivity", "There is no issued record for the Original File Number provided.");
+                }
             }
         }
+
+        private int DeleteConveyance(int id, int[] deleteId, string user)
+        {
+            int actionCount = 0;
+
+            try
+            {
+                using (var context = new OracleContext())
+                {
+                    var del = context.WRF_WRF.Where(dd => dd.WaterRightFacilityIdFrom == id && dd.RelationshipTypeCode == "AWPF" && deleteId.Contains(dd.WaterRightFacilityIdTo));
+
+                    if (del != null && del.Count() > 0)
+                    {
+                            context.WRF_WRF.RemoveRange(del);
+                            context.SaveChanges();
+                            actionCount = del.Count();
+                    }
+                }     
+            }
+            catch(Exception exception)
+            {
+              
+                StatusReport.Add("DeleteError", exception);
+            }
+
+             return actionCount;
+        }
+
+        private int AddConveyance(int id, List<VAwsConveyFile> adds, string user, DateTime currentDate)
+        {
+            int actionCount = 0;
+            foreach(var a in adds)
+            {
+                var record = QueryResult.GetWrfRecord(a.ConveyingFileNo);
+
+                if(record != null)
+                {
+                    var addItem = new WaterRightFacilityToWaterRightFacility()
+                    {
+                        WaterRightFacilityIdFrom = id,
+                        WaterRightFacilityIdTo = record.Id,
+                        RelationshipTypeCode = "AWPF",
+                        IsActive="Y",
+                        CreateBy = user,
+                        CreateDt = currentDate
+                    };
+
+                    WaterRightFacilityToWaterRightFacility.Add(addItem);
+
+                    actionCount++;
+                }
+            }
+
+            return actionCount;
+        }        
+
     }
 }
