@@ -205,8 +205,8 @@ namespace HydrosApi
             }
             return Ok(found.PCC);
         }
-        [HttpGet, Route("adwr/wrfbypcc/{inputPcc}")]
-        public IHttpActionResult GetWrfById(string inputPcc)
+        [HttpGet, Route("adwr/wrfbypcc/{inputPcc}/{type?}")]
+        public IHttpActionResult GetWrfById(string inputPcc, string type=null)
         {
             
             try

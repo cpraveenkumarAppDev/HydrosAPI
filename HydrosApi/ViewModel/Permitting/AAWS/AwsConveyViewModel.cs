@@ -7,7 +7,7 @@
     using Models.ADWR;
     using Data;
     using System;
- 
+    using System.Data.Entity;
 
 
     public class AwsConveyViewModel
@@ -33,30 +33,47 @@
         {
             int actionCount = 0;
             var currentDate = DateTime.Now;
+            StatusReport = new Dictionary<string, object>();
 
             if (id != null && conveyance != null)
             {
-                var wrf_id = id ?? -1;    
-                
-                if(conveyance.OriginalFile != null && conveyance.OriginalFile.OriginalFileNo != null)                    
-                {
-                    UpdateOriginalFile(wrf_id, conveyance.OriginalFile.OriginalFileNo, user, currentDate);
-                }
+                var wrf_id = id ?? -1;
 
-                if (conveyance.ConveyFile != null && conveyance.ConveyFile.Count() > 0)
-                {
-                    var deletes = conveyance.ConveyFile.Where(d => d.DeleteItem == 1).Select(d => d.ConveyingWaterRightFacilityId).ToArray();
-                    var adds = conveyance.ConveyFile.Where(a => !(a.DeleteItem == 1)).ToList();
 
-                    if (deletes != null && deletes.Count() > 0)
+                using (var context = new OracleContext())
+                {
+                    if (conveyance.OriginalFile != null && conveyance.OriginalFile.OriginalFileNo != null)
                     {
-                        actionCount += DeleteConveyance(wrf_id, deletes, user);                        
+                        actionCount += UpdateOriginalFile(wrf_id, conveyance.OriginalFile.OriginalFileNo, user, currentDate, context);
                     }
 
-                    if (adds != null && adds.Count() > 0)
+                    if (conveyance.ConveyFile != null && conveyance.ConveyFile.Count() > 0)
                     {
-                        actionCount+=AddConveyance(wrf_id, adds, user, currentDate);
+                        var deletes = conveyance.ConveyFile.Where(d => d.DeleteItem == 1).Select(d => d.ConveyingWaterRightFacilityId).ToArray();
+                        var adds = conveyance.ConveyFile.Where(a => !(a.DeleteItem == 1)).ToList();
+
+                        if (deletes != null && deletes.Count() > 0)
+                        {
+                            actionCount += DeleteConveyance(wrf_id, deletes, user, context);
+
+                        }
+
+                        if (adds != null && adds.Count() > 0)
+                        {
+                            actionCount += AddConveyance(wrf_id, adds, user, currentDate, context);
+                        }
                     }
+
+
+                    var errors = StatusReport != null ? StatusReport.Where(s => s.Value.ToString().StartsWith("Error")) : null;
+                    var errorCount = errors != null && errors.Count() > 0 ? errors.Count() : 0;
+
+                    if (errorCount == 0 && actionCount > 0)
+                    {
+                        StatusReport = null;
+                        context.SaveChanges();
+                    }
+
                 }
             }
 
@@ -67,13 +84,13 @@
         }
         
 
-        private void UpdateOriginalFile(int id, string originalFile, string user, DateTime currentDate)
+        private int UpdateOriginalFile(int id, string originalFile, string user, DateTime currentDate, OracleContext context)
         {
-            
+            var actionCount = 0;
             var record = QueryResult.GetWrfRecord(originalFile);
             if(record==null || originalFile==null)
             {
-                StatusReport.Add("OriginalFileNumber", "Invalid Original File Number");
+                StatusReport.Add("OriginalFileNumberInvalid", string.Format("Error: Original File Number {0} is invalid",originalFile));
             }
 
             else
@@ -91,10 +108,15 @@
                         origItem.WaterRightFacilityIdTo = record.Id;
                         origItem.UpdateBy = user;
                         origItem.UpdateDt = currentDate;
-                        WaterRightFacilityToWaterRightFacility.Update(origItem);
+
+                        context.WRF_WRF.Attach(origItem);
+                        context.Entry(origItem).State = EntityState.Modified;                        
+                        actionCount++;
+
+                        StatusReport.Add("OriginalFileNumberUpdate", string.Format("Updated: {0}", OriginalFile));
                     }
 
-                    else if (orig == null)
+                    else if (!(orig != null && orig.Count() > 0))
                     {
                         var item = new WaterRightFacilityToWaterRightFacility()
                         {
@@ -105,48 +127,54 @@
                             CreateBy = user,
                             CreateDt = currentDate
                         };
+
+                        context.WRF_WRF.Add(item);                         
+                        actionCount++;
+                        StatusReport.Add("OriginalFileNumberAdd", string.Format("Added: {0}", OriginalFile));
                     }
                 }
                 else
                 {
-                    StatusReport.Add("OriginalFileActivity", "There is no issued record for the Original File Number provided.");
-                }
+                    StatusReport.Add("OriginalFileNumberError", string.Format("Error: There is no issued record for the Original File Number {0} provided.", OriginalFile));
+                }  
+                
+                
+                 
             }
+            return actionCount;
         }
 
-        private int DeleteConveyance(int id, int[] deleteId, string user)
+        private int DeleteConveyance(int id, int[] deleteId, string user, OracleContext context)
         {
-            int actionCount = 0;
+            int actionCount = 0;            
 
             try
-            {
-                using (var context = new OracleContext())
-                {
-                    var del = context.WRF_WRF.Where(dd => dd.WaterRightFacilityIdFrom == id && dd.RelationshipTypeCode == "AWPF" && deleteId.Contains(dd.WaterRightFacilityIdTo));
+            { 
+                var del = context.WRF_WRF.Where(dd => dd.WaterRightFacilityIdFrom == id && dd.RelationshipTypeCode == "AWPF" && deleteId.Contains(dd.WaterRightFacilityIdTo));
+                actionCount = del.Count();
 
-                    if (del != null && del.Count() > 0)
-                    {
-                            context.WRF_WRF.RemoveRange(del);
-                            context.SaveChanges();
-                            actionCount = del.Count();
-                    }
-                }     
+
+                if (del != null && del.Count() > 0)
+                {
+                    context.WRF_WRF.RemoveRange(del);
+                    StatusReport.Add("ConveyanceDelete", String.Format("Successfully deleted {0} records", actionCount));
+                }                
+                   
             }
             catch(Exception exception)
             {
-              
-                StatusReport.Add("DeleteError", exception);
+                StatusReport.Add("ConveyanceException", QueryResult.BundleExceptions(exception));
             }
 
              return actionCount;
         }
 
-        private int AddConveyance(int id, List<VAwsConveyFile> adds, string user, DateTime currentDate)
+        private int AddConveyance(int id, List<VAwsConveyFile> adds, string user, DateTime currentDate, OracleContext context)
         {
             int actionCount = 0;
             foreach(var a in adds)
             {
-                var record = QueryResult.GetWrfRecord(a.ConveyingFileNo);
+                var record = a.ConveyingFileNo != null ? QueryResult.GetWrfRecord(a.ConveyingFileNo) : null;
 
                 if(record != null)
                 {
@@ -160,9 +188,18 @@
                         CreateDt = currentDate
                     };
 
-                    WaterRightFacilityToWaterRightFacility.Add(addItem);
-
+                    context.WRF_WRF.Add(addItem);
                     actionCount++;
+                }
+
+                else
+                {
+                    StatusReport.Add(String.Format("ConveyanceNotAdded{0}", actionCount), String.Format("Unable to add {0}", a.ConveyingFileNo ?? "No value supplied"));
+                }
+
+                if (actionCount > 0)
+                {
+                    StatusReport.Add(String.Format("ConveyanceAdded{0}", actionCount), String.Format("Successfully added {0} records", actionCount));
                 }
             }
 

@@ -358,6 +358,8 @@
         {
             try
             {
+                var msg = "";
+
                 if (!(la != null && la.Count() > 0))
                     return Ok();
 
@@ -548,22 +550,29 @@
         public IHttpActionResult SaveConveyance(int id, [FromBody] AwsConveyViewModel conveyance) //New conveyance
         {
             try
-            {
-
-                 
+            {                 
                 var user = new GetBestUsername(User.Identity.Name).UserName;  //Set to Oracle ID if possible
-
                 var convey = new AwsConveyViewModel(id, conveyance, user);
+
+                //use "successfulActions" if you want to return mixed results (successful and unsuccessful actions)
+                //you will need to accommodate in the AwsConveyViewModel to savechanges even when some are unsuccessful
+                var successfulActions = convey.StatusReport != null ? convey.StatusReport.Where(s => !(s.Value.ToString().StartsWith("Error"))) : null;
+                var errors = convey.StatusReport != null ? convey.StatusReport.Where(s => s.Value.ToString().StartsWith("Error")) : null;
+
+                if(errors != null && errors.Count() > 0)
+                {
+                    var msg = String.Join(", ", errors.Select(v => v.Value.ToString()));
+                    return BadRequest(msg);
+                }
+                
                 return Ok(convey);
             }
-
 
             catch (Exception exception)
             {
                 return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
             }
         }
-
 
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS & Recharge")]
@@ -1401,10 +1410,11 @@
             }
         }
 
-        [HttpGet, Route("aws/getwrfid/{pcc}")]
-        public IHttpActionResult GetWrfId(string pcc)
+        [HttpGet, Route("aws/getwrfid/{pcc}/{type?}")]
+        public IHttpActionResult GetWrfId(string pcc, string type=null)
         {
-            int? waterRightFacilityId;
+           
+            int? waterRightFacilityId=null;
             if (pcc == null)
             {
                 return BadRequest("Please provide a PCC");
@@ -1412,12 +1422,37 @@
 
             try
             {
-                Regex regex = new Regex(@"(\d{2})\D?(\d{6})\D?(\d{4})");
-                pcc = regex.Replace(pcc, "$1-$2.$3");
-                if (pcc.Length != 14)
-                    return BadRequest("Invalid PCC format was submitted.");
+                Regex regex = type != null && type == "SW" ? new Regex(@"(\d{2})\D?(\d{5})\D?(\d{1,4})") : new Regex(@"(\d{2})\D?(\d{6})\D?(\d{4})");                
 
-                waterRightFacilityId = QueryResult.RgrRptGet(pcc);
+                pcc = regex.Replace(pcc, "$1-$2.$3");
+
+                if (type != null &&  type == "SW")
+                {
+
+                    //regex = new Regex(@"(\d{2})\D?(\d{6})\D?(\d{1,4})");
+
+                    // pcc= regex.Replace(pcc, "$1-$2.$3");
+
+
+                    if (pcc.Length > 9)
+                    {
+
+                        waterRightFacilityId = QueryResult.RgrRptSurface(pcc);
+
+                        if (waterRightFacilityId == null)
+                            return Ok(-1);
+                        else
+                            return Ok(waterRightFacilityId);
+                    }
+                }
+                else {
+                    if (pcc.Length != 14)
+                    {
+                        return BadRequest("Invalid PCC format was submitted.");
+                    }
+
+                    waterRightFacilityId = QueryResult.RgrRptGet(pcc);
+                }                
 
                 if (waterRightFacilityId == null)
                     return BadRequest("PCC does not exist.");
@@ -1429,7 +1464,6 @@
                 return BadRequest(QueryResult.BundleExceptions(exception));
             }
         }
-
 
         [HttpPost, Route("aws/legalAvail/remove")]
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-AAWS")]

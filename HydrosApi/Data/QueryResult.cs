@@ -121,6 +121,36 @@
             }
         }
 
+
+        public static int? RgrRptSurface(string pcc)
+        {
+            if (pcc == null)
+                return null;
+
+            Regex regex = new Regex(@"(\d{2})\D?(\d{6})\D?(\d{1,4})");
+            pcc = regex.Replace(pcc, "$1-$2.$3");
+
+            if(pcc.Length < 10)
+            {
+                return null;
+            }
+
+            using (var ctx = new OracleContext())
+            using (var cmd = ctx.Database.Connection.CreateCommand())
+            {
+                ctx.Database.Connection.Open();
+                cmd.CommandText = string.Format("select t.art_idno id from ADWR.SW_APPL_REGRY t " +
+                                                " where t.art_program || '-' || t.art_appli_no || '.' || t.art_convy_no = '{0}'", pcc);
+                var id = cmd.ExecuteScalar();
+                if (id != null)
+                    return Convert.ToInt32(id);
+                else
+                    return null;
+
+            }
+
+        }
+
         /// <summary>
         /// Use this when you need to run an inline SQL query.
         /// </summary>
@@ -132,7 +162,7 @@
             try
             {
                 if (pcc == null)
-                    return null;
+                    return null;               
 
                 Regex regex = new Regex(@"(\d{2})\D?(\d{6})\D?(\d{4})");
                 pcc = regex.Replace(pcc, "$1-$2.$3");
@@ -205,6 +235,8 @@
             return null;
         }
 
+      
+         
         public static WaterRightFacility GetWrfRecord(string id)
         {
             try
