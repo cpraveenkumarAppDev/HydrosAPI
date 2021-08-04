@@ -48,6 +48,7 @@ namespace HydrosApi.Data
         public virtual DbSet<AwUsers> AW_USERS { get; set; }
 
         public virtual DbSet<WaterRightFacility> WTR_RIGHT_FACILITY { get; set; }
+        
         public virtual DbSet<AwsComments> AWS_COMMENTS { get; set; }
         public virtual DbSet<VAwsCustomerLongName> V_AWS_CUSTOMER_LONG_NAME { get; set; }
         public virtual DbSet<VAwsCustomer> V_AWS_CUSTOMER { get; set; }
@@ -73,6 +74,9 @@ namespace HydrosApi.Data
 
         public virtual DbSet<AwAreaOfImpact100> AwAreaOfImpact100 { get; set; }
         public object AwsComments { get; internal set; }
+
+        public virtual DbSet<VAwsConveyFile> VAwsConveyFile { get; set; }
+        public virtual DbSet<VAwsOriginalFile> VAwsOriginalFile { get; set; }
 
 
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }

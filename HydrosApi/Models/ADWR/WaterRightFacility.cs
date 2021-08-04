@@ -37,6 +37,9 @@ namespace HydrosApi.Models.ADWR
         [Column("ACC_DOCKET_DT")]
         public DateTime? AzCorpComDocketDate { get; set; }
 
+        [Column("NAME")]
+        public string WaterRightFacilityName { get; set; }
+
         public string PCC { get => $"{this.Program}-{this.Certificate}.{this.Conveyance}"; }
 
         [Column("UPDATEBY")]

@@ -4,7 +4,8 @@
     using System.Data.Entity;
     using System.Text.RegularExpressions;
     using System;
-    
+    using System.Globalization;
+    using Models.ADWR;
 
     public partial class QueryResult : Repository<QueryResult>
     {
@@ -25,16 +26,10 @@
 
         public static List<dynamic> RunAnyQuery(string sql)
         {
-            return RunAnyQuery(sql, new OracleContext(),true);
-        }
+            return RunAnyQuery(sql, new OracleContext());
+        }        
 
-        public static List<dynamic> RunAnyQuery(string sql, bool addHeader)
-        {
-            return RunAnyQuery(sql, new OracleContext(), addHeader);
-        }
-
-
-        public static List<dynamic> RunAnyQuery(string sql, DbContext ctx=null,bool addHeader=true)
+        public static List<dynamic> RunAnyQuery(string sql, DbContext ctx=null, bool addHeader=true)
         {
             var result = new List<dynamic>();
 
@@ -91,7 +86,7 @@
                             data.Add(reader.GetName(i), value);
                         }
 
-                        if (rowIndex == 1 && addHeader == true)
+                        if (rowIndex == 1 && addHeader==true)
                         {
                             result.Add(header);
                         }
@@ -126,6 +121,36 @@
             }
         }
 
+
+        public static int? RgrRptSurface(string pcc)
+        {
+            if (pcc == null)
+                return null;
+
+            Regex regex = new Regex(@"(\d{2})\D?(\d{6})\D?(\d{1,4})");
+            pcc = regex.Replace(pcc, "$1-$2.$3");
+
+            if(pcc.Length < 10)
+            {
+                return null;
+            }
+
+            using (var ctx = new OracleContext())
+            using (var cmd = ctx.Database.Connection.CreateCommand())
+            {
+                ctx.Database.Connection.Open();
+                cmd.CommandText = string.Format("select t.art_idno id from ADWR.SW_APPL_REGRY t " +
+                                                " where t.art_program || '-' || t.art_appli_no || '.' || t.art_convy_no = '{0}'", pcc);
+                var id = cmd.ExecuteScalar();
+                if (id != null)
+                    return Convert.ToInt32(id);
+                else
+                    return null;
+
+            }
+
+        }
+
         /// <summary>
         /// Use this when you need to run an inline SQL query.
         /// </summary>
@@ -137,7 +162,7 @@
             try
             {
                 if (pcc == null)
-                    return null;
+                    return null;               
 
                 Regex regex = new Regex(@"(\d{2})\D?(\d{6})\D?(\d{4})");
                 pcc = regex.Replace(pcc, "$1-$2.$3");
@@ -197,7 +222,62 @@
             return fullException;
         }
 
-        
 
+        public static string TitleFormat(string val)
+        {
+            TextInfo ti = new CultureInfo("en-US", true).TextInfo;
+
+            if (val != null)
+            {
+                return ti.ToTitleCase(val.ToLower());
+
+            }
+            return null;
+        }
+
+      
+         
+        public static WaterRightFacility GetWrfRecord(string id)
+        {
+            try
+            {
+
+               // if (id == null)
+                   // return BadRequest("Please enter a PCC or WaterRightFacilityId");
+
+                Regex regex = new Regex(@"([1-9][0-9])[^0-9]?([0-9]{6})[^0-9]?([0-9]{4})");
+                var pcc = regex.Replace(id, "$1-$2.$3");
+
+                if (pcc.Length == 14)
+                {
+                    var program = regex.Replace(pcc, "$1");
+                    var certificate = regex.Replace(pcc, "$2");
+                    var conveyance = regex.Replace(pcc, "$3");
+                    return WaterRightFacility.Get(w => w.Program == program && w.Certificate == certificate && w.Conveyance == conveyance);
+                }
+                else
+                {
+                    int wrfId;
+                    bool validId = Int32.TryParse(id, out wrfId);
+
+                    if (validId)
+                    {
+                       return WaterRightFacility.Get(w => w.Id == wrfId);
+                    }
+
+                }
+                // var info = new GeoBoundaryViewModel();
+                //return Ok(info);
+
+                return null;
+            }
+            catch (Exception exception)
+            {
+                return null;
+            }
+
+
+        }
+      
     }
 }

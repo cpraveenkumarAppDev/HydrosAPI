@@ -38,5 +38,26 @@ namespace HydrosApi.Models.Permitting.AAWS
         [Column("PCC")]
         [StringLength(20)]
         public string PCC { get; set; }
+
+        [NotMapped]
+        public string PermitCodeDescriptionLower
+        {
+            get
+            {
+                if(PermitCodeDescription != null)
+                {
+                    PermitCodeDescription = QueryResult.TitleFormat(PermitCodeDescription);
+                    return PermitCodeDescription;
+
+                }
+
+                return null;
+            }
+
+            set
+            {
+                this.PermitCodeDescriptionLower = value;
+            }
+        }
     }
 }

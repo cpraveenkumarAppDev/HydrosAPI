@@ -20,6 +20,7 @@
         {
             var hydro = VAwsHydro.Get(h => h.WaterRightFacilityId == id);
             var wellServing = VAwsWellServing.GetList(x => x.WaterRightFacilityId == id).OrderBy(x=>x.WellRegistryId).ToList();
+             
 
             Hydrology = hydro;
             WellServing = wellServing;
