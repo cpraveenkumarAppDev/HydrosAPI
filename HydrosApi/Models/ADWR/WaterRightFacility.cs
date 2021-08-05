@@ -37,6 +37,12 @@ namespace HydrosApi.Models.ADWR
         [Column("ACC_DOCKET_DT")]
         public DateTime? AzCorpComDocketDate { get; set; }
 
+        [Column("ACC_COMPLIANCE")]
+        public string AzCorpCompliance { get; set; }
+
+        [Column("ACC_COMPLIANCE_STATUS_DATE")]
+        public DateTime? AzCorpComplianceStatusDate { get; set; }
+
         [Column("NAME")]
         public string WaterRightFacilityName { get; set; }
 
