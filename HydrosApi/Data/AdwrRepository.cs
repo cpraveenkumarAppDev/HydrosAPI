@@ -104,6 +104,15 @@ using System.Data.Entity.Infrastructure;
             }
         }
 
+        public static void Delete(List<T> entity)
+        {
+            using (var databaseContext = new ADWRContext())
+            {
+                databaseContext.Entry(entity).State = EntityState.Deleted;
+                databaseContext.SaveChanges();
+            }
+        }
+
         public static void AddAll(List<T> entity)
         {
             using (var databaseContext = new ADWRContext())

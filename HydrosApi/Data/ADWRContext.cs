@@ -49,7 +49,7 @@
         public virtual DbSet<POINT_OF_DIVERSION_VIEW> POINT_OF_DIVERSION_VIEW { get; set; }
         public virtual DbSet<WFR_POD> WFR_POD { get; set; }
 
-        
+        public virtual DbSet<IrrigationData> IrrigationData { get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

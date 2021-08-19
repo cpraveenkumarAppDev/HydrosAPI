@@ -183,6 +183,49 @@
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpPost, Route("adj/updateirr/")]
+        
+
+        public IHttpActionResult UpdateIrrigationData([FromBody] List<IrrigationData> irrigationData)
+        {
+            if(irrigationData == null)
+            {
+                return BadRequest("No data was submitted. Nothing Updated");
+            }
+
+            List<IrrigationData> notDelete = new List<IrrigationData>();
+
+            var delete = irrigationData.Where(i => i.DeleteRecord == true && i.Id != null).ToList();   
+            var add = irrigationData.Where(i => i.Id == null).ToList();
+            var update = irrigationData.Where(i => i.DeleteRecord != true && i.Id != null).ToList();
+
+            if(delete != null && delete.Count() > 0)
+            {
+                IrrigationData.Delete(delete);
+            }
+
+            if(add != null && add.Count() > 0)
+            {
+                IrrigationData.AddAll(add);
+                notDelete.AddRange(add);              
+            }
+
+            if(update != null && update.Count() > 0)
+            {
+
+                foreach(var u in update)
+                {
+                    IrrigationData.Update(u);
+                }
+
+                notDelete.AddRange(update);
+
+            }
+
+            return Ok(notDelete);
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/updateWfr/{useage}/{id}/{wfr_num}")]
         [HttpPost]
         public async Task<IHttpActionResult> UpdateWfr(string useage, int id, string wfr_num)

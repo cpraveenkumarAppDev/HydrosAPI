@@ -78,7 +78,21 @@ namespace HydrosApi.Models.Permitting.AAWS
 
         [Column("UPDATEDT")]
         public DateTime? UpdateDt { get; set; }
-               
+
+       //NotMapped]
+        /*blic WaterRightFacility WaterRightRecord { 
+            
+            get
+            {
+                return WaterRightFacility.Get(f => f.Id == WaterRightFacilityId);
+            }
+            
+            set
+            {
+                WaterRightRecord = value;
+            }           
+        }*/
+      
         [NotMapped]
         public string PCC
         {
