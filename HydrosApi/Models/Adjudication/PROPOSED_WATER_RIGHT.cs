@@ -1,5 +1,4 @@
-namespace HydrosApi.Models
-{
+ 
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -7,18 +6,21 @@ namespace HydrosApi.Models
     using System.Data.Entity.Spatial;
     using System.Linq;
     using System.Text.RegularExpressions;
+     
     using HydrosApi.Data;
+    namespace HydrosApi.Models.Adjudication
+    {
 
-    [Table("ADJ_INV.PROPOSED_WATER_RIGHT")]
-    public partial class PROPOSED_WATER_RIGHT:AdwrRepository<PROPOSED_WATER_RIGHT>
+        [Table("ADJ_INV.PROPOSED_WATER_RIGHT")]
+    public partial class PROPOSED_WATER_RIGHT : AdwrRepository<PROPOSED_WATER_RIGHT>
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-       public PROPOSED_WATER_RIGHT()
-       {
+        public PROPOSED_WATER_RIGHT()
+        {
             PWR_POD = new HashSet<PWR_POD>();
-       }
-        
-        [Key]    
+        }
+
+        [Key]
         public int ID { get; set; }
 
         public int? WFR_ID { get; set; }
@@ -42,7 +44,7 @@ namespace HydrosApi.Models
         public string POU_NAME { get; set; }
         [StringLength(50)]
         public string POU_CODE { get; set; }
-       
+
         public int? POU_SEQ { get; set; }
         [StringLength(50)]
         public string QUANTITY { get; set; }
@@ -51,6 +53,12 @@ namespace HydrosApi.Models
 
         [NotMapped]
         public string StatusMessage { get; set; }
+
+        [NotMapped]
+        public List<IrrigationData> irrigationData {
+            get => IrrigationData.GetList(i => i.ProposedWaterRightId == ID);
+            set => irrigationData = value;            
+        }
 
         public static PROPOSED_WATER_RIGHT ProposedWaterRight(string pouId)
         {
@@ -61,7 +69,7 @@ namespace HydrosApi.Models
         }
 
         public static PROPOSED_WATER_RIGHT ProposedWaterRight(int id)
-        {            
+        { 
             return PROPOSED_WATER_RIGHT.Get(p => p.ID == id);             
         }
 
