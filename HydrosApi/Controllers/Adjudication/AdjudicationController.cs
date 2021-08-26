@@ -232,6 +232,8 @@
         {
             try
             {
+                var user=User.Identity.Name.Replace("AZWATER0\\", "");
+                var date = DateTime.Now;
 
                 var wfrSde = await Task.FromResult(WATERSHED_FILE_REPORT_SDE.Get(p => p.WFR_NUM == wfr_num));
                 var wfr = await Task.FromResult(WATERSHED_FILE_REPORT.Get(p => p.OBJECTID == wfrSde.OBJECTID));
@@ -241,6 +243,8 @@
                     var pod = await Task.FromResult(WFR_POD.Get(p => p.ID == id));
                     pod.WFR_ID = wfr.ID;
                     pod.POD_ID = adwrpod.ID;
+                    pod.UPDATEBY = user;
+                    pod.UPDATEDT = date;
                     WFR_POD.Update(pod);
                 }
                 else if (useage == "POD" && adwrpod == null)
@@ -251,9 +255,11 @@
                 {
                     var pwr = await Task.FromResult(PROPOSED_WATER_RIGHT.Get(p => p.ID == id));
                     pwr.WFR_ID = wfr.ID;
+                    pwr.UPDATEBY = user;
+                    pwr.UPDATEDT = date;
                     PROPOSED_WATER_RIGHT.Update(pwr);
                 }
-                wfr.WFR_NUM = wfr_num;
+                wfr.WFR_NUM = wfr_num;                
                 WATERSHED_FILE_REPORT.Update(wfr);
                 return Ok(wfr);
 
