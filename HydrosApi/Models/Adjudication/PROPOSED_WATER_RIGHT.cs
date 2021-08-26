@@ -63,14 +63,13 @@
         public static PROPOSED_WATER_RIGHT ProposedWaterRight(string pouId)
         {
             Regex rgx = new Regex(@"[^0-9]");
-            var pwr= !rgx.IsMatch(pouId) ? PROPOSED_WATER_RIGHT.ProposedWaterRight(int.Parse(pouId)) 
-                : PROPOSED_WATER_RIGHT.Get(p => p.POU_ID == pouId);
+            var pwr= !rgx.IsMatch(pouId) ? ProposedWaterRight(int.Parse(pouId)) : Get(p => p.POU_ID == pouId);
             return pwr;
         }
 
         public static PROPOSED_WATER_RIGHT ProposedWaterRight(int id)
         { 
-            return PROPOSED_WATER_RIGHT.Get(p => p.ID == id);             
+            return Get(p => p.ID == id);             
         }
 
         //public static <List>PROPOSED_WATER_RIGHT WaterRight(string DWR_ID)
