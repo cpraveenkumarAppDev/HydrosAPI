@@ -50,10 +50,10 @@ namespace HydrosApi.Models.Adjudication
         public DateTime? ClaimDate { get; set; }
 
         [Column("UTM_X")]
-        public decimal UtmX { get; set; }
+        public decimal? UtmX { get; set; }
 
         [Column("UTM_Y")]
-        public decimal UtmY { get; set; }
+        public decimal? UtmY { get; set; }
 
         [Column("REMARKS")]
         public string Remarks { get; set; }
