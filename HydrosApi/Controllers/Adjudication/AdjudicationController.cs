@@ -127,6 +127,44 @@
             }
         }
 
+        [HttpGet, Route("adj/getnoa/{pcc?}")]
+        public IHttpActionResult GetNoa(string pcc = null) //like pcc but program/file_no/file_ext
+        {
+            int? id = null;
+
+            if (pcc != null)
+            {
+                Regex regex = new Regex(@"([1-9][0-9])\D?([0-9]{6})\D?([0-9]{4})");
+                pcc = regex.Replace(pcc, "$1-$2.$3");
+
+                if (pcc.Length == 14)
+                {
+                    id = QueryResult.RgrRptGet(pcc);
+                }
+                else
+                {
+                    id = int.Parse(pcc);
+                }
+            }
+
+
+            var noaCode = id == null ? NoticeOfAppropriationView.PopulateNoaView() : NoticeOfAppropriationView.PopulateNoaView(id);
+            return Ok(noaCode);
+            
+            //[NotMapped]
+           // public List<IrrigationData> Irrigation {
+           //     get => IrrigationData.GetList(i => i.ProposedWaterRightId == ID);
+             //   set => Irrigation = value;
+          //  }
+
+
+
+
+
+           
+        }
+
+
         //--------------------------------------------------------------------------------------------------------
         //---------------------------------- ADD/ DELETE/UPDATE ------------------------------------------------
         //--------------------------------------------------------------------------------------------------------       
@@ -182,48 +220,69 @@
 
         }
 
-        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        [HttpPost, Route("adj/updateirr/")]
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         
-
-        public IHttpActionResult UpdateIrrigationData([FromBody] List<IrrigationData> irrigationData)
+        
+        [HttpPost, Route("adj/updateirr/")]
+        public async Task<IHttpActionResult> UpdateIrrigationData([FromBody] List<IrrigationData> irrigation)
         {
-            if(irrigationData == null)
+            try
             {
-                return BadRequest("No data was submitted. Nothing Updated");
-            }
-
-            List<IrrigationData> notDelete = new List<IrrigationData>();
-
-            var delete = irrigationData.Where(i => i.DeleteRecord == true && i.Id != null).ToList();   
-            var add = irrigationData.Where(i => i.Id == null).ToList();
-            var update = irrigationData.Where(i => i.DeleteRecord != true && i.Id != null).ToList();
-
-            if(delete != null && delete.Count() > 0)
-            {
-                IrrigationData.Delete(delete);
-            }
-
-            if(add != null && add.Count() > 0)
-            {
-                IrrigationData.AddAll(add);
-                notDelete.AddRange(add);              
-            }
-
-            if(update != null && update.Count() > 0)
-            {
-
-                foreach(var u in update)
+                int actions = 0;
+                if (irrigation == null)
                 {
-                    IrrigationData.Update(u);
+                    return BadRequest("No data was submitted. Nothing Updated");
                 }
 
-                notDelete.AddRange(update);
+                List<IrrigationData> notDelete = new List<IrrigationData>();
 
+
+                var delete = irrigation.Where(i => i.DeleteRecord == true && i.Id != null).ToList();
+                var add = irrigation.Where(i => i.Id == null && i.ProposedWaterRightId != null).ToList();
+                var update = irrigation.Where(i => i.DeleteRecord != true && i.Id != null && i.ProposedWaterRightId != null).ToList();
+
+                using (var context = new ADWRContext())
+                {
+                    if (delete != null && delete.Count() > 0)
+                    {
+                        var deleteList = delete.Select(d => d.Id).ToArray();
+                        var items = context.IrrigationData.Where(i => deleteList.Contains(i.Id));
+                        context.IrrigationData.RemoveRange(items);
+                    }
+
+                    if (add != null && add.Count() > 0)
+                    {
+                        context.IrrigationData.AddRange(add);
+                        notDelete.AddRange(add);
+                    }
+
+                    if (update != null && update.Count() > 0)
+                    {
+                        foreach (var u in update)
+                        {
+                            context.IrrigationData.Attach(u);
+                            context.Entry(u).State = System.Data.Entity.EntityState.Modified;
+                        }
+
+                        notDelete.AddRange(update);
+                    }
+
+                    actions = await context.SaveChangesAsync();
+                }
+
+                if (actions == 0)
+                {
+                    return BadRequest("No changes were made");
+                }
+
+                return Ok(await Task.FromResult(notDelete));
             }
-
-            return Ok(notDelete);
+            catch(Exception exception)
+            {
+                return BadRequest(string.Format("Error: {0}", QueryResult.BundleExceptions(exception)));
+            }
         }
+
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/updateWfr/{useage}/{id}/{wfr_num}")]

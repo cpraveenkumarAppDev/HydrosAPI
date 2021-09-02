@@ -79,6 +79,7 @@ namespace HydrosApi.Data
         public virtual DbSet<VAwsOriginalFile> VAwsOriginalFile { get; set; }
 
 
+
         //public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
         //public virtual DbSet<WATERSHED_FILE_REPORT> WATERSHED_FILE_REPORT { get; set; }
 

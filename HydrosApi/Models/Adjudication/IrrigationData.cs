@@ -1,12 +1,14 @@
-﻿using HydrosApi.Data;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System;
-
+﻿
 namespace HydrosApi.Models.Adjudication
 {
+    using Data;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System;
+
+
     [Table("ADJ_INV.IRRIGATION_DATA")]
-    public class IrrigationData : AdwrRepository<IrrigationData>
+    public partial class IrrigationData : AdwrRepository<IrrigationData>
     {
         [Key, Column("ID")]       
         public int? Id { get; set; }
@@ -21,10 +23,10 @@ namespace HydrosApi.Models.Adjudication
         public string Crop { get; set; }
 
         [Column("WATER_DUTY")]
-        public float? WaterDuty { get; set; }
+        public decimal? WaterDuty { get; set; }
 
         [Column("REPORTED_VOLUME")]
-        public int? ReportedVolumne { get; set; }
+        public int? ReportedVolume { get; set; }
 
         [Column("UNIT")]
         public string Unit { get; set; }
@@ -48,4 +50,5 @@ namespace HydrosApi.Models.Adjudication
 
         public bool? DeleteRecord { get; set; }
     }
+
 }

@@ -108,7 +108,8 @@ using System.Data.Entity.Infrastructure;
         {
             using (var databaseContext = new ADWRContext())
             {
-                databaseContext.Entry(entity).State = EntityState.Deleted;
+                databaseContext.Entry(entity).State = EntityState.Deleted;                
+                databaseContext.Set<T>().RemoveRange(entity);
                 databaseContext.SaveChanges();
             }
         }
