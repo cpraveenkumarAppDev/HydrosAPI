@@ -286,3 +286,5 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+/NOA_Database_Ticket.zip
+/CODED_CD_NOA_USE.xlsx

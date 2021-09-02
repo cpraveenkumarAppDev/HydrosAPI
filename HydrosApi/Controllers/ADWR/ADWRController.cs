@@ -229,6 +229,29 @@ namespace HydrosApi
             
         }
 
+        [HttpPost, Route("adwr/saveWrfUpdates")]
+        public IHttpActionResult SaveWrfUpdates([FromBody] WaterRightFacility wrfUpdates)
+        {
+            WaterRightFacility wrf=new WaterRightFacility();
+            try
+            {
+                if (wrfUpdates != null) {
+                    var user = User.Identity.Name.Replace("AZWATER0\\", "");
+                    wrfUpdates.UpdateBy = user;
+                    wrfUpdates.UpdateDt = DateTime.Now;
+
+                    wrf = WaterRightFacility.Get(x => x.Id == wrfUpdates.Id);
+                    WaterRightFacility.Update(wrfUpdates);
+                }
+            }
+            catch (Exception exception)
+            {
+                //log exception
+                return InternalServerError(exception);
+            }
+            return Ok(wrf);
+        }
+
         [HttpGet, Route("adwr/getWrfById/{id}")]
         public IHttpActionResult GetWrfById(int id)
         {

@@ -183,12 +183,57 @@
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpPost, Route("adj/updateirr/")]
+        
+
+        public IHttpActionResult UpdateIrrigationData([FromBody] List<IrrigationData> irrigationData)
+        {
+            if(irrigationData == null)
+            {
+                return BadRequest("No data was submitted. Nothing Updated");
+            }
+
+            List<IrrigationData> notDelete = new List<IrrigationData>();
+
+            var delete = irrigationData.Where(i => i.DeleteRecord == true && i.Id != null).ToList();   
+            var add = irrigationData.Where(i => i.Id == null).ToList();
+            var update = irrigationData.Where(i => i.DeleteRecord != true && i.Id != null).ToList();
+
+            if(delete != null && delete.Count() > 0)
+            {
+                IrrigationData.Delete(delete);
+            }
+
+            if(add != null && add.Count() > 0)
+            {
+                IrrigationData.AddAll(add);
+                notDelete.AddRange(add);              
+            }
+
+            if(update != null && update.Count() > 0)
+            {
+
+                foreach(var u in update)
+                {
+                    IrrigationData.Update(u);
+                }
+
+                notDelete.AddRange(update);
+
+            }
+
+            return Ok(notDelete);
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/updateWfr/{useage}/{id}/{wfr_num}")]
         [HttpPost]
         public async Task<IHttpActionResult> UpdateWfr(string useage, int id, string wfr_num)
         {
             try
             {
+                var user=User.Identity.Name.Replace("AZWATER0\\", "");
+                var date = DateTime.Now;
 
                 var wfrSde = await Task.FromResult(WATERSHED_FILE_REPORT_SDE.Get(p => p.WFR_NUM == wfr_num));
                 var wfr = await Task.FromResult(WATERSHED_FILE_REPORT.Get(p => p.OBJECTID == wfrSde.OBJECTID));
@@ -198,6 +243,8 @@
                     var pod = await Task.FromResult(WFR_POD.Get(p => p.ID == id));
                     pod.WFR_ID = wfr.ID;
                     pod.POD_ID = adwrpod.ID;
+                    pod.UPDATEBY = user;
+                    pod.UPDATEDT = date;
                     WFR_POD.Update(pod);
                 }
                 else if (useage == "POD" && adwrpod == null)
@@ -208,9 +255,11 @@
                 {
                     var pwr = await Task.FromResult(PROPOSED_WATER_RIGHT.Get(p => p.ID == id));
                     pwr.WFR_ID = wfr.ID;
+                    pwr.UPDATEBY = user;
+                    pwr.UPDATEDT = date;
                     PROPOSED_WATER_RIGHT.Update(pwr);
                 }
-                wfr.WFR_NUM = wfr_num;
+                wfr.WFR_NUM = wfr_num;                
                 WATERSHED_FILE_REPORT.Update(wfr);
                 return Ok(wfr);
 
