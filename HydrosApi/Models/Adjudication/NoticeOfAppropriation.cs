@@ -24,20 +24,16 @@ namespace HydrosApi.Models.Adjudication
         [Key, Column("ID")]
         public int? Id { get; set; }
 
-        [Column("WRF_ID")]
-        public int? WaterRightFacilityId { get; set; }
-
-
-        [Column("PROGRAM_CODE")]
+        [Column("PROGRAM")]
         public string Program { get; set; }
 
-        [Column("CERT_NO")]
-        public string Certificate { get; set; }
+        [Column("FILE_NO")]
+        public string FileNo { get; set; }
 
-        [Column("CONV_NO")]
-        public string Conveyance { get; set; }
+        [Column("FILE_EXT")]
+        public string FileExt { get; set; }
 
-        [Column("CNDS_CODE")]
+        [Column("DAT_SRC_CODE")]
         public string DataSourceCode { get; set; }
 
         [Column("CLAIMANT_ID")]
@@ -49,6 +45,42 @@ namespace HydrosApi.Models.Adjudication
         [Column("CLAIM_DATE")]
         public DateTime? ClaimDate { get; set; }
 
+        [Column("COUNTY")]
+        public string County { get; set; }
+
+        [Column("BOOK")]
+        public int? Book { get; set; }
+
+        [Column("PAGE_FR")]
+        public int? PageFrom { get; set; }
+
+        [Column("PAGE_TO")]
+        public int? PageTo { get; set; }
+
+        [Column("SUB_WATERSHED")]
+        public string SubWatershed { get; set; }
+
+        [Column("CLAIM_LOC")]
+        public string ClaimLocation { get; set; }
+
+        [Column("CLAIM_TWNSHP")]
+        public string ClaimTownship { get; set; }
+
+        [Column("CLAIM_RANGE")]
+        public string ClaimRange { get; set; }
+
+        [Column("CLAIM_SEC")]
+        public string ClaimSec { get; set; }
+
+        [Column("LOC_LEGAL")]
+        public string LocLegal { get; set; }
+
+        [Column("LOC_CAD")]
+        public string LocCadastral { get; set; }
+
+        [Column("QUANTITY")]
+        public decimal? Quantity { get; set; }
+
         [Column("UTM_X")]
         public decimal? UtmX { get; set; }
 
@@ -57,6 +89,15 @@ namespace HydrosApi.Models.Adjudication
 
         [Column("REMARKS")]
         public string Remarks { get; set; }
+
+        [Column("WTR_SRC")]
+        public string WaterSource { get; set; }
+
+        [Column("NOA_USE_DESCR")]
+        public string UseDescription { get; set; } //multiple, comma delimited
+
+        [Column("CUOM_CODE")]
+        public string UnitOfMeasureCode { get; set; }
 
         [Column("CREATEDT")]
         public DateTime? CreateDt { get; set; }
@@ -70,23 +111,51 @@ namespace HydrosApi.Models.Adjudication
         [Column("UPDATEBY")]
         public string UpdateBy { get; set; }
 
-
-
-        //public NoticeOfAppropriationView NoaDescription { get; set; }
-
-
-        //public List<NoticeOfAppropriationUse> NoaUse { get; set; }
         [NotMapped]
-        public List<NoticeOfAppropriationUseCode> NoaUseCode { get; set; }
+        public bool? DeleteRecord { get; set; }
 
         [NotMapped]
-        public string PCC
+        public bool? RestoreRecord { get; set; }
+
+        [NotMapped]
+        public string DataSourceDescription { 
+            get => DataSourceCode != null ? NoticeOfAppropriationDataSource.Get(s=>s.Code==DataSourceCode).Description : null; 
+            //set => DataSourceDescription=value; 
+        }
+
+        [NotMapped]
+        public string UnitOfMeasureDescription
         {
-            get => string.Format("{0}-{1}.{2}", Program, Certificate, Conveyance);
-            set
+            get => UnitOfMeasureCode != null ? CdUnitOfMeasureSOC.Get(u => u.Code == UnitOfMeasureCode).Description : null;
+            //set => UnitOfMeasureDescription = value;
+        }
+
+        [NotMapped]
+        public string ClaimantNew { get; set; }
+        
+
+        [NotMapped]
+        public string Claimant
+        {
+            get => ClaimantId != null ?  NoticeOfAppropriationClaimant.Get(s => s.Id == ClaimantId).Claimant : null;
+            
+        }
+
+        [NotMapped]
+        public string BookInfo
+        {
+            get => Book != null ? string.Format("Book {0} Page {1}-{2}",Book, PageFrom, PageTo) : null;
+            //set => BookInfo = value;
+        }
+
+        [NotMapped]
+        public string FileNumber
+        {
+            get => string.Format("{0}-{1}.{2}", Program, FileNo, FileExt);
+            /*set
             {
 
-                PCC = value;
+                FileNumber = value;
 
                 if (value != null)
                 {
@@ -98,68 +167,31 @@ namespace HydrosApi.Models.Adjudication
                         Program = regex.Replace(value, "$1");
                     }
 
-                    if (Certificate == null)
+                    if (FileNo == null)
                     {
-                        Certificate = regex.Replace(value, "$2");
+                        FileNo = regex.Replace(value, "$2");
                     }
 
-                    if (Conveyance == null)
+                    if (FileExt == null)
                     {
-                        Conveyance = regex.Replace(value, "$3");
+                        FileExt = regex.Replace(value, "$3");
                     }
 
-                    WaterRightFacilityId = QueryResult.RgrRptGet(value);
+                    //WaterRightFacilityId = QueryResult.RgrRptGet(value);
 
                 }
 
-            }
+            }*/
         }
         [NotMapped]
 
-        public string Errors { get; set; }
-        
-    }
-          /*  /// <summary>
-            /// Get data, including code descriptions for Notices of Appropriation
-            /// </summary>
-            /// <param name="id"></param>
-            /// <returns></returns>
-            public static NoticeOfAppropriation NoticeOfAppropriationData(int? id)
-        {
-            var errorNoa= new NoticeOfAppropriation();
-            if(id==null)
-            {
-                errorNoa.Errors = "id is empty";
-                return errorNoa;
-            }
+        public string Message { get; set; } //return error messages here       
 
-          //  Regex regex = new Regex(@"(\d{2})\D?(\d{6})\D?(\d{1,4})");
-           // var pcc = regex.Replace(id, "$1-$2.$3");
 
-            var noa = Get(n => n.Id == id);
+        [NotMapped]
+        public List<NoticeOfAppropriationClaimant> UpdatedClaimantList { get; set; } //return error messages here       
 
-            if(noa==null)
-            {
-                errorNoa.Errors = "id not found";
-                return errorNoa;
-            }
-
-            //var noaDescr = new NoticeOfAppropriationView();           
-            var noaUse = NoticeOfAppropriationUse.GetList(u => u.NoticeOfAppropriationId == id); 
-             
-            //noa.NoaDescription = noaDescr;
-            noa.NoaUse = noaUse;
-             
-            return noa;
-        }
-
-        //
-        public static NoticeOfAppropriation NoticeOfAppropriationData(NoticeOfAppropriation noa)
-        {
-            return noa;
-
-        }
-    }*/
+    }          
 
     /// <summary>
     /// NoticeOfAppropriationUseDescr
@@ -188,6 +220,7 @@ namespace HydrosApi.Models.Adjudication
         [Column("DESCR")]
         public string Description { get; set; }
     }
+        
 
     [Table("ADJ_INV.NOA_CLAIMANT")]
     public partial class NoticeOfAppropriationClaimant: AdwrRepository<NoticeOfAppropriationClaimant>
@@ -198,6 +231,14 @@ namespace HydrosApi.Models.Adjudication
 
         [Column("CLAIMANT")]
         public string Claimant{ get; set; }
+
+        [Column("UPDATEBY")]
+        public string UpdateBy { get; set; }
+
+        [Column("CREATEBY")]
+        public string CreateBy { get; set; }
+
+
     }
     /// <summary>
     /// NoticeOfAppropriationUse
@@ -207,7 +248,7 @@ namespace HydrosApi.Models.Adjudication
     /// Contains an unmapped column that assigns the description from the corresponding code table (ADJ_INV.CD_NOA_USE)
     /// </remarks>
 
-    [Table("ADJ_INV.NOA_USE")]
+    /*[Table("ADJ_INV.NOA_USE")]
     public partial class NoticeOfAppropriationUse : AdwrRepository<NoticeOfAppropriationUse>
     {
 
@@ -235,48 +276,25 @@ namespace HydrosApi.Models.Adjudication
         [NotMapped]
         public string UseDescription
         {
-
             get => UseCode != null ? NoticeOfAppropriationUseCode.Get(d => d.Code == UseCode).Description : null;
             set => UseDescription = value;
         }
-    }
-
+    }*/
 
     //set the codes here with a custom view
-
     public class NoticeOfAppropriationView
     {
         [Key]
         public int? Id { get; set; }
-        public List<NoticeOfAppropriationUseCode> NoticeOfAppropriationUseList {
-            get => NoticeOfAppropriationUseCode.GetAll();
-        }
 
-        public List<NoticeOfAppropriationDataSource> NoticeOfAppropriationDataSourceList
-        { 
-            get => NoticeOfAppropriationDataSource.GetAll();
-        }
+        public List<NoticeOfAppropriation> NoticeOfAppropriationAll { get; set; }
 
-        public List<CdAwCounty> CountyList
-        {
-            get => CdAwCounty.GetAll();
-            set => CountyList = value;
-        }
+        public Dictionary<string, object> NoticeOfAppropriationCodeList { get; set; }
 
-        public List<NoticeOfAppropriationClaimant> NoticeOfAppropriationClaimantList
-        {
-            get => NoticeOfAppropriationClaimant.GetAll();
-        }
+        public NoticeOfAppropriation NoticeOfAppropriationSelection { get; set; }
 
-        public List<NoticeOfAppropriation> NoticeOfAppropriationAll
-        {
-            get; set;
-        }
 
-        public NoticeOfAppropriation NoticeOfAppropriationSelection
-        {
-            get; set;
-        }
+
 
         public static NoticeOfAppropriationView PopulateNoaView(int? Id=null)
         {
@@ -284,6 +302,38 @@ namespace HydrosApi.Models.Adjudication
             if(Id==null)
             {
                 noaView.NoticeOfAppropriationAll = NoticeOfAppropriation.GetAll();
+
+                var noticeOfAppropriationCodeList = new Dictionary<string, object>();
+                var countyList = CdAwCounty.GetAll();
+                var claimantList = NoticeOfAppropriationClaimant.GetAll();
+                var dataSourceList = NoticeOfAppropriationDataSource.GetAll();
+                var useList = NoticeOfAppropriationUseCode.GetAll();
+                var unitOfMeasureList = CdUnitOfMeasureSOC.GetAll();
+                var subWatershed = SubWatershedAIS.GetAll();
+                var subWatershedList = (from s in subWatershed select new
+                {
+                    s.WatershedCode,
+                    s.WatershedName,
+                    s.SubWatershedCode,
+                    SubWatershedName = s.SubWatershedName == "NOT ASSIGNED" ? s.WatershedName : s.SubWatershedName,
+                    OriginalSubWatershedName=s.SubWatershedName
+                }).ToList().OrderBy(O=>O.SubWatershedName);
+
+                noticeOfAppropriationCodeList.Add("CountyList", countyList != null && countyList.Count() > 0 ? countyList : null);               
+                noticeOfAppropriationCodeList.Add("ClaimantList", claimantList != null && claimantList.Count() > 0 ? claimantList : null); 
+                noticeOfAppropriationCodeList.Add("DataSourceList", dataSourceList != null && dataSourceList.Count() > 0 ? dataSourceList : null);               
+                noticeOfAppropriationCodeList.Add("UseList", useList != null && useList.Count() > 0 ? useList : null);
+                noticeOfAppropriationCodeList.Add("UnitOfMeasureList", unitOfMeasureList != null && unitOfMeasureList.Count() > 0 ? unitOfMeasureList : null);
+                noticeOfAppropriationCodeList.Add("SubWatershedList", subWatershedList != null && subWatershedList.Count() > 0 ? subWatershedList : null);
+
+                if (noticeOfAppropriationCodeList != null)
+                    noaView.NoticeOfAppropriationCodeList = noticeOfAppropriationCodeList;
+
+                //if(unitOfMeasure != null)
+                    //noaView.NoticeOfAppropriationCodeList.Add(unitOfMeasure);
+
+               // if(subWatershed != null && subWatershed.Count() > 0)
+                    //noaView.NoticeOfAppropriationCodeList.Add(subWatershed);
             }
 
             else

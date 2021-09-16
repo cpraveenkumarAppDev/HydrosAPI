@@ -54,7 +54,7 @@
         public virtual DbSet<SubWatershedAIS> SubWatershedAIS { get; set; }
         public virtual DbSet<CdUnitOfMeasureSOC> CdUnitOfMeasureSOC { get; set; }
         public virtual DbSet<NoticeOfAppropriation> NoticeOfAppropriation { get; set; }
-        //public virtual DbSet<NoticeOfAppropriationUse> NoticeOfAppropriationUse { get; set; }
+       // public virtual DbSet<NoticeOfAppropriationUse> NoticeOfAppropriationUse { get; set; }
         public virtual DbSet<NoticeOfAppropriationUseCode> NoticeOfAppropriationUseCode { get; set; }
         public virtual DbSet<NoticeOfAppropriationDataSource> NoticeOfAppropriationDataSource { get; set; }
         public virtual DbSet<NoticeOfAppropriationClaimant> NoticeOfAppropriationClaimant { get; set; }

@@ -126,11 +126,93 @@
                 return Ok(WATERSHED_FILE_REPORT_SDE.GetAll());
             }
         }
+        
+        
+        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpPost, Route("adj/updatenoa/")]        
+        public IHttpActionResult UpdateNoticeOfAppropriation([FromBody] NoticeOfAppropriation noa) //like pcc but program/file_no/file_ext
+        {
+            int? claimantId = 0;
+            var user = User.Identity.Name.Replace("AZWATER0\\", "");
+
+            var noaContainer = new List<NoticeOfAppropriation>();
+            if(noa==null)
+            {
+                return BadRequest("No data was updated because no data was submitted");
+            }
+
+           if(noa.Program == null || noa.FileNo==null || noa.FileExt==null)
+            {
+                return BadRequest("The Program, File Number and File Extension must have a value");
+            }
+
+            if (noa.Id != null && noa.RestoreRecord == true)
+            {
+                //make sure restorerecord doesn't exist
+                //var restoreRecord = noaContainer.Where(d => d.Id == noa.Id);
+
+                    noa.UpdateBy = user;
+                    noa.UpdateDt = DateTime.Now;
+
+                var restore=NoticeOfAppropriation.Add(noa);
+                    noaContainer = NoticeOfAppropriation.GetAll();
+                    return Ok(noaContainer);                     
+            }
+
+            else if (noa.Id != null && noa.DeleteRecord==true)
+            {
+
+                noaContainer = NoticeOfAppropriation.GetAll();
+
+                var deleteRecord = noaContainer.Where(d => d.Id == noa.Id && noa.DeleteRecord==true).FirstOrDefault();
+
+                noaContainer.Where(d => d.Id == noa.Id).FirstOrDefault().RestoreRecord = true;
+                NoticeOfAppropriation.Delete(deleteRecord);                     
+            }
+            else  
+            {
+                var existing = NoticeOfAppropriation.Get(e => e.Program == noa.Program && e.FileNo == noa.FileNo && e.FileExt == noa.FileExt);
+
+                if ((existing != null && ((noa.Id != null && existing.Id != noa.Id) || noa.Id == null))) {
+                    //make sure a duplicate program/fileno/fileext combination isn't being added/updated
+                    return BadRequest(string.Format("Could not {0} the record. A record with the file number {1} already exists",noa.Id==null ? "update" : "add",existing.FileNumber));
+                }
+
+                if (noa.ClaimantNew != null)
+                {
+                    var ncu = NoticeOfAppropriationClaimant.Add(new NoticeOfAppropriationClaimant() { Claimant = noa.ClaimantNew, CreateBy=user });
+                    if(ncu != null)
+                    {
+                        claimantId = ncu.Id;
+                        noa.ClaimantId = claimantId;
+                    }                        
+                }
+
+                if(noa.Id != null)
+                {
+                    noa.UpdateBy = user;
+                    noa.UpdateDt = DateTime.Now;
+                    NoticeOfAppropriation.Update(noa);
+                }
+                else
+                {
+
+                    noa.CreateBy = user;
+                    noa.CreateDt = DateTime.Now;
+                    NoticeOfAppropriation.Add(noa);
+                }
+                
+                return GetNoticeOfAppropriation();
+            }
+
+            return Ok(noaContainer);
+        }
 
         [HttpGet, Route("adj/getnoa/{pcc?}")]
-        public IHttpActionResult GetNoa(string pcc = null) //like pcc but program/file_no/file_ext
+        public IHttpActionResult GetNoticeOfAppropriation(string pcc = null) //like pcc but program/file_no/file_ext
         {
             int? id = null;
+            //var user = User.Identity.Name.Replace("AZWATER0\\", "");
 
             if (pcc != null)
             {
@@ -283,6 +365,7 @@
             }
         }
 
+      
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/updateWfr/{useage}/{id}/{wfr_num}")]

@@ -18,25 +18,16 @@ namespace HydrosApi.Models.Adjudication
         [Column("SWS_NAME")]
         public string SubWatershedName { get; set; }
 
-        /*[NotMapped]
+        [NotMapped]
         public string WatershedName
         {
-
             get {
-                var watershed = WatershedAIS.Get(w => w.WatershedCode == WatershedCode);  
-                if(SubWatershedName== "NOT ASSIGNED" && watershed !=null)
-                {
-                    SubWatershedName = watershed.WatershedName;
-                }
+                var watershed = WatershedAIS.Get(w => w.WatershedCode == WatershedCode);                 
                 return watershed != null ? watershed.WatershedName : null;
             }
 
-            set
-            {
-                if(sub)
-                WatershedName = value;
-            }
-        }*/
+            set => WatershedName = value;             
+        }
 
 
         
