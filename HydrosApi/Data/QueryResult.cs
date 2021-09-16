@@ -10,6 +10,25 @@
     public partial class QueryResult : Repository<QueryResult>
     {
         /// <summary>
+        /// The QueryResult Class
+        /// </summary>
+        /// <remarks>
+        /// <para>       
+        /// A collection of utilities for:
+        /// 
+        /// Running custom queries
+        /// Getting an ID from the sequencer
+        /// rgr_rpt
+        /// Returing exceptions
+        /// </para>      
+        /// </remarks>
+
+        public static List<dynamic> RunAnyQuery(string sql)
+        {
+            return RunAnyQuery(sql, new OracleContext());
+        }
+
+        /// <summary>
         /// Use this when you need to run an inline SQL query.
         /// </summary>
         /// <param name="sql">Provide an SQL Statement (ideally you should only use this for select statements) </param>
@@ -23,11 +42,6 @@
         /// This was a proof of concept for recreating ARM and reusing the existing dataabase structure
         /// </para>      
         /// </remarks>
-
-        public static List<dynamic> RunAnyQuery(string sql)
-        {
-            return RunAnyQuery(sql, new OracleContext());
-        }        
 
         public static List<dynamic> RunAnyQuery(string sql, DbContext ctx=null, bool addHeader=true)
         {

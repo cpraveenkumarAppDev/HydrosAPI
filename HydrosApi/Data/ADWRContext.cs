@@ -50,10 +50,18 @@
         public virtual DbSet<WFR_POD> WFR_POD { get; set; }
 
         public virtual DbSet<IrrigationData> IrrigationData { get; set; }
-
+        public virtual DbSet<WatershedAIS> WatershedAIS { get; set; }
+        public virtual DbSet<SubWatershedAIS> SubWatershedAIS { get; set; }
+        public virtual DbSet<CdUnitOfMeasureSOC> CdUnitOfMeasureSOC { get; set; }
+        public virtual DbSet<NoticeOfAppropriation> NoticeOfAppropriation { get; set; }
+       // public virtual DbSet<NoticeOfAppropriationUse> NoticeOfAppropriationUse { get; set; }
+        public virtual DbSet<NoticeOfAppropriationUseCode> NoticeOfAppropriationUseCode { get; set; }
+        public virtual DbSet<NoticeOfAppropriationDataSource> NoticeOfAppropriationDataSource { get; set; }
+        public virtual DbSet<NoticeOfAppropriationClaimant> NoticeOfAppropriationClaimant { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            
 
             modelBuilder.Entity<POINT_OF_DIVERSION>()
             .Property(p => p.OBJECTID);
