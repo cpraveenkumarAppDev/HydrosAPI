@@ -111,6 +111,12 @@ namespace HydrosApi.Models.Adjudication
         [Column("UPDATEBY")]
         public string UpdateBy { get; set; }
 
+        [Column("CLAIM_TWNSHP_DIR")]
+        public string ClaimDirectionNS { get; set; }
+
+        [Column("CLAIM_RANGE_DIR")]
+        public string ClaimDirectionEW { get; set; }                
+
         [NotMapped]
         public bool? DeleteRecord { get; set; }
 
