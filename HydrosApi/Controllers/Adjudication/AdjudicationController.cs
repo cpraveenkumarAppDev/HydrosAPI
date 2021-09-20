@@ -178,9 +178,12 @@
                     return BadRequest(string.Format("Could not {0} the record. A record with the file number {1} already exists",noa.Id==null ? "update" : "add",existing.FileNumber));
                 }
 
-                if (noa.ClaimantNew != null)
+                if (noa.ClaimantNew != null && noa.ClaimantId==null)
                 {
-                    var ncu = NoticeOfAppropriationClaimant.Add(new NoticeOfAppropriationClaimant() { Claimant = noa.ClaimantNew, CreateBy=user });
+                    var newClaimant = new NoticeOfAppropriationClaimant() { Claimant = noa.ClaimantNew.ToUpper(), CreateBy = user };
+                    var ncu = NoticeOfAppropriationClaimant.Add(newClaimant);
+                        
+                      
                     if(ncu != null)
                     {
                         claimantId = ncu.Id;
@@ -192,16 +195,15 @@
                 {
                     noa.UpdateBy = user;
                     noa.UpdateDt = DateTime.Now;
-                    NoticeOfAppropriation.Update(noa);
+                    NoticeOfAppropriation.Update(noa);                    
                 }
                 else
                 {
-
                     noa.CreateBy = user;
                     noa.CreateDt = DateTime.Now;
-                    NoticeOfAppropriation.Add(noa);
+                    var newNoa=NoticeOfAppropriation.Add(noa);
                 }
-                
+
                 return GetNoticeOfAppropriation();
             }
 
