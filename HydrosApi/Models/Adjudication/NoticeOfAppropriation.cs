@@ -25,7 +25,7 @@ namespace HydrosApi.Models.Adjudication
         public int? Id { get; set; }
 
         [Column("PROGRAM")]
-        public string Program { get; set; }
+        public string Program { get; set; } = "10";
 
         [Column("FILE_NO")]
         public string FileNo { get; set; }
