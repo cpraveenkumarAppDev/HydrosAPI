@@ -333,6 +333,7 @@
     <Compile Include="Models\Adjudication\POINT_OF_DIVERSION_VIEW.cs" />
     <Compile Include="Models\Adjudication\SubWatershedAIS.cs" />
     <Compile Include="Models\Adjudication\TEST_FILE_UPLOAD.cs" />
+    <Compile Include="Models\Adjudication\WatershedView.cs" />
     <Compile Include="Models\Adjudication\WatershedAIS.cs" />
     <Compile Include="Models\Adjudication\WATERSHED_FILE_REPORT_SDE.cs" />
     <Compile Include="Models\ADWR\AwCustLongName.cs" />

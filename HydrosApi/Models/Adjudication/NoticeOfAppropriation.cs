@@ -41,7 +41,7 @@ namespace HydrosApi.Models.Adjudication
 
         [Column("FILE_DATE")]
         public DateTime? FileDate { get; set; }
-
+        
         [Column("CLAIM_DATE")]
         public DateTime? ClaimDate { get; set; }
 
@@ -112,10 +112,20 @@ namespace HydrosApi.Models.Adjudication
         public string UpdateBy { get; set; }
 
         [Column("CLAIM_TWNSHP_DIR")]
-        public string ClaimDirectionNS { get; set; }
+        public string ClaimTownshipDirection { get; set; }
 
         [Column("CLAIM_RANGE_DIR")]
-        public string ClaimDirectionEW { get; set; }                
+        public string ClaimRangeDirection { get; set; }
+
+        [Column("QUARTER_160_ACRE")]
+        public string Quarter160Acre { get; set; }
+
+        [Column("QUARTER_40_ACRE")]
+        public string Quarter40Acre { get; set; }
+
+        [Column("QUARTER_10_ACRE")]
+        public string Quarter10Acre { get; set; }
+
 
         [NotMapped]
         public bool? DeleteRecord { get; set; }
@@ -138,8 +148,12 @@ namespace HydrosApi.Models.Adjudication
 
         [NotMapped]
         public string ClaimantNew { get; set; }
-        
 
+
+        [NotMapped]
+        public string FormattedClaimDate {
+            get => ClaimDate != null ? ClaimDate.Value.ToShortDateString() : null;
+        }
         [NotMapped]
         public string Claimant
         {
@@ -315,15 +329,7 @@ namespace HydrosApi.Models.Adjudication
                 var dataSourceList = NoticeOfAppropriationDataSource.GetAll();
                 var useList = NoticeOfAppropriationUseCode.GetAll();
                 var unitOfMeasureList = CdUnitOfMeasureSOC.GetAll();
-                var subWatershed = SubWatershedAIS.GetAll();
-                var subWatershedList = (from s in subWatershed select new
-                {
-                    s.WatershedCode,
-                    s.WatershedName,
-                    s.SubWatershedCode,
-                    SubWatershedName = s.SubWatershedName == "NOT ASSIGNED" ? s.WatershedName : s.SubWatershedName,
-                    OriginalSubWatershedName=s.SubWatershedName
-                }).ToList().OrderBy(O=>O.SubWatershedName);
+                var subWatershedList = WatershedView.GetAll();              
 
                 noticeOfAppropriationCodeList.Add("CountyList", countyList != null && countyList.Count() > 0 ? countyList : null);               
                 noticeOfAppropriationCodeList.Add("ClaimantList", claimantList != null && claimantList.Count() > 0 ? claimantList : null); 

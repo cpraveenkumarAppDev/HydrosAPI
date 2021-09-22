@@ -58,6 +58,7 @@
         public virtual DbSet<NoticeOfAppropriationUseCode> NoticeOfAppropriationUseCode { get; set; }
         public virtual DbSet<NoticeOfAppropriationDataSource> NoticeOfAppropriationDataSource { get; set; }
         public virtual DbSet<NoticeOfAppropriationClaimant> NoticeOfAppropriationClaimant { get; set; }
+        public virtual DbSet<WatershedView> WatershedView { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
