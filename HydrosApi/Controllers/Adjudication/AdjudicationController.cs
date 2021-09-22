@@ -146,6 +146,10 @@
                 return BadRequest("The Program, File Number and File Extension must have a value");
             }
 
+            //disable delete and restore options
+            noa.DeleteRecord = false;
+            noa.RestoreRecord = false;
+
             if (noa.Id != null && noa.RestoreRecord == true)
             {
                 //make sure restorerecord doesn't exist
@@ -210,11 +214,11 @@
             return Ok(noaContainer);
         }
 
-        [HttpGet, Route("adj/getnoa/{pcc?}")]
+        [HttpGet, Authorize, Route("adj/getnoa/{pcc?}")]
         public IHttpActionResult GetNoticeOfAppropriation(string pcc = null) //like pcc but program/file_no/file_ext
         {
             int? id = null;
-            //var user = User.Identity.Name.Replace("AZWATER0\\", "");
+            var user = User.Identity.Name.Replace("AZWATER0\\", "");
 
             if (pcc != null)
             {
@@ -230,7 +234,6 @@
                     id = int.Parse(pcc);
                 }
             }
-
 
             var noaCode = id == null ? NoticeOfAppropriationView.PopulateNoaView() : NoticeOfAppropriationView.PopulateNoaView(id);
             return Ok(noaCode);
