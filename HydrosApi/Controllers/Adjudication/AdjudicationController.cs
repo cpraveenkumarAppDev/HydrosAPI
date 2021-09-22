@@ -128,7 +128,7 @@
         }
         
         
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpPost, Route("adj/updatenoa/")]        
         public IHttpActionResult UpdateNoticeOfAppropriation([FromBody] NoticeOfAppropriation noa) //like pcc but program/file_no/file_ext
         {

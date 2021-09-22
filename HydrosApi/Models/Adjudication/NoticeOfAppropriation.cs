@@ -325,7 +325,7 @@ namespace HydrosApi.Models.Adjudication
 
                 var noticeOfAppropriationCodeList = new Dictionary<string, object>();
                 var countyList = CdAwCounty.GetAll();
-                var claimantList = NoticeOfAppropriationClaimant.GetAll();
+                var claimantList = NoticeOfAppropriationClaimant.GetAll().OrderBy(c=>c.Claimant);
                 var dataSourceList = NoticeOfAppropriationDataSource.GetAll();
                 var useList = NoticeOfAppropriationUseCode.GetAll();
                 var unitOfMeasureList = CdUnitOfMeasureSOC.GetAll();
