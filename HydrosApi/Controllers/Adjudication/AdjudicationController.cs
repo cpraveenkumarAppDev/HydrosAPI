@@ -146,8 +146,7 @@
                 return BadRequest("The Program, File Number and File Extension must have a value");
             }
 
-            //disable delete and restore options
-            noa.DeleteRecord = false;
+            //restore option             
             noa.RestoreRecord = false;
 
             if (noa.Id != null && noa.RestoreRecord == true)
@@ -166,12 +165,14 @@
             else if (noa.Id != null && noa.DeleteRecord==true)
             {
 
-                noaContainer = NoticeOfAppropriation.GetAll();
+                /* noaContainer = NoticeOfAppropriation.GetAll();
+                 var deleteRecord = noaContainer.Where(d => d.Id == noa.Id && noa.DeleteRecord==true).FirstOrDefault();
+                 noaContainer.Where(d => d.Id == noa.Id).FirstOrDefault().RestoreRecord = true;*/
 
-                var deleteRecord = noaContainer.Where(d => d.Id == noa.Id && noa.DeleteRecord==true).FirstOrDefault();
 
-                noaContainer.Where(d => d.Id == noa.Id).FirstOrDefault().RestoreRecord = true;
-                NoticeOfAppropriation.Delete(deleteRecord);                     
+                var deleteRecord = NoticeOfAppropriation.Get(d => d.Id == noa.Id);
+                NoticeOfAppropriation.Delete(deleteRecord);
+                return Ok(NoticeOfAppropriation.GetAll());
             }
             else  
             {
