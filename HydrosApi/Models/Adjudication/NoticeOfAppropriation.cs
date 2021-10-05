@@ -234,13 +234,42 @@ namespace HydrosApi.Models.Adjudication
 
 
     }
-    /// <summary>
-    /// NoticeOfAppropriationView Class inside NoticeofAppropriation.cs
-    /// </summary>
-    /// <remarks>
-    /// View that consolidates data and related code lists for select options    
-    /// </remarks>    
-    public class NoticeOfAppropriationView
+    public class NumericCounty
+    {
+        
+        public string Code { get; set; }
+
+        public string Description { get; set; }
+
+        public static List<NumericCounty> PopulateNumericCounty()
+        {
+            var numericCounty = new List<NumericCounty>();
+            numericCounty.Add(new NumericCounty() { Code = "01", Description = "Apache" });
+            numericCounty.Add(new NumericCounty() { Code = "02", Description = "Cochise" });
+            numericCounty.Add(new NumericCounty() { Code = "03", Description = "Coconino" });
+            numericCounty.Add(new NumericCounty() { Code = "04", Description = "Gila" });
+            numericCounty.Add(new NumericCounty() { Code = "05", Description = "Graham" });
+            numericCounty.Add(new NumericCounty() { Code = "06", Description = "Greenlee" });
+            numericCounty.Add(new NumericCounty() { Code = "07", Description = "Maricopa" });
+            numericCounty.Add(new NumericCounty() { Code = "08", Description = "Mojave" });
+            numericCounty.Add(new NumericCounty() { Code = "09", Description = "Navajo" });
+            numericCounty.Add(new NumericCounty() { Code = "10", Description = "Pima" });
+            numericCounty.Add(new NumericCounty() { Code = "11", Description = "Pinal" });
+            numericCounty.Add(new NumericCounty() { Code = "12", Description = "Santa Cruz" });
+            numericCounty.Add(new NumericCounty() { Code = "13", Description = "Yavapai" });
+            numericCounty.Add(new NumericCounty() { Code = "14", Description = "Yuma" });
+            numericCounty.Add(new NumericCounty() { Code = "15", Description = "La Paz" });
+
+            return numericCounty;
+        }
+    }
+        /// <summary>
+        /// NoticeOfAppropriationView Class inside NoticeofAppropriation.cs
+        /// </summary>
+        /// <remarks>
+        /// View that consolidates data and related code lists for select options    
+        /// </remarks>    
+        public class NoticeOfAppropriationView
     {
         [Key]
         public int? Id { get; set; }
@@ -255,12 +284,14 @@ namespace HydrosApi.Models.Adjudication
         public static NoticeOfAppropriationView PopulateNoaView(int? Id=null)
         {
             var noaView = new NoticeOfAppropriationView();
-            if(Id==null)
+            if (Id == null)
             {
                 noaView.NoticeOfAppropriationAll = NoticeOfAppropriation.GetAll();
 
                 var noticeOfAppropriationCodeList = new Dictionary<string, object>();
-                var countyList = CdAwCounty.GetAll();
+                //var countyList = CdAwCounty.GetAll();
+
+                var countyList = NumericCounty.PopulateNumericCounty();
                 var claimantList = NoticeOfAppropriationClaimant.GetAll().OrderBy(c=>c.Claimant);
                 var dataSourceList = NoticeOfAppropriationDataSource.GetAll();
                 var useList = NoticeOfAppropriationUseCode.GetAll();
