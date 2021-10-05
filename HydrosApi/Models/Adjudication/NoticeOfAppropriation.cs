@@ -280,7 +280,17 @@ namespace HydrosApi.Models.Adjudication
 
         public NoticeOfAppropriation NoticeOfAppropriationSelection { get; set; }
 
+        public static NoticeOfAppropriationView PopulateNoaView(string pgm, string fno, string fex)
+        {
+            var noaByFile = NoticeOfAppropriation.Get(n => n.Program == pgm && n.FileNo == fno && n.FileExt == fex);
 
+            if(noaByFile != null)
+            {
+                return PopulateNoaView(noaByFile.Id);
+            }
+
+            return null;            
+        }
         public static NoticeOfAppropriationView PopulateNoaView(int? Id=null)
         {
             var noaView = new NoticeOfAppropriationView();

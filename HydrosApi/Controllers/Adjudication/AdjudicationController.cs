@@ -212,7 +212,7 @@
                 return GetNoticeOfAppropriation();
             }
 
-            return Ok(noaContainer);
+           // return Ok(noaContainer);
         }
 
         [HttpGet, Authorize, Route("adj/getnoa/{pcc?}")]
@@ -223,12 +223,18 @@
 
             if (pcc != null)
             {
-                Regex regex = new Regex(@"([1-9][0-9])\D?([0-9]{6})\D?([0-9]{4})");
+                Regex regex = new Regex(@"([1-9][0-9])\D?([0-9]{6,7})\D?([0-9]{4})");
+
+                
                 pcc = regex.Replace(pcc, "$1-$2.$3");
 
-                if (pcc.Length == 14)
+                if (pcc.Length == 14 || pcc.Length == 15)
                 {
-                    id = QueryResult.RgrRptGet(pcc);
+                    var pgm = regex.Replace(pcc,"$1");
+                    var fno = regex.Replace(pcc,"$2");
+                    var fex = regex.Replace(pcc,"$3");
+
+                    return Ok(NoticeOfAppropriationView.PopulateNoaView(pgm, fno, fex));
                 }
                 else
                 {
