@@ -55,9 +55,10 @@
         public string StatusMessage { get; set; }
 
         [NotMapped]
-        public List<IrrigationData> Irrigation {
+        public List<IrrigationData> Irrigation
+        {
             get => IrrigationData.GetList(i => i.ProposedWaterRightId == ID);
-            set => Irrigation = value;            
+            set => Irrigation = value;
         }
 
         public static PROPOSED_WATER_RIGHT ProposedWaterRight(string pouId)

@@ -20,7 +20,12 @@ namespace HydrosApi.Models
         public int? POD_ID { get; set; }
 
         public int? PWR_ID { get; set; }
+        public byte[] FILE_DATA { get; set; }
+        [StringLength(100)]
+        public string ORIGINAL_FILE_NAME { get; set; }
 
+        [StringLength(100)]
+        public string DESCRIPTION { get; set; }
         [StringLength(2000)]
         public string TYPE { get; set; }
 
@@ -37,16 +42,11 @@ namespace HydrosApi.Models
 
         public DateTime? UPDATEDT { get; set; }
 
-        [StringLength(100)]
-        public string ORIGINAL_FILE_NAME { get; set; }
-
-        [StringLength(100)]
-        public string DESCRIPTION { get; set; }
 
         [StringLength(100)]
         public string MIME_TYPE { get; set; }
 
-        public byte[] FILE_DATA { get; set; }
+        
 
         [NotMapped]
         public string STATUS { get; set; }
