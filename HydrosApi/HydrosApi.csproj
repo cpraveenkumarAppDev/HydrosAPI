@@ -328,6 +328,7 @@
     <Compile Include="Data\SdeRepository.cs" />
     <Compile Include="Models\Adjudication\AISPODS.cs" />
     <Compile Include="Models\Adjudication\CdUnitOfMeasureSOC.cs" />
+    <Compile Include="Models\Adjudication\CropCode.cs" />
     <Compile Include="Models\Adjudication\IrrigationData.cs" />
     <Compile Include="Models\Adjudication\NoticeOfAppropriation.cs" />
     <Compile Include="Models\Adjudication\POINT_OF_DIVERSION_VIEW.cs" />

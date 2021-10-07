@@ -125,9 +125,22 @@
             {
                 return Ok(WATERSHED_FILE_REPORT_SDE.GetAll());
             }
+        }       
+
+        [HttpGet, Route("adj/crop/{code?}")]
+        public IHttpActionResult GetCrop(string code = null)
+        {
+            if (code != null)
+            {
+                return Ok(Task.FromResult(CropCode.Get(c=>c.Code==code)));
+               
+            }
+            else
+            {
+                return Ok(Task.FromResult(CropCode.GetAll()));
+            }
         }
-        
-        
+
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpPost, Route("adj/updatenoa/")]        
         public IHttpActionResult UpdateNoticeOfAppropriation([FromBody] NoticeOfAppropriation noa) //like pcc but program/file_no/file_ext
@@ -244,18 +257,7 @@
 
             var noaCode = id == null ? NoticeOfAppropriationView.PopulateNoaView() : NoticeOfAppropriationView.PopulateNoaView(id);
             return Ok(noaCode);
-            
-            //[NotMapped]
-           // public List<IrrigationData> Irrigation {
-           //     get => IrrigationData.GetList(i => i.ProposedWaterRightId == ID);
-             //   set => Irrigation = value;
-          //  }
-
-
-
-
-
-           
+              
         }
 
 
@@ -314,9 +316,7 @@
 
         }
 
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        
-        
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]       
         [HttpPost, Route("adj/updateirr/")]
         public async Task<IHttpActionResult> UpdateIrrigationData([FromBody] List<IrrigationData> irrigation)
         {
@@ -456,7 +456,7 @@
         }
 
 
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpPost, Route("adj/testfileblob/")] //PWR_ID or an error message is returned       
         public async Task<IHttpActionResult> TestFileBlob() //<== ID IS THE ID FROM THE EXPLANATION TABLE
         {
@@ -476,7 +476,7 @@
             return BadRequest("Error Uploading File");
         }
 
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpPost, Route("adj/addfileblob/")] //PWR_ID or an error message is returned       
         public async Task<IHttpActionResult> AddFileBlob() //<== ID IS THE ID FROM THE EXPLANATION TABLE
         {
