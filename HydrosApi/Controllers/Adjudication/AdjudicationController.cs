@@ -352,11 +352,11 @@
 
                     if (update != null && update.Count() > 0)
                     {
-                        foreach (var u in update)
-                        {
-                            context.IrrigationData.Attach(u);
-                            context.Entry(u).State = System.Data.Entity.EntityState.Modified;
-                        }
+                        //foreach (var u in update)
+                        //{
+                            //context.IrrigationData.Attach(u);
+                            //context.Entry(u).State = System.Data.Entity.EntityState.Modified;
+                        //}
 
                         notDelete.AddRange(update);
                     }
