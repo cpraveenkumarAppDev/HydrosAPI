@@ -11,11 +11,18 @@ namespace HydrosApi.Models.Adjudication
     using ADWR;
 
     /// <summary>
-    /// Notice of Appropriation
+    /// Notice of Appropriation (NoticeOfAppropriation.cs)
     /// </summary>
     /// <remarks>
     /// <para>       
-    /// A collection of classes to populate notice of appropriation and its corresponding descriptions for codes
+    /// A collection of classes to populate notice of appropriation and associated data for code lists
+    /// </para>  
+    /// <para>NoticeOfAppropriation</para>      
+    /// <para>NoticeOfAppropriationUseCode</para>      
+    /// <para>NoticeOfAppropriationDataSource</para>
+    /// <para>NoticeOfAppropriationClaimant</para>    
+    /// <para>       
+    /// NoticeOfAppropriationView - creates a package of data and code lists for the Notice of Appropriation tab
     /// </para>      
     /// </remarks>
     [Table("ADJ_INV.NOTICE_OF_APPROPRIATION")]
@@ -25,7 +32,7 @@ namespace HydrosApi.Models.Adjudication
         public int? Id { get; set; }
 
         [Column("PROGRAM")]
-        public string Program { get; set; }
+        public string Program { get; set; } = "10";
 
         [Column("FILE_NO")]
         public string FileNo { get; set; }
@@ -41,7 +48,7 @@ namespace HydrosApi.Models.Adjudication
 
         [Column("FILE_DATE")]
         public DateTime? FileDate { get; set; }
-
+        
         [Column("CLAIM_DATE")]
         public DateTime? ClaimDate { get; set; }
 
@@ -111,6 +118,21 @@ namespace HydrosApi.Models.Adjudication
         [Column("UPDATEBY")]
         public string UpdateBy { get; set; }
 
+        [Column("CLAIM_TWNSHP_DIR")]
+        public string ClaimTownshipDirection { get; set; }
+
+        [Column("CLAIM_RANGE_DIR")]
+        public string ClaimRangeDirection { get; set; }
+
+        [Column("QUARTER_160_ACRE")]
+        public string Quarter160Acre { get; set; }
+
+        [Column("QUARTER_40_ACRE")]
+        public string Quarter40Acre { get; set; }
+
+        [Column("QUARTER_10_ACRE")]
+        public string Quarter10Acre { get; set; }
+
         [NotMapped]
         public bool? DeleteRecord { get; set; }
 
@@ -132,8 +154,11 @@ namespace HydrosApi.Models.Adjudication
 
         [NotMapped]
         public string ClaimantNew { get; set; }
-        
 
+        [NotMapped]
+        public string FormattedClaimDate {
+            get => ClaimDate != null ? ClaimDate.Value.ToShortDateString() : null;
+        }
         [NotMapped]
         public string Claimant
         {
@@ -152,41 +177,10 @@ namespace HydrosApi.Models.Adjudication
         public string FileNumber
         {
             get => string.Format("{0}-{1}.{2}", Program, FileNo, FileExt);
-            /*set
-            {
-
-                FileNumber = value;
-
-                if (value != null)
-                {
-
-                    Regex regex = new Regex(@"([1-9][0-9])\D?([0-9]{6})\D?([0-9]{4})");
-
-                    if (Program == null)
-                    {
-                        Program = regex.Replace(value, "$1");
-                    }
-
-                    if (FileNo == null)
-                    {
-                        FileNo = regex.Replace(value, "$2");
-                    }
-
-                    if (FileExt == null)
-                    {
-                        FileExt = regex.Replace(value, "$3");
-                    }
-
-                    //WaterRightFacilityId = QueryResult.RgrRptGet(value);
-
-                }
-
-            }*/
         }
         [NotMapped]
 
-        public string Message { get; set; } //return error messages here       
-
+        public string Message { get; set; } //return error messages here      
 
         [NotMapped]
         public List<NoticeOfAppropriationClaimant> UpdatedClaimantList { get; set; } //return error messages here       
@@ -240,49 +234,42 @@ namespace HydrosApi.Models.Adjudication
 
 
     }
-    /// <summary>
-    /// NoticeOfAppropriationUse
-    /// </summary>
-    /// <remarks>
-    /// Table (ADJ_INV.NOA_USE) containing the many to one relationship for NoticeOfAppropriation uses for Notice of Appropriation Use
-    /// Contains an unmapped column that assigns the description from the corresponding code table (ADJ_INV.CD_NOA_USE)
-    /// </remarks>
-
-    /*[Table("ADJ_INV.NOA_USE")]
-    public partial class NoticeOfAppropriationUse : AdwrRepository<NoticeOfAppropriationUse>
+    public class NumericCounty
     {
+        
+        public string Code { get; set; }
 
-        [Key, Column("ID")]
-        public int? Id { get; set; }
+        public string Description { get; set; }
 
-        [Column("NOA_ID")]
-        public int? NoticeOfAppropriationId { get; set; }
-
-        [Column("CNUS_CODE")]
-        public string UseCode { get; set; }
-
-        [Column("CREATEDT")]
-        public DateTime? CreateDt { get; set; }
-
-        [Column("CREATEBY")]
-        public string CreateBy { get; set; }
-
-        [Column("UPDATEDT")]
-        public DateTime? UpdateDt { get; set; }
-
-        [Column("UPDATEBY")]
-        public string UpdateBy { get; set; }
-
-        [NotMapped]
-        public string UseDescription
+        public static List<NumericCounty> PopulateNumericCounty()
         {
-            get => UseCode != null ? NoticeOfAppropriationUseCode.Get(d => d.Code == UseCode).Description : null;
-            set => UseDescription = value;
-        }
-    }*/
+            var numericCounty = new List<NumericCounty>();
+            numericCounty.Add(new NumericCounty() { Code = "01", Description = "Apache" });
+            numericCounty.Add(new NumericCounty() { Code = "02", Description = "Cochise" });
+            numericCounty.Add(new NumericCounty() { Code = "03", Description = "Coconino" });
+            numericCounty.Add(new NumericCounty() { Code = "04", Description = "Gila" });
+            numericCounty.Add(new NumericCounty() { Code = "05", Description = "Graham" });
+            numericCounty.Add(new NumericCounty() { Code = "06", Description = "Greenlee" });
+            numericCounty.Add(new NumericCounty() { Code = "07", Description = "Maricopa" });
+            numericCounty.Add(new NumericCounty() { Code = "08", Description = "Mojave" });
+            numericCounty.Add(new NumericCounty() { Code = "09", Description = "Navajo" });
+            numericCounty.Add(new NumericCounty() { Code = "10", Description = "Pima" });
+            numericCounty.Add(new NumericCounty() { Code = "11", Description = "Pinal" });
+            numericCounty.Add(new NumericCounty() { Code = "12", Description = "Santa Cruz" });
+            numericCounty.Add(new NumericCounty() { Code = "13", Description = "Yavapai" });
+            numericCounty.Add(new NumericCounty() { Code = "14", Description = "Yuma" });
+            numericCounty.Add(new NumericCounty() { Code = "15", Description = "La Paz" });
 
-    //set the codes here with a custom view
-    public class NoticeOfAppropriationView
+            return numericCounty;
+        }
+    }
+        /// <summary>
+        /// NoticeOfAppropriationView Class inside NoticeofAppropriation.cs
+        /// </summary>
+        /// <remarks>
+        /// View that consolidates data and related code lists for select options    
+        /// </remarks>    
+        public class NoticeOfAppropriationView
     {
         [Key]
         public int? Id { get; set; }
@@ -293,31 +280,33 @@ namespace HydrosApi.Models.Adjudication
 
         public NoticeOfAppropriation NoticeOfAppropriationSelection { get; set; }
 
+        public static NoticeOfAppropriationView PopulateNoaView(string pgm, string fno, string fex)
+        {
+            var noaByFile = NoticeOfAppropriation.Get(n => n.Program == pgm && n.FileNo == fno && n.FileExt == fex);
 
+            if(noaByFile != null)
+            {
+                return PopulateNoaView(noaByFile.Id);
+            }
 
-
+            return null;            
+        }
         public static NoticeOfAppropriationView PopulateNoaView(int? Id=null)
         {
             var noaView = new NoticeOfAppropriationView();
-            if(Id==null)
+            if (Id == null)
             {
                 noaView.NoticeOfAppropriationAll = NoticeOfAppropriation.GetAll();
 
                 var noticeOfAppropriationCodeList = new Dictionary<string, object>();
-                var countyList = CdAwCounty.GetAll();
-                var claimantList = NoticeOfAppropriationClaimant.GetAll();
+                //var countyList = CdAwCounty.GetAll();
+
+                var countyList = NumericCounty.PopulateNumericCounty();
+                var claimantList = NoticeOfAppropriationClaimant.GetAll().OrderBy(c=>c.Claimant);
                 var dataSourceList = NoticeOfAppropriationDataSource.GetAll();
                 var useList = NoticeOfAppropriationUseCode.GetAll();
                 var unitOfMeasureList = CdUnitOfMeasureSOC.GetAll();
-                var subWatershed = SubWatershedAIS.GetAll();
-                var subWatershedList = (from s in subWatershed select new
-                {
-                    s.WatershedCode,
-                    s.WatershedName,
-                    s.SubWatershedCode,
-                    SubWatershedName = s.SubWatershedName == "NOT ASSIGNED" ? s.WatershedName : s.SubWatershedName,
-                    OriginalSubWatershedName=s.SubWatershedName
-                }).ToList().OrderBy(O=>O.SubWatershedName);
+                var subWatershedList = WatershedView.GetAll();              
 
                 noticeOfAppropriationCodeList.Add("CountyList", countyList != null && countyList.Count() > 0 ? countyList : null);               
                 noticeOfAppropriationCodeList.Add("ClaimantList", claimantList != null && claimantList.Count() > 0 ? claimantList : null); 
@@ -328,12 +317,6 @@ namespace HydrosApi.Models.Adjudication
 
                 if (noticeOfAppropriationCodeList != null)
                     noaView.NoticeOfAppropriationCodeList = noticeOfAppropriationCodeList;
-
-                //if(unitOfMeasure != null)
-                    //noaView.NoticeOfAppropriationCodeList.Add(unitOfMeasure);
-
-               // if(subWatershed != null && subWatershed.Count() > 0)
-                    //noaView.NoticeOfAppropriationCodeList.Add(subWatershed);
             }
 
             else
@@ -349,36 +332,3 @@ namespace HydrosApi.Models.Adjudication
     
 }
 
-
-/*
-"ID","NUMBER(10)"
-"WRF_ID","NUMBER(10)"
-"PROGRAM_CODE","VARCHAR2(3)"
-"CERT_NO","VARCHAR2(6)"
-"CONV_NO","VARCHAR2(4)"
-"CNDS_CODE","VARCHAR2(4)"
-"CLAIMANT_ID","NUMBER(10)"
-"FILE_DATE","DATE"
-"CLAIM_DATE","DATE"
-"COUNTY","VARCHAR2(30)"
-"BOOK","NUMBER(10)"
-"PAGE_FR","NUMBER(10)"
-"PAGE_TO","NUMBER(10)"
-"WS_CODE","VARCHAR2(2)"
-"SWS_CODE","NUMBER(1)"
-"CLAIM_LOC","VARCHAR2(20)"
-"CLAIM_TWNSHP","VARCHAR2(20)"
-"CLAIM_RANGE","VARCHAR2(20)"
-"CLAIM_SEC","VARCHAR2(20)"
-"LOC_LEGAL","VARCHAR2(20)"
-"LOC_CAD","VARCHAR2(15)"
-"UTM_X","NUMBER(38,8)"
-"UTM_Y","NUMBER(38,8)"
-"REMARKS","VARCHAR2(2000)"
-"QUANTITY","NUMBER(20,3)"
-"WTR_SRC","VARCHAR2(20)"
-"CREATEDT","DATE"
-"CREATEBY","VARCHAR2(30)"
-"UPDATEDT","DATE"
-"UPDATEBY","VARCHAR2(30)"
-*/

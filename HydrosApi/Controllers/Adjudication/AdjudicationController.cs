@@ -125,10 +125,23 @@
             {
                 return Ok(WATERSHED_FILE_REPORT_SDE.GetAll());
             }
+        }       
+
+        [HttpGet, Route("adj/crop/{code?}")]
+        public IHttpActionResult GetCrop(string code = null)
+        {
+            if (code != null)
+            {
+                return Ok(Task.FromResult(CropCode.Get(c=>c.Code==code)));
+               
+            }
+            else
+            {
+                return Ok(Task.FromResult(CropCode.GetAll()));
+            }
         }
-        
-        
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpPost, Route("adj/updatenoa/")]        
         public IHttpActionResult UpdateNoticeOfAppropriation([FromBody] NoticeOfAppropriation noa) //like pcc but program/file_no/file_ext
         {
@@ -146,6 +159,9 @@
                 return BadRequest("The Program, File Number and File Extension must have a value");
             }
 
+            //restore option             
+            noa.RestoreRecord = false;
+
             if (noa.Id != null && noa.RestoreRecord == true)
             {
                 //make sure restorerecord doesn't exist
@@ -162,12 +178,14 @@
             else if (noa.Id != null && noa.DeleteRecord==true)
             {
 
-                noaContainer = NoticeOfAppropriation.GetAll();
+                /* noaContainer = NoticeOfAppropriation.GetAll();
+                 var deleteRecord = noaContainer.Where(d => d.Id == noa.Id && noa.DeleteRecord==true).FirstOrDefault();
+                 noaContainer.Where(d => d.Id == noa.Id).FirstOrDefault().RestoreRecord = true;*/
 
-                var deleteRecord = noaContainer.Where(d => d.Id == noa.Id && noa.DeleteRecord==true).FirstOrDefault();
 
-                noaContainer.Where(d => d.Id == noa.Id).FirstOrDefault().RestoreRecord = true;
-                NoticeOfAppropriation.Delete(deleteRecord);                     
+                var deleteRecord = NoticeOfAppropriation.Get(d => d.Id == noa.Id);
+                NoticeOfAppropriation.Delete(deleteRecord);
+                return Ok(NoticeOfAppropriation.GetAll());
             }
             else  
             {
@@ -178,9 +196,12 @@
                     return BadRequest(string.Format("Could not {0} the record. A record with the file number {1} already exists",noa.Id==null ? "update" : "add",existing.FileNumber));
                 }
 
-                if (noa.ClaimantNew != null)
+                if (noa.ClaimantNew != null && noa.ClaimantId==null)
                 {
-                    var ncu = NoticeOfAppropriationClaimant.Add(new NoticeOfAppropriationClaimant() { Claimant = noa.ClaimantNew, CreateBy=user });
+                    var newClaimant = new NoticeOfAppropriationClaimant() { Claimant = noa.ClaimantNew.ToUpper(), CreateBy = user };
+                    var ncu = NoticeOfAppropriationClaimant.Add(newClaimant);
+                        
+                      
                     if(ncu != null)
                     {
                         claimantId = ncu.Id;
@@ -192,36 +213,41 @@
                 {
                     noa.UpdateBy = user;
                     noa.UpdateDt = DateTime.Now;
-                    NoticeOfAppropriation.Update(noa);
+                    NoticeOfAppropriation.Update(noa);                    
                 }
                 else
                 {
-
                     noa.CreateBy = user;
                     noa.CreateDt = DateTime.Now;
-                    NoticeOfAppropriation.Add(noa);
+                    var newNoa=NoticeOfAppropriation.Add(noa);
                 }
-                
+
                 return GetNoticeOfAppropriation();
             }
 
-            return Ok(noaContainer);
+           // return Ok(noaContainer);
         }
 
-        [HttpGet, Route("adj/getnoa/{pcc?}")]
+        [HttpGet, Authorize, Route("adj/getnoa/{pcc?}")]
         public IHttpActionResult GetNoticeOfAppropriation(string pcc = null) //like pcc but program/file_no/file_ext
         {
             int? id = null;
-            //var user = User.Identity.Name.Replace("AZWATER0\\", "");
+            var user = User.Identity.Name.Replace("AZWATER0\\", "");
 
             if (pcc != null)
             {
-                Regex regex = new Regex(@"([1-9][0-9])\D?([0-9]{6})\D?([0-9]{4})");
+                Regex regex = new Regex(@"([1-9][0-9])\D?([0-9]{6,7})\D?([0-9]{4})");
+
+                
                 pcc = regex.Replace(pcc, "$1-$2.$3");
 
-                if (pcc.Length == 14)
+                if (pcc.Length == 14 || pcc.Length == 15)
                 {
-                    id = QueryResult.RgrRptGet(pcc);
+                    var pgm = regex.Replace(pcc,"$1");
+                    var fno = regex.Replace(pcc,"$2");
+                    var fex = regex.Replace(pcc,"$3");
+
+                    return Ok(NoticeOfAppropriationView.PopulateNoaView(pgm, fno, fex));
                 }
                 else
                 {
@@ -229,21 +255,9 @@
                 }
             }
 
-
             var noaCode = id == null ? NoticeOfAppropriationView.PopulateNoaView() : NoticeOfAppropriationView.PopulateNoaView(id);
             return Ok(noaCode);
-            
-            //[NotMapped]
-           // public List<IrrigationData> Irrigation {
-           //     get => IrrigationData.GetList(i => i.ProposedWaterRightId == ID);
-             //   set => Irrigation = value;
-          //  }
-
-
-
-
-
-           
+              
         }
 
 
@@ -302,9 +316,7 @@
 
         }
 
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        
-        
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]       
         [HttpPost, Route("adj/updateirr/")]
         public async Task<IHttpActionResult> UpdateIrrigationData([FromBody] List<IrrigationData> irrigation)
         {
@@ -444,7 +456,7 @@
         }
 
 
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpPost, Route("adj/testfileblob/")] //PWR_ID or an error message is returned       
         public async Task<IHttpActionResult> TestFileBlob() //<== ID IS THE ID FROM THE EXPLANATION TABLE
         {
@@ -464,7 +476,7 @@
             return BadRequest("Error Uploading File");
         }
 
-        //[Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpPost, Route("adj/addfileblob/")] //PWR_ID or an error message is returned       
         public async Task<IHttpActionResult> AddFileBlob() //<== ID IS THE ID FROM THE EXPLANATION TABLE
         {
