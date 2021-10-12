@@ -16,6 +16,7 @@
     using HydrosApi.Data;
     using HydrosApi.ViewModel;
     using HydrosApi.Models.Adjudication;
+    using System.Web;
 
 
 
@@ -506,20 +507,36 @@
         [HttpPost, Route("adj/addfile/")] //PWR_ID or an error message is returned       
         public async Task<IHttpActionResult> AddFile() //<== ID IS THE ID FROM THE EXPLANATION TABLE
         {
-            if (!Request.Content.IsMimeMultipartContent())
+
+
+            try
             {
-                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+
+                if (!Request.Content.IsMimeMultipartContent())
+                {
+                    throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+                }
+
+                var provider = await Request.Content.ReadAsMultipartAsync<HandleForm>(new HandleForm());
+                var fileList = await Task.FromResult(FILE.UploadFile(provider, User.Identity.Name.Replace("AZWATER0\\", "")));
+
+                if (fileList != null && fileList.STATUS == null)
+                {
+                    return Ok(fileList);
+                }
+
+                return BadRequest(fileList.STATUS);
             }
-
-            var provider = await Request.Content.ReadAsMultipartAsync<HandleForm>(new HandleForm());
-            var fileList = await Task.FromResult(FILE.UploadFile(provider, User.Identity.Name.Replace("AZWATER0\\", "")));
-
-            if (fileList != null && fileList.STATUS == null)
+            catch (Exception exception)
             {
-                return Ok(fileList);
-            }
 
-            return BadRequest(fileList.STATUS);
+                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+            }
+        }
+
+        private object BundleExceptions(Exception exception)
+        {
+            throw new NotImplementedException();
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
