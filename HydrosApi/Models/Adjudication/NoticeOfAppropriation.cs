@@ -259,6 +259,7 @@ namespace HydrosApi.Models.Adjudication
             numericCounty.Add(new NumericCounty() { Code = "13", Description = "Yavapai" });
             numericCounty.Add(new NumericCounty() { Code = "14", Description = "Yuma" });
             numericCounty.Add(new NumericCounty() { Code = "15", Description = "La Paz" });
+            numericCounty.Add(new NumericCounty() { Code = "16", Description = "Secretary of State" });
 
             return numericCounty;
         }
