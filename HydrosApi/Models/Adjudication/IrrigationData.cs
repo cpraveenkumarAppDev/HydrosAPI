@@ -26,7 +26,7 @@ namespace HydrosApi.Models.Adjudication
         public decimal? WaterDuty { get; set; }
 
         [Column("REPORTED_VOLUME")]
-        public int? ReportedVolume { get; set; }
+        public decimal? ReportedVolume { get; set; }
 
         [Column("UNIT")]
         public string Unit { get; set; }
