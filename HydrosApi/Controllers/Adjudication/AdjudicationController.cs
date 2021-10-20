@@ -17,6 +17,7 @@
     using HydrosApi.ViewModel;
     using HydrosApi.Models.Adjudication;
     using System.Web;
+    using System.Text;
 
 
 
@@ -98,6 +99,18 @@
             {
                 return Ok(await Task.FromResult(PLACE_OF_USE_VIEW.GetAll())); //return all places of use
             }
+        }
+        [Route("adj/getAisConfig")]
+        public HttpResponseMessage GetAisConfig()
+        {
+            //return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion()));
+            var json = File.ReadAllText(HttpContext.Current.Server.MapPath(@"~/MapConfig/ais.json"));
+
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json"),
+                StatusCode = HttpStatusCode.OK
+            };
         }
 
         [Route("adj/managepod/{id}")]

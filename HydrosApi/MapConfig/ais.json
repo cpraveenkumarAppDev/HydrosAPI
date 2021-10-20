@@ -1,0 +1,90 @@
+﻿{
+  "appId": "rs6aR4o7RsnsxyZd",
+  "portalUrl": "https://azwatermaps.azwater.gov/portal",
+  "logo": null,
+  "agency": "Arizona Department of Water Resources",
+  "title": "AIS",
+  "tabName": "AIS",
+  "active": true,
+  "searchSources": [
+    {
+      "title": "Watershed File Report",
+      "searchFields": [
+        "DWR_ID"
+      ]
+    },
+    {
+      "title": "Point of Diversion",
+      "searchFields": [
+        "DWR_ID"
+      ]
+    },
+    {
+      "title": "County",
+      "searchFields": [
+        "NAME"
+      ]
+    },
+    {
+      "title": "ArcGIS World Geocoding Service"
+    }
+  ],
+  "TRS": {
+  },
+  "bufferSources": [
+  ],
+  "query": [
+    {
+      "title": "Watershed File Report",
+      "urlKey": "wfr-layer"
+    },
+    {
+      "title": "Domestic",
+      "urlKey": "domestic-layer"
+    },
+    {
+      "title": "Point of Diversion",
+      "urlKey": "pod-layer"
+    },
+    {
+      "title": "Irrigation",
+      "urlKey": "irrigation-layer"
+    },
+    {
+      "title": "StockWater",
+      "urlKey": "stockwater-layer"
+    },
+    {
+      "title": "Stockpond",
+      "urlKey": "stock-layer"
+    },
+    {
+      "title": "Municipal",
+      "urlKey": "municipal-layer"
+    },
+    {
+      "title": "Industrial",
+      "urlKey": "industrial-layer"
+    }
+  ],
+  "layers": {
+    "wfrUrl": "https://azwatermaps.azwater.gov/arcgis/rest/services/ADJ/ADJ_LLC_WFRs_All/MapServer/0",
+    "domesticUrl": "https://azwatermaps.azwater.gov/arcgis/rest/services/ADJ/ADJ_LLC_POUs_DM_points/FeatureServer/0",
+    "podsUrl": "https://azwatermaps.azwater.gov/arcgis/rest/services/ADJ/ADJ_LLC_PODs_All/FeatureServer/4",
+    "irrigrationUrl": "https://azwatermaps.azwater.gov/arcgis/rest/services/ADJ/ADJ_LLC_POUs_IR_polys/FeatureServer/0",
+    "stockWaterUrl": "https://azwatermaps.azwater.gov/arcgis/rest/services/ADJ/ADJ_LLC_POUs_SW_polys/FeatureServer/0",
+    "stockPondUrl": "https://azwatermaps.azwater.gov/arcgis/rest/services/ADJ/ADJ_LLC_POUs_SP_polys/FeatureServer/0",
+    "municipalUrl": "https://azwatermaps.azwater.gov/arcgis/rest/services/ADJ/ADJ_LLC_POUs_MU_polys/FeatureServer/0",
+    "industrialUrl": "https://azwatermaps.azwater.gov/arcgis/rest/services/ADJ/ADJ_LLC_POUs_CI_polys/FeatureServer/0",
+    "waterShedUrl": "https://services.arcgis.com/C34zQ7veRS0V1t04/arcgis/rest/services/Surface_Watershed/FeatureServer/0",
+    "townshipUrl": "https://services.arcgis.com/C34zQ7veRS0V1t04/ArcGIS/rest/services/Boundaries/FeatureServer",
+    "cadastralUrl": "https://tiles.arcgis.com/tiles/C34zQ7veRS0V1t04/arcgis/rest/services/Cadastral_Vector/VectorTileServer"
+  },
+  "links": {
+    "detailsGWSI": "http://gisweb.azwater.gov/GWSI/Detail.aspx?SiteID=",
+    "detailsWellReg": "http://gisweb.azwater.gov/WellRegistry/Detail.aspx?RegID=",
+    "imagedRecordWellReg": "https://dwrsrvc.azwater.gov/dsapi/api/WellRegDoc/AllDocs/?registryNum=",
+    "imagedRecordWells35": "https://dwrsrvc.azwater.gov/dsapi/api/WellRegDoc/getwell35docs/?registry=",
+    "imagedRecordSOC": "https://dwrsrvc.azwater.gov/dsapi/api/SOC/?fileNumber="
+  }
+}
