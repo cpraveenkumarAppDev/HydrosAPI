@@ -832,7 +832,7 @@
                 .Property(e => e.WELL_TYPE)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<SW_AIS_VIEW>()
+            /*modelBuilder.Entity<SW_AIS_VIEW>()
                 .Property(e => e.ART_PROGRAM)
                 .IsUnicode(false);
 
@@ -842,15 +842,15 @@
 
             modelBuilder.Entity<SW_AIS_VIEW>()
                 .Property(e => e.PCC)
-                .IsUnicode(false);
+                .IsUnicode(false);*/
 
-            modelBuilder.Entity<SW_AIS_VIEW>()
-                .Property(e => e.WS_CODE)
-                .IsUnicode(false);
+            //modelBuilder.Entity<SW_AIS_VIEW>()
+                //.Property(e => e.WS_CODE)
+                //IsUnicode(false);
 
-            modelBuilder.Entity<SW_AIS_VIEW>()
-                .Property(e => e.USE)
-                .IsUnicode(false);
+           //modelBuilder.Entity<SW_AIS_VIEW>()
+               // .Property(e => e.USE)
+               // .IsUnicode(false);
 
             modelBuilder.Entity<SOC_AIS_VIEW>()
                 .Property(e => e.ID)

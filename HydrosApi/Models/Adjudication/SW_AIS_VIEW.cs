@@ -10,9 +10,25 @@ using HydrosApi.Data;
 namespace HydrosApi.Models
 { 
 
+       //ID, ART_PROGRAM, ART_APPLI_NO, ART_CONVY_NO, PCC, OWNER_NAME
+
     [Table("ADWR.SW_AIS_VIEW")]
+
     public partial class SW_AIS_VIEW:AdwrRepository<SW_AIS_VIEW>
     {
+
+        [Key]
+        [Column(Order = 0)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long ID { get; set; }
+
+        [StringLength(6)]
+        public string ART_PROGRAM { get; set; }
+
+        public int? ART_APPLI_NO { get; set; }
+
+        public int? ART_CONVY_NO { get; set; }
+
         [NotMapped]         
         public List<string> FILE_LINK
         {
@@ -28,36 +44,19 @@ namespace HydrosApi.Models
             }
         }
 
-        [StringLength(40)]
+        [Column("OWNER_NAME"), StringLength(40)]
         public string NAME { get; set; }
-        [StringLength(4000)]
-        public string USE { get; set; }
-        [StringLength(88)]
+
+
+        //[StringLength(4000)]
+        //public string USE { get; set; }
+        [Column("PCC"), StringLength(88)]
         public string PCC { get; set; }
-        public string FILE_STATUS { get; set; }
-        public DateTime? ART_FILE_DATE { get; set; }
-        [Key]
-        [Column(Order = 0)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long ID { get; set; }
-
+        //public string FILE_STATUS { get; set; }
+       // public DateTime? ART_FILE_DATE { get; set; }
+       /* 
         [StringLength(6)]
-        public string ART_PROGRAM { get; set; }
-
-        public int? ART_APPLI_NO { get; set; }
-
-        public int? ART_CONVY_NO { get; set; }
-
-
-        [Key]
-        [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long ART_IDNO { get; set; }
-
-        [StringLength(6)]
-        public string WS_CODE { get; set; }
-
-
+        public string WS_CODE { get; set; } */
 
 
         //this is no longer necessary and can be removed eventually
@@ -71,7 +70,7 @@ namespace HydrosApi.Models
             foreach (var item in swMatch)
             {
                 int fileNo = int.Parse(item.FileNumber);
-                var swItem = SW_AIS_VIEW.GetList(s => s.ART_APPLI_NO == fileNo && s.ART_PROGRAM == item.FileType);
+                var swItem = GetList(s => s.ART_APPLI_NO == fileNo && s.ART_PROGRAM == item.FileType);
                 var swFile=docuService.getSurfaceWaterDocs(item.FileType+"-"+item.FileNumber).Select(f => f.FileUrl).Distinct();
                 swItem.Select(d => { d.FILE_LINK = swFile.ToList(); return d; }).ToList();
               

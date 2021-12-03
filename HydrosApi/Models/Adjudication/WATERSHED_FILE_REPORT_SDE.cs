@@ -14,7 +14,7 @@
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 
         [Key]
-        public int OBJECTID { get; set; } 
+        public int OBJECTID { get; set; }
 
         [StringLength(50)]
         public string WFR_NUM { get; set; }
@@ -50,17 +50,17 @@
         public string WFR_REGION { get; set; }
 
         [StringLength(100)]
-        public string WFR_SUBREGION { get; set; } 
+        public string WFR_SUBREGION { get; set; }
 
         [StringLength(100)]
-        public string WFR_SEQUENCE { get; set; } 
+        public string WFR_SEQUENCE { get; set; }
 
         [StringLength(300)]
         public string SOC { get; set; }
 
 
         ///get the WFR using its objectid
-        public static WATERSHED_FILE_REPORT_SDE WatershedFileReportSDE(int ? objectid)
+        public static WATERSHED_FILE_REPORT_SDE WatershedFileReportSDE(int? objectid)
         {
             return WATERSHED_FILE_REPORT_SDE.Get(p => p.OBJECTID == objectid);
         }
@@ -83,5 +83,35 @@
             return WATERSHED_FILE_REPORT_SDE.GetList(p => objectids.Contains(p.OBJECTID));
         }
 
+        
+
+
+
+    }
+
+    public class WatershedFileReportSDEOptions
+    {
+        public string ColumnName { get; set; }
+        public string SearchValue { get; set; }
+
+        public bool? Sort { get; set; }
+
+        public string SortDirection { get; set; }
+
+        public int? PageNo { get; set; }
+
+        public int? PageRow { get; set; }
+
+        public static List<WATERSHED_FILE_REPORT_SDE> PopulateWatershedFileReport(List<WatershedFileReportSDEOptions> options)
+        {
+            List<WATERSHED_FILE_REPORT_SDE> report=null;
+            if (options==null)
+            {
+                return WATERSHED_FILE_REPORT_SDE.GetAll().Take(50).ToList();                
+            }
+
+             
+            return report;
+        }
     }
 }
