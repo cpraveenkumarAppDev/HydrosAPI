@@ -394,50 +394,60 @@
       
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        [Route("adj/updateWfr/{useage}/{id}/{wfr_num}")]
+        [Route("adj/updateWfr/{useage}/{id}/{wfr_num?}")]
         [HttpPost]
-        public async Task<IHttpActionResult> UpdateWfr(string useage, int id, string wfr_num)
+        public async Task<IHttpActionResult> UpdateWfr(string useage, int id, string wfr_num = null)
         {
             try
             {
                 var user=User.Identity.Name.Replace("AZWATER0\\", "");
                 var date = DateTime.Now;
 
-                var wfrSde = await Task.FromResult(WATERSHED_FILE_REPORT_SDE.Get(p => p.WFR_NUM == wfr_num));
-                var wfr = await Task.FromResult(WATERSHED_FILE_REPORT.Get(p => p.OBJECTID == wfrSde.OBJECTID));
-                var adwrpod = POINT_OF_DIVERSION_VIEW.Get(p => p.OBJECTID == id);
-                if (useage == "POD" && adwrpod != null)
-                {
-                    var pod = await Task.FromResult(WFR_POD.Get(p => p.ID == id));
-                    pod.WFR_ID = wfr.ID;
-                    pod.POD_ID = adwrpod.ID;
-                    pod.UPDATEBY = user;
-                    pod.UPDATEDT = date;
-                    WFR_POD.Update(pod);
-                }
-                else if (useage == "POD" && adwrpod == null)
-                {
-                    return Ok("No POD found in ADWR table");
-                }
-                else
+                //if wfr_num null clear link between the pwr and wfr.  Added ? to route and null to Parameter REH 12/21
+                if (wfr_num == null)
                 {
                     var pwr = await Task.FromResult(PROPOSED_WATER_RIGHT.Get(p => p.ID == id));
-                    pwr.WFR_ID = wfr.ID;
+                    pwr.WFR_ID = null;
                     pwr.UPDATEBY = user;
                     pwr.UPDATEDT = date;
                     PROPOSED_WATER_RIGHT.Update(pwr);
+                    return Ok();
                 }
-                wfr.WFR_NUM = wfr_num;                
-                WATERSHED_FILE_REPORT.Update(wfr);
-                return Ok(wfr);
-
+                else
+                {
+                    var wfrSde = await Task.FromResult(WATERSHED_FILE_REPORT_SDE.Get(p => p.WFR_NUM == wfr_num));
+                    var wfr = await Task.FromResult(WATERSHED_FILE_REPORT.Get(p => p.OBJECTID == wfrSde.OBJECTID));
+                    var adwrpod = POINT_OF_DIVERSION_VIEW.Get(p => p.OBJECTID == id);
+                    if (useage == "POD" && adwrpod != null)
+                    {
+                        var pod = await Task.FromResult(WFR_POD.Get(p => p.ID == id));
+                        pod.WFR_ID = wfr.ID;
+                        pod.POD_ID = adwrpod.ID;
+                        pod.UPDATEBY = user;
+                        pod.UPDATEDT = date;
+                        WFR_POD.Update(pod);
+                    }
+                    else if (useage == "POD" && adwrpod == null)
+                    {
+                        return Ok("No POD found in ADWR table");
+                    }
+                    else
+                    {
+                        var pwr = await Task.FromResult(PROPOSED_WATER_RIGHT.Get(p => p.ID == id));
+                        pwr.WFR_ID = wfr.ID;
+                        pwr.UPDATEBY = user;
+                        pwr.UPDATEDT = date;
+                        PROPOSED_WATER_RIGHT.Update(pwr);
+                    }
+                    wfr.WFR_NUM = wfr_num;
+                    WATERSHED_FILE_REPORT.Update(wfr);
+                    return Ok(wfr);
+                }
             }
             catch
             {
                 return BadRequest("Could not find WFR to assign");
             }
-
-
 
         }
 
