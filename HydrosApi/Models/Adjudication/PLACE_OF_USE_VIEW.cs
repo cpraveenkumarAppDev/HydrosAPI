@@ -8,6 +8,7 @@
     using System.Web.UI.WebControls;
     using System.Web;
     using HydrosApi.Models.Adjudication;
+    using HydrosApi.Data;
 
     [Table("ADJ.PLACE_OF_USE_VIEW")]
     public partial class PLACE_OF_USE_VIEW :SdeRepository<PLACE_OF_USE_VIEW>
@@ -125,38 +126,25 @@
         public static List<PLACE_OF_USE_VIEW> PlaceOfUseView(string id)
         {
             var pouList = new List<PLACE_OF_USE_VIEW>();
-            var pou= PLACE_OF_USE_VIEW.Get(p => p.DWR_ID == id);
+            var pou= Get(p => p.DWR_ID == id);
 
-            pou.StatementOfClaim = pou.SOC == null ? null :
-            (from s in pou.SOC.Split(',')
-             select new
-             {
-                 program = s.IndexOf("-") > -1 ? s.Split('-')[0].Replace(" ", "") : "",
-                 file_no = int.Parse((s.IndexOf("-") > -1 ? s.Split('-')[1].Replace(" ", "") : s).Replace(" ", ""))
-             }).Select(f => SOC_AIS_VIEW.Get(s => s.FILE_NO == f.file_no)).Distinct().ToList();
-
-            if(pou.BAS_OF_CLM != null)
+            if (pou != null)
             {
-                var bocList = (from p in (from s in pou.BAS_OF_CLM.Split(',')
-                                         select new
-                                         {
-                                             program = s.IndexOf("-") > -1 ? s.Split('-')[0].Replace(" ", "") : "",
-                                             file_no = (s.IndexOf("-") > -1 ? s.Split('-')[1].Replace(" ", "") : s).Replace(" ", "")
-                                         })
-                              select new
-                              {
-                                  p.program,
-                                  p.file_no,
-                                  numeric_file_no=int.Parse(p.file_no==null ? "0" : p.file_no.ToString()),
-                                  registry_id = p.program + "-" + p.file_no
-                              }).Distinct();
+                if (pou.SOC != null)
+                {
+                    var soc = FileFromStringList.GetFileFromStringList(pou.SOC, new[] { ',', ';' });
+                    pou.StatementOfClaim = soc?.Select(f => SOC_AIS_VIEW.Get(s => s.FILE_NO == f.NumericFileNo)).Distinct().ToList();
+                }
 
-                var wellList = bocList.Where(p => p.program == "55" || p.program=="35");                
-                var swList = bocList.Where(p => p.program != "55" && p.program != "35");
+                if (pou.BAS_OF_CLM != null)
+                {
+                    var bocList = FileFromStringList.GetFileFromStringList(pou.BAS_OF_CLM, new[] { ',', ';' });
+                    var wellList = bocList?.Where(p => p.Program == "55" || p.Program == "35");
+                    var swList = bocList?.Where(p => p.Program != "55" && p.Program != "35");                    
+                    pou.Well = wellList?.Select(f => WELLS_VIEW.Get(s => s.FILE_NO == f.FileNo && s.PROGRAM == f.Program)).ToList();
+                    pou.Surfacewater = swList?.Select(f => SW_AIS_VIEW.Get(s => s.ART_APPLI_NO == f.NumericFileNo)).ToList();
+                }
 
-                pou.Well = wellList?.Select(f => WELLS_VIEW.Get(s => s.FILE_NO == f.file_no && s.PROGRAM==f.program)).ToList();
-
-                pou.Surfacewater = swList?.Select(f => SW_AIS_VIEW.Get(s => s.ART_APPLI_NO == f.numeric_file_no)).ToList();
             }
 
             pou.ProposedWaterRight = PROPOSED_WATER_RIGHT.Get(p => p.POU_ID == pou.DWR_ID);

@@ -18,8 +18,7 @@
     using HydrosApi.Models.Adjudication;
     using System.Web;
     using System.Text;
-
-
+ 
 
     //[Authorize] 
     //at minimum, ensure this is an authorized user, granular permissions will be added later
@@ -54,13 +53,7 @@
         [HttpGet]
         public IHttpActionResult GetMapUrls()
         {
-  
-            string[] repositoryUrls = ConfigurationManager.AppSettings.AllKeys
-                 .Where(key => key.StartsWith("gisAdjUrl"))
-                 .Select(key => ConfigurationManager.AppSettings[key])
-                 .ToArray();
-            return Ok(repositoryUrls);
-
+            return Ok(new MapUriConfig().layers);
         }
         [Route("adj/getpwr/{id}")]
         [HttpGet]
@@ -103,9 +96,10 @@
         [Route("adj/getAisConfig")]
         public HttpResponseMessage GetAisConfig()
         {
-            //return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion()));
-            var json = File.ReadAllText(HttpContext.Current.Server.MapPath(@"~/MapConfig/ais.json"));
+            //var json = File.ReadAllText(HttpContext.Current.Server.MapPath(@"~/MapConfig/ais.json"));
+            var json = JsonConvert.SerializeObject(new MapUriConfig());
 
+            
             return new HttpResponseMessage()
             {
                 Content = new StringContent(json, Encoding.UTF8, "application/json"),
@@ -119,7 +113,6 @@
         {
             try
             {
-
                 return Ok(await Task.FromResult(POINT_OF_DIVERSION_VIEW.PointOfDivsersionView(id)));
             }
             catch (Exception exception)
@@ -127,16 +120,23 @@
                 return Ok(exception);
             }
         }
+
         [HttpGet, Route("adj/getwfr/{id?}")]
         public IHttpActionResult GetWfr(int? id = null)
         {
             if (id != null)
             {
+
                 var wfr = Task.FromResult(WATERSHED_FILE_REPORT.WatershedFileReportByObjectId(id));
+
+               
                 return Ok(wfr);
             }
             else
             {
+
+                //return Ok(WATERSHED_FILE_REPORT_SDE.GetAll().Take(50));
+                //return Ok(WATERSHED_FILE_REPORT.GetList(w => w.WFR_NUM != null));
                 return Ok(WATERSHED_FILE_REPORT_SDE.GetAll());
             }
         }       
@@ -146,8 +146,7 @@
         {
             if (code != null)
             {
-                return Ok(Task.FromResult(CropCode.Get(c=>c.Code==code)));
-               
+                return Ok(Task.FromResult(CropCode.Get(c=>c.Code==code)));               
             }
             else
             {
@@ -185,8 +184,8 @@
                     noa.UpdateDt = DateTime.Now;
 
                 var restore=NoticeOfAppropriation.Add(noa);
-                    noaContainer = NoticeOfAppropriation.GetAll();
-                    return Ok(noaContainer);                     
+                    //noaContainer = NoticeOfAppropriation.GetAll();
+                    return Ok(restore);                     
             }
 
             else if (noa.Id != null && noa.DeleteRecord==true)
@@ -199,7 +198,7 @@
 
                 var deleteRecord = NoticeOfAppropriation.Get(d => d.Id == noa.Id);
                 NoticeOfAppropriation.Delete(deleteRecord);
-                return Ok(NoticeOfAppropriation.GetAll());
+                return Ok(deleteRecord);
             }
             else  
             {
@@ -236,7 +235,7 @@
                     var newNoa=NoticeOfAppropriation.Add(noa);
                 }
 
-                return GetNoticeOfAppropriation();
+                return Ok(noa);
             }
 
            // return Ok(noaContainer);
@@ -251,7 +250,6 @@
             if (pcc != null)
             {
                 Regex regex = new Regex(@"([1-9][0-9])\D?([0-9]{6,7})\D?([0-9]{4})");
-
                 
                 pcc = regex.Replace(pcc, "$1-$2.$3");
 
@@ -270,10 +268,8 @@
             }
 
             var noaCode = id == null ? NoticeOfAppropriationView.PopulateNoaView() : NoticeOfAppropriationView.PopulateNoaView(id);
-            return Ok(noaCode);
-              
+            return Ok(noaCode);              
         }
-
 
         //--------------------------------------------------------------------------------------------------------
         //---------------------------------- ADD/ DELETE/UPDATE ------------------------------------------------
