@@ -292,12 +292,16 @@ namespace HydrosApi.Models.Adjudication
 
             return null;            
         }
+        
         public static NoticeOfAppropriationView PopulateNoaView(int? Id=null)
         {
             var noaView = new NoticeOfAppropriationView();
             if (Id == null)
             {
-                noaView.NoticeOfAppropriationAll = NoticeOfAppropriation.GetAll();
+                //noaView.NoticeOfAppropriationAll = NoticeOfAppropriation.GetAll();
+
+                var noa = NoticeOfAppropriation.GetAll();
+                noaView.NoticeOfAppropriationAll = noa;
 
                 var noticeOfAppropriationCodeList = new Dictionary<string, object>();
                 //var countyList = CdAwCounty.GetAll();
@@ -309,12 +313,12 @@ namespace HydrosApi.Models.Adjudication
                 var unitOfMeasureList = CdUnitOfMeasureSOC.GetAll();
                 var subWatershedList = WatershedView.GetAll();              
 
-                noticeOfAppropriationCodeList.Add("CountyList", countyList != null && countyList.Count() > 0 ? countyList : null);               
-                noticeOfAppropriationCodeList.Add("ClaimantList", claimantList != null && claimantList.Count() > 0 ? claimantList : null); 
-                noticeOfAppropriationCodeList.Add("DataSourceList", dataSourceList != null && dataSourceList.Count() > 0 ? dataSourceList : null);               
-                noticeOfAppropriationCodeList.Add("UseList", useList != null && useList.Count() > 0 ? useList : null);
-                noticeOfAppropriationCodeList.Add("UnitOfMeasureList", unitOfMeasureList != null && unitOfMeasureList.Count() > 0 ? unitOfMeasureList : null);
-                noticeOfAppropriationCodeList.Add("SubWatershedList", subWatershedList != null && subWatershedList.Count() > 0 ? subWatershedList : null);
+                noticeOfAppropriationCodeList.Add("CountyList", countyList);               
+                noticeOfAppropriationCodeList.Add("ClaimantList", claimantList); 
+                noticeOfAppropriationCodeList.Add("DataSourceList", dataSourceList);               
+                noticeOfAppropriationCodeList.Add("UseList", useList);
+                noticeOfAppropriationCodeList.Add("UnitOfMeasureList", unitOfMeasureList);
+                noticeOfAppropriationCodeList.Add("SubWatershedList", subWatershedList);
 
                 if (noticeOfAppropriationCodeList != null)
                     noaView.NoticeOfAppropriationCodeList = noticeOfAppropriationCodeList;

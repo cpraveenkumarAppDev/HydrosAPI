@@ -15,6 +15,7 @@
         }
         
         public virtual DbSet<EXPLANATIONS> EXPLANATIONS { get; set; }
+        public virtual DbSet<ExplanationType> ExplanationType { get; set; }
         public virtual DbSet<FILE> FILES { get; set; }
         public virtual DbSet<PROPOSED_WATER_RIGHT> PROPOSED_WATER_RIGHT { get; set; }
         public virtual DbSet<TEST_FILE_UPLOAD> TEST_FILE_UPLOAD { get; set; }

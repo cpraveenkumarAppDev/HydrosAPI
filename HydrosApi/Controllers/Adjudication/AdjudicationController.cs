@@ -154,92 +154,21 @@
             }
         }
 
-        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
-        [HttpPost, Route("adj/updatenoa/")]        
-        public IHttpActionResult UpdateNoticeOfAppropriation([FromBody] NoticeOfAppropriation noa) //like pcc but program/file_no/file_ext
+        [HttpGet, Route("adj/watershed/{code?}")]
+        public IHttpActionResult GetWatershed(string code = null)
         {
-            int? claimantId = 0;
-            var user = User.Identity.Name.Replace("AZWATER0\\", "");
-
-            var noaContainer = new List<NoticeOfAppropriation>();
-            if(noa==null)
+            if (code != null)
             {
-                return BadRequest("No data was updated because no data was submitted");
+                return Ok(Task.FromResult(WatershedView.Get(w=>w.WatershedCode==code)));
             }
-
-           if(noa.Program == null || noa.FileNo==null || noa.FileExt==null)
+            else
             {
-                return BadRequest("The Program, File Number and File Extension must have a value");
+                var ws = WatershedView.GetAll();
+                //return Ok(Task.FromResult(WatershedView.GetAll()));
+                return Ok(ws);
             }
-
-            //restore option             
-            noa.RestoreRecord = false;
-
-            if (noa.Id != null && noa.RestoreRecord == true)
-            {
-                //make sure restorerecord doesn't exist
-                //var restoreRecord = noaContainer.Where(d => d.Id == noa.Id);
-
-                    noa.UpdateBy = user;
-                    noa.UpdateDt = DateTime.Now;
-
-                var restore=NoticeOfAppropriation.Add(noa);
-                    //noaContainer = NoticeOfAppropriation.GetAll();
-                    return Ok(restore);                     
-            }
-
-            else if (noa.Id != null && noa.DeleteRecord==true)
-            {
-
-                /* noaContainer = NoticeOfAppropriation.GetAll();
-                 var deleteRecord = noaContainer.Where(d => d.Id == noa.Id && noa.DeleteRecord==true).FirstOrDefault();
-                 noaContainer.Where(d => d.Id == noa.Id).FirstOrDefault().RestoreRecord = true;*/
-
-
-                var deleteRecord = NoticeOfAppropriation.Get(d => d.Id == noa.Id);
-                NoticeOfAppropriation.Delete(deleteRecord);
-                return Ok(deleteRecord);
-            }
-            else  
-            {
-                var existing = NoticeOfAppropriation.Get(e => e.Program == noa.Program && e.FileNo == noa.FileNo && e.FileExt == noa.FileExt);
-
-                if ((existing != null && ((noa.Id != null && existing.Id != noa.Id) || noa.Id == null))) {
-                    //make sure a duplicate program/fileno/fileext combination isn't being added/updated
-                    return BadRequest(string.Format("Could not {0} the record. A record with the file number {1} already exists",noa.Id==null ? "update" : "add",existing.FileNumber));
-                }
-
-                if (noa.ClaimantNew != null && noa.ClaimantId==null)
-                {
-                    var newClaimant = new NoticeOfAppropriationClaimant() { Claimant = noa.ClaimantNew.ToUpper(), CreateBy = user };
-                    var ncu = NoticeOfAppropriationClaimant.Add(newClaimant);
-                        
-                      
-                    if(ncu != null)
-                    {
-                        claimantId = ncu.Id;
-                        noa.ClaimantId = claimantId;
-                    }                        
-                }
-
-                if(noa.Id != null)
-                {
-                    noa.UpdateBy = user;
-                    noa.UpdateDt = DateTime.Now;
-                    NoticeOfAppropriation.Update(noa);                    
-                }
-                else
-                {
-                    noa.CreateBy = user;
-                    noa.CreateDt = DateTime.Now;
-                    var newNoa=NoticeOfAppropriation.Add(noa);
-                }
-
-                return Ok(noa);
-            }
-
-           // return Ok(noaContainer);
         }
+
 
         [HttpGet, Authorize, Route("adj/getnoa/{pcc?}")]
         public IHttpActionResult GetNoticeOfAppropriation(string pcc = null) //like pcc but program/file_no/file_ext
@@ -267,8 +196,9 @@
                 }
             }
 
+
             var noaCode = id == null ? NoticeOfAppropriationView.PopulateNoaView() : NoticeOfAppropriationView.PopulateNoaView(id);
-            return Ok(noaCode);              
+            return Ok(noaCode);      
         }
 
         //--------------------------------------------------------------------------------------------------------
@@ -387,7 +317,98 @@
             }
         }
 
-      
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpPost, Route("adj/updatenoa/")]
+        public IHttpActionResult UpdateNoticeOfAppropriation([FromBody] NoticeOfAppropriation noa) //like pcc but program/file_no/file_ext
+        {
+            int? claimantId = 0;
+            var user = User.Identity.Name.Replace("AZWATER0\\", "");
+
+            var noaContainer = new List<NoticeOfAppropriation>();
+            if (noa == null)
+            {
+                return BadRequest("No data was updated because no data was submitted");
+            }
+
+            if (noa.Program == null || noa.FileNo == null || noa.FileExt == null)
+            {
+                return BadRequest("The Program, File Number and File Extension must have a value");
+            }
+
+            //restore option             
+            noa.RestoreRecord = false;
+
+            if (noa.Id != null && noa.RestoreRecord == true)
+            {
+                //make sure restorerecord doesn't exist
+                //var restoreRecord = noaContainer.Where(d => d.Id == noa.Id);
+
+                noa.UpdateBy = user;
+                noa.UpdateDt = DateTime.Now;
+
+                var restore = NoticeOfAppropriation.Add(noa);
+                //noaContainer = NoticeOfAppropriation.GetAll();
+                return Ok(restore);
+            }
+
+            else if (noa.Id != null && noa.DeleteRecord == true)
+            {
+
+                /* noaContainer = NoticeOfAppropriation.GetAll();
+                 var deleteRecord = noaContainer.Where(d => d.Id == noa.Id && noa.DeleteRecord==true).FirstOrDefault();
+                 noaContainer.Where(d => d.Id == noa.Id).FirstOrDefault().RestoreRecord = true;*/
+
+
+                var deleteRecord = NoticeOfAppropriation.Get(d => d.Id == noa.Id);
+
+                if(deleteRecord==null)
+                {
+                    return Ok(noa); //record was alredy deleted so return noa
+                }
+                NoticeOfAppropriation.Delete(deleteRecord);
+                return Ok(deleteRecord);
+            }
+            else
+            {
+                var existing = NoticeOfAppropriation.Get(e => e.Program == noa.Program && e.FileNo == noa.FileNo && e.FileExt == noa.FileExt);
+
+                if ((existing != null && ((noa.Id != null && existing.Id != noa.Id) || noa.Id == null)))
+                {
+                    //make sure a duplicate program/fileno/fileext combination isn't being added/updated
+                    return BadRequest(string.Format("Could not {0} the record. A record with the file number {1} already exists", noa.Id == null ? "update" : "add", existing.FileNumber));
+                }
+
+                if (noa.ClaimantNew != null && noa.ClaimantId == null)
+                {
+                    var newClaimant = new NoticeOfAppropriationClaimant() { Claimant = noa.ClaimantNew.ToUpper(), CreateBy = user };
+                    var ncu = NoticeOfAppropriationClaimant.Add(newClaimant);
+
+
+                    if (ncu != null)
+                    {
+                        claimantId = ncu.Id;
+                        noa.ClaimantId = claimantId;
+                    }
+                }
+
+                if (noa.Id != null)
+                {
+                    noa.UpdateBy = user;
+                    noa.UpdateDt = DateTime.Now;
+                    NoticeOfAppropriation.Update(noa);
+                }
+                else
+                {
+                    noa.CreateBy = user;
+                    noa.CreateDt = DateTime.Now;
+                    var newNoa = NoticeOfAppropriation.Add(noa);
+                }
+
+                return Ok(noa);
+            }
+
+            // return Ok(noaContainer);
+        }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [Route("adj/updateWfr/{useage}/{id}/{wfr_num}")]

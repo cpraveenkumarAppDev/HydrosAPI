@@ -40,6 +40,9 @@
         [StringLength(50)]
         public string BOC { get; set; }
 
+        public string WS { get; set; }
+        public int? SW { get; set; }
+
         [StringLength(100)]
         public string WFR_PARCELS { get; set; }
 

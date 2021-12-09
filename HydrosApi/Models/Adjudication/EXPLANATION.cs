@@ -36,4 +36,15 @@
 
         public DateTime? UPDATEDT { get; set; }
     }
+
+    [Table("ADJ_INV.CD_EXP_TYPE")]
+    public partial class ExplanationType : AdwrRepository<ExplanationType>
+    {
+
+        [Key, Column("CODE")]
+        public string Code { get; set; }
+
+        [Column("DESCR")]
+        public string Description { get; set; }
+    }
 }

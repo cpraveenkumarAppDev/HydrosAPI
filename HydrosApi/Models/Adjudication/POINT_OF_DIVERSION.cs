@@ -107,6 +107,10 @@
 
         [StringLength(300)]
         public string WTR_SOURCE { get; set; }
+         
+        public string WS { get; set; }
+
+        public int? SW { get; set; }
 
         [StringLength(700)]
         public string XPLANATION { get; set; }
