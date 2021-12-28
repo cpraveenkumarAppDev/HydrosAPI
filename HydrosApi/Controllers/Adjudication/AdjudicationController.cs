@@ -85,7 +85,7 @@
         {
             if (id != null)
             {
-                var pou = Task.FromResult(PLACE_OF_USE_VIEW.PlaceOfUseView(id));
+                var pou = await Task.FromResult(PLACE_OF_USE_VIEW.PlaceOfUseView(id));
                 return Ok(pou);
             }
             else
@@ -113,7 +113,7 @@
         {
             try
             {
-                return Ok(await Task.FromResult(POINT_OF_DIVERSION_VIEW.PointOfDivsersionView(id)));
+                return Ok(await Task.FromResult(POINT_OF_DIVERSION_VIEW.PointOfDiversionView(id)));
             }
             catch (Exception exception)
             {
@@ -547,30 +547,56 @@
         [HttpPost, Route("adj/addfile/")] //PWR_ID or an error message is returned       
         public async Task<IHttpActionResult> AddFile() //<== ID IS THE ID FROM THE EXPLANATION TABLE
         {
-
-
             try
             {
-
                 if (!Request.Content.IsMimeMultipartContent())
                 {
                     throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
                 }
 
                 var provider = await Request.Content.ReadAsMultipartAsync<HandleForm>(new HandleForm());
-                var fileList = await Task.FromResult(FILE.UploadFile(provider, User.Identity.Name.Replace("AZWATER0\\", "")));
+                var id = 0;  // provider.FormData["ID"];
 
-                if (fileList != null && fileList.STATUS == null)
+                bool success = int.TryParse(provider.FormData["ID"], out id);
+
+                provider.FormData["ID"] = id.ToString();
+
+                var deleteRecord = provider.FormData["DeleteRecord"];
+
+                if(deleteRecord=="true" && id > 0)
                 {
-                    return Ok(fileList);
+                    var delete = FILE.Get(f => f.ID == id);
+                    FILE.Delete(delete);
+                    delete.STATUS = "Deleted";
+
+                    return Ok(delete);
                 }
+
+                var fileList = await Task.FromResult(FILE.FileValues(provider, User.Identity.Name.Replace("AZWATER0\\", "")));
+
+                if (fileList != null)
+                {                    
+                    if (fileList.ID > 0)
+                    {
+                        var update=FILE.Update(fileList);
+                        return Ok(update);
+                      
+                    }
+
+                    else
+                    {
+                        var added = FILE.Add(fileList);
+                        return Ok(added);
+                    }
+                }
+
 
                 return BadRequest(fileList.STATUS);
             }
             catch (Exception exception)
             {
 
-                return BadRequest(string.Format("Error: {0}", BundleExceptions(exception)));
+                return BadRequest(string.Format("Error: {0} {1}", exception.InnerException, exception.StackTrace));
             }
         }
 
@@ -607,6 +633,78 @@
             }
             FILE.Delete(fileRecord);
             return Ok("File successfully deleted");
+        }
+
+        [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
+        [HttpPost, Route("adj/updateexp/")] //used for add/update/delete
+        public IHttpActionResult UpdateExplanation([FromBody] EXPLANATIONS explanation) //Send all form values
+        {
+            var user = User.Identity.Name.Replace("AZWATER0\\", "");
+            var date = DateTime.Now;
+
+            if (explanation == null || explanation.EXPLANATION=="")
+            {
+                return BadRequest("Explanation was not provided");
+            }
+
+            if(explanation.PWR_ID == null && explanation.WFR_ID == null && explanation.POD_ID == null)
+            {
+                return BadRequest("An invalid explanation not associated with a proposed water right/watershed file report was entered.");
+            }
+
+            var wfrId = explanation.WFR_ID;
+            var pwrId = explanation.PWR_ID;
+
+            if (explanation.DeleteRecord==true)
+            {
+                var delete = EXPLANATIONS.Get(e => e.ID == explanation.ID);
+
+                if(delete != null)
+                {
+                    EXPLANATIONS.Delete(delete);
+                    return Ok(delete);                    
+                }
+
+                return BadRequest("Unable to delete record");
+            }
+            else
+            {
+                
+                if(explanation.ID > 0)
+                {
+                    explanation.UPDATEBY = user;
+                    explanation.UPDATEDT = date;
+
+                    EXPLANATIONS.Update(explanation);
+                    return Ok(explanation);
+                }
+                else
+                {
+                    explanation.CREATEBY = user;
+                    explanation.CREATEDT = date;
+                    var added=EXPLANATIONS.Add(explanation);
+
+                    return Ok(added);
+
+                }
+            }
+
+             
+            //return Ok(wfrId != null ? EXPLANATIONS.GetList(e => e.WFR_ID == wfrId) : EXPLANATIONS.GetList(e => e.PWR_ID == pwrId));
+            /*
+           
+            var newExplanation = await Task.FromResult(EXPLANATIONS.Add(new EXPLANATIONS()
+            {
+                CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
+                CREATEDT = DateTime.Now,
+                PWR_ID = explanation.PWR_ID != null ? explanation.PWR_ID : null,
+                WFR_ID = explanation.WFR_ID != null ? explanation.WFR_ID : null,
+                POD_ID = explanation.POD_ID != null ? explanation.POD_ID : null,
+                EXP_TYPE = explanation.EXP_TYPE,
+                EXPLANATION = explanation.EXPLANATION
+            }));*/
+
+
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]

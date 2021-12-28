@@ -35,16 +35,19 @@
         public string UPDATEBY { get; set; }
 
         public DateTime? UPDATEDT { get; set; }
+
+        [NotMapped]
+        public bool? DeleteRecord { get; set; }
     }
 
     [Table("ADJ_INV.CD_EXP_TYPE")]
     public partial class ExplanationType : AdwrRepository<ExplanationType>
     {
-
         [Key, Column("CODE")]
         public string Code { get; set; }
 
         [Column("DESCR")]
         public string Description { get; set; }
     }
+    
 }

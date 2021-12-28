@@ -254,7 +254,7 @@
 
                 var pod = POINT_OF_DIVERSION_VIEW.Get(p => p.OBJECTID == id);
                 var podSde = POINT_OF_DIVERSION.Get(p => p.OBJECTID == id);
-                pod.Explanations = EXPLANATIONS.GetList(p => p.POD_ID == pod.ID);
+                pod.Explanation = EXPLANATIONS.GetList(p => p.POD_ID == pod.ID);
                 pod.FileList = FILE.GetList(p => p.POD_ID == pod.ID);
                 char[] delimiters = new[] { ',', ';' };
                 return podSde;

@@ -17,9 +17,21 @@ namespace HydrosApi.Services.docushareClient
         }
         public List<SOCDOC>GetSocDocs(string pcc)
         {
-            //call DSAPI
-            var result = this.client.GetAsync("soc/getsocdocuments?fileNumber=" + pcc).Result;
             List<SOCDOC> socDocs = new List<SOCDOC>();
+            var socMsg = new SOCDOC();
+
+            if (pcc==null)
+            {
+                socMsg.Status= "PCC submitted was empty";
+                socDocs.Add(socMsg);
+                return socDocs;
+
+            }
+            //call DSAPI
+            var path = string.Format("soc/getsocdocuments?fileNumber={0}", pcc);
+
+            var result = this.client.GetAsync(path).Result;
+            
           
             if (result.IsSuccessStatusCode)
             {
@@ -27,7 +39,8 @@ namespace HydrosApi.Services.docushareClient
                 var content = result.Content.ReadAsStringAsync().Result;
                 if(content.Contains("No records found"))
                 {
-                    socDocs.FirstOrDefault().Status= $"No records found for "+pcc;
+                    socMsg.Status = $"No records found for "+pcc;
+                    socDocs.Add(socMsg);
                     return socDocs;
                 }
                 socDocs = JsonConvert.DeserializeObject<List<SOCDOC>>(content);
@@ -38,8 +51,10 @@ namespace HydrosApi.Services.docushareClient
                 //return result;
             }
 
-            socDocs.FirstOrDefault().Status = $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
+            socMsg.Status = $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
+            socDocs.Add(socMsg);
             return socDocs;
+            
         }
 
         public List<SWDOC> getSurfaceWaterDocs(string pcc)
@@ -47,7 +62,9 @@ namespace HydrosApi.Services.docushareClient
             //call DSAPI
 
             List<SWDOC> swDoc = new List<SWDOC>();
-            var result = this.client.GetAsync("surfacewater/Getswdocuments?pc=" + pcc).Result;
+            var swMsg = new SWDOC();
+            var path = string.Format("surfacewater/Getswdocuments?pc={0}", pcc);
+            var result = this.client.GetAsync(path).Result;
 
             if (result.IsSuccessStatusCode)
             {
@@ -56,7 +73,8 @@ namespace HydrosApi.Services.docushareClient
 
                 if (content.Contains("No records found"))
                 {
-                    //swDoc.FirstOrDefault().Status= $"No records found for " + pcc;
+                    swMsg.Status= $"No records found for " + pcc;
+                    swDoc.Add(swMsg);
                     return swDoc;
                 }
                 
@@ -65,9 +83,9 @@ namespace HydrosApi.Services.docushareClient
             }
 
             //swDoc.FirstOrDefault().Status = $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
-            var swStatus = new SWDOC();
-            swStatus.Status = $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
-            swDoc.Add(swStatus);
+             
+            swMsg.Status = $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
+            swDoc.Add(swMsg);
             return swDoc;
 
         }

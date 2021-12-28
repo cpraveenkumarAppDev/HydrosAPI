@@ -42,16 +42,104 @@ namespace HydrosApi.Models
 
         public DateTime? UPDATEDT { get; set; }
 
-
         [StringLength(100)]
-        public string MIME_TYPE { get; set; }
-
-        
+        public string MIME_TYPE { get; set; }               
 
         [NotMapped]
         public string STATUS { get; set; }
 
+        [NotMapped]
+        public bool DeleteRecord { get; set; }
 
+
+
+        public static FILE FileValues(HandleForm provider, string User)
+        {
+            var uploadFilePath = @"" + ConfigurationManager.AppSettings["FileUploadLocation"];
+
+            var fileInfo = new FILE();
+            string fieldName;
+            //string newFileName="";            
+
+            var form = provider.FormData;
+
+            //get all the form data (ie not the file stream yet)
+            //------------------------------------------------------------------
+            //eventually move this block into a class or function so it can be used anywhere.
+            //also use it for non-multipart/form-data types
+
+            foreach (var key in form)
+            {
+                var keyValue = form.GetValues(key.ToString()).FirstOrDefault();
+                fieldName = key.ToString().Trim('\"');
+                var property = fileInfo.GetType().GetProperty(fieldName);
+
+               
+                
+
+                if (property != null)
+                {
+                    //Convert the form value to the correct data type
+                    var converter = TypeDescriptor.GetConverter(property.PropertyType);
+                    try
+                    {
+                        property.SetValue(fileInfo, converter.ConvertFrom(keyValue));
+                    }
+                    catch
+                    {
+                        fileInfo.STATUS = String.Format("The value '{0}' provided for {1} is not valid. It should be a {2}", keyValue, fieldName, property.PropertyType);
+                        return fileInfo;
+                    }
+                }
+            }
+
+            //--end eventually move this into a class or function so it can be used anywhere
+            //-------------------------------------------------------------------------------
+
+            if (fileInfo.PWR_ID == null && fileInfo.WFR_ID == null && fileInfo.POD_ID == null || provider.Files.Count() == 0)
+            {
+                fileInfo = new FILE();
+                fileInfo.STATUS = fileInfo.PWR_ID == null || fileInfo.WFR_ID == null || fileInfo.POD_ID == null ? "An ID for Proposed Water Right or Water Facility Right was not provided." : "Please select a valid file.";
+                return fileInfo;
+            }
+
+
+            if (fileInfo.ID > 0)
+            {
+                fileInfo.UPDATEBY = User;
+                fileInfo.UPDATEDT = DateTime.Now;
+            }
+
+            else
+            {
+                fileInfo.CREATEBY = User;
+                fileInfo.CREATEDT = DateTime.Now;
+
+            }
+
+
+            //FILE.Add(fileInfo);
+
+            foreach (var file in provider.Files)
+            {
+
+                var mimeType = file.Headers.ContentType.MediaType;
+                var originalFileName = file.Headers.ContentDisposition.FileName.Trim('\"');
+
+                byte[] fileData = file.ReadAsByteArrayAsync().Result;
+
+                fileInfo.ORIGINAL_FILE_NAME = originalFileName;
+                fileInfo.FILE_DATA = fileData;
+                fileInfo.TYPE = Path.GetExtension(originalFileName.ToLower());
+                fileInfo.MIME_TYPE = mimeType;
+
+                //FILE.Update(fileInfo);
+            }
+
+            
+            return fileInfo;
+        }
+    
         public static FILE UploadFile(HandleForm provider, string User)
         {
 
@@ -75,11 +163,12 @@ namespace HydrosApi.Models
                 var property = fileInfo.GetType().GetProperty(fieldName);
 
                 //Convert the form value to the correct data type
-                var converter = TypeDescriptor.GetConverter(property.PropertyType); 
+                 
                 if (property != null)
                 {
                     try
                     {
+                        var converter = TypeDescriptor.GetConverter(property.PropertyType);
                         property.SetValue(fileInfo, converter.ConvertFrom(keyValue));
                     }
                     catch
@@ -100,9 +189,19 @@ namespace HydrosApi.Models
                 return fileInfo;
             }
 
-            fileInfo.CREATEBY = User;
-            fileInfo.CREATEDT = DateTime.Now;            
-            
+            if (fileInfo.ID > 0)
+            {
+                fileInfo.UPDATEBY = User;
+                fileInfo.UPDATEDT = DateTime.Now;
+            }
+
+            else
+            {
+                fileInfo.CREATEBY = User;
+                fileInfo.CREATEDT = DateTime.Now;
+
+            }
+
             FILE.Add(fileInfo);
 
             foreach (var file in provider.Files)            { 

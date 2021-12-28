@@ -25,20 +25,23 @@ namespace HydrosApi.Models.Adjudication
         [Column("OBJECTID")]
         public int OBJECTID { get; set; }
         [NotMapped]
-        public List<SOC_AIS_VIEW> SOC { get; set; }
+        public List<SOC_AIS_VIEW> StatementOfClaim { get; set; }
         [NotMapped]
         public List<WELLS_VIEW> Well { get; set; }
         [NotMapped]
         public List<SW_AIS_VIEW> Surfacewater { get; set; }
         [NotMapped]
-        public List<EXPLANATIONS> Explanations { get; set; }
+        public List<EXPLANATIONS> Explanation { get; set; }
+
+         [NotMapped]
+        public List<ExplanationType> ExplanationTypeList { get; set; }
         [NotMapped]
         public List<FILE> FileList { get; set; }
 
         [NotMapped]
         public POINT_OF_DIVERSION PointOfDiversionSde { get; set; }
 
-        public static POINT_OF_DIVERSION_VIEW PointOfDivsersionView(int id)
+        public static POINT_OF_DIVERSION_VIEW PointOfDiversionView(int id)
         {
             var pod = new POINT_OF_DIVERSION_VIEW();
 
@@ -58,7 +61,7 @@ namespace HydrosApi.Models.Adjudication
 
             if (podData != null)
             {
-                pod.Explanations = EXPLANATIONS.GetList(p => p.POD_ID == pod.ID);
+                pod.Explanation = EXPLANATIONS.GetList(p => p.POD_ID == pod.ID);
                 pod.FileList = FILE.GetList(p => p.POD_ID == pod.ID);
             }
             
@@ -71,7 +74,7 @@ namespace HydrosApi.Models.Adjudication
                 if (podSde.SOC != null)
                 {
                     var soc = FileFromStringList.GetFileFromStringList(podSde.SOC, delimiters);
-                    pod.SOC = soc?.Select(f => SOC_AIS_VIEW.Get(s => s.FILE_NO == f.NumericFileNo)).Distinct().ToList();
+                    pod.StatementOfClaim = soc?.Select(f => SOC_AIS_VIEW.Get(s => s.FILE_NO == f.NumericFileNo)).Distinct().ToList();
                 }
 
                 if (podSde.BOC != null)
@@ -83,42 +86,47 @@ namespace HydrosApi.Models.Adjudication
                     pod.Surfacewater = swList?.Select(f => SW_AIS_VIEW.Get(s => s.ART_APPLI_NO == f.NumericFileNo)).ToList();
                 }
             }
-            
-                
-                    /*
 
-                pod.SOC = podSde.SOC == null ? null : Regex.Replace(podSde.SOC, @"\s+", "") == "" ? null :
-                        (from s in podSde.SOC.Split(delimiters)
-                         select new
-                         {
-                             program = s.IndexOf("-") > -1 ? s.Split('-')[0].Replace(" ", "") : "",
-                             file_no = int.Parse((s.IndexOf("-") > -1 ? s.Split('-')[1].Replace(" ", "") : s).Replace(" ", ""))
-                         }).Select(f => SOC_AIS_VIEW.Get(s => s.FILE_NO == f.file_no)).Where(c => c != null).Distinct().ToList();
+            if (pod != null)
+            {
+                pod.ExplanationTypeList = ExplanationType.GetAll();
+            }
 
-                if (podSde.BOC != null && Regex.Replace(podSde.BOC, @"\s+", "") != "")
-                {
-                    var bocList = (from p in (from s in podSde.BOC.Split(delimiters)
-                                              select new
-                                              {
-                                                  program = s.IndexOf("-") > -1 ? s.Split('-')[0].Replace(" ", "") : "",
-                                                  file_no = (s.IndexOf("-") > -1 ? s.Split('-')[1].Split('.')[0].Replace(" ", "") : s).Replace(" ", "")
-                                              })
-                                   select new
-                                   {
-                                       p.program,
-                                       p.file_no,
-                                       numeric_file_no = int.Parse(p.file_no == null ? "0" : p.file_no.ToString()),
-                                       registry_id = p.program + "-" + p.file_no
-                                   }).Distinct();
-                    var wellList = bocList.Where(p => p.program == "55" || p.program == "35");
-                    var swList = bocList.Where(p => p.program != "55" && p.program != "35");
 
-                    pod.Well = wellList == null ? null :
-                        wellList.Select(f => WELLS_VIEW.Get(s => s.FILE_NO == f.file_no && s.PROGRAM == f.program)).Where(c => c != null).ToList();
-                    pod.Surfacewater = swList == null ? null : swList.Select(f => SW_AIS_VIEW.Get(s => s.ART_APPLI_NO == f.numeric_file_no)).Where(c => c != null).ToList();
-                }*/
-            
-            
+            /*
+
+        pod.SOC = podSde.SOC == null ? null : Regex.Replace(podSde.SOC, @"\s+", "") == "" ? null :
+                (from s in podSde.SOC.Split(delimiters)
+                 select new
+                 {
+                     program = s.IndexOf("-") > -1 ? s.Split('-')[0].Replace(" ", "") : "",
+                     file_no = int.Parse((s.IndexOf("-") > -1 ? s.Split('-')[1].Replace(" ", "") : s).Replace(" ", ""))
+                 }).Select(f => SOC_AIS_VIEW.Get(s => s.FILE_NO == f.file_no)).Where(c => c != null).Distinct().ToList();
+
+        if (podSde.BOC != null && Regex.Replace(podSde.BOC, @"\s+", "") != "")
+        {
+            var bocList = (from p in (from s in podSde.BOC.Split(delimiters)
+                                      select new
+                                      {
+                                          program = s.IndexOf("-") > -1 ? s.Split('-')[0].Replace(" ", "") : "",
+                                          file_no = (s.IndexOf("-") > -1 ? s.Split('-')[1].Split('.')[0].Replace(" ", "") : s).Replace(" ", "")
+                                      })
+                           select new
+                           {
+                               p.program,
+                               p.file_no,
+                               numeric_file_no = int.Parse(p.file_no == null ? "0" : p.file_no.ToString()),
+                               registry_id = p.program + "-" + p.file_no
+                           }).Distinct();
+            var wellList = bocList.Where(p => p.program == "55" || p.program == "35");
+            var swList = bocList.Where(p => p.program != "55" && p.program != "35");
+
+            pod.Well = wellList == null ? null :
+                wellList.Select(f => WELLS_VIEW.Get(s => s.FILE_NO == f.file_no && s.PROGRAM == f.program)).Where(c => c != null).ToList();
+            pod.Surfacewater = swList == null ? null : swList.Select(f => SW_AIS_VIEW.Get(s => s.ART_APPLI_NO == f.numeric_file_no)).Where(c => c != null).ToList();
+        }*/
+
+
             return pod;
         }
     }

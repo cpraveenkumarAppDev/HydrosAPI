@@ -119,6 +119,9 @@
         public List<EXPLANATIONS> Explanation { get; set; }
 
         [NotMapped]
+        public List<ExplanationType> ExplanationTypeList { get; set; }
+
+        [NotMapped]
         public List<FILE> FileList { get; set; }
 
         //Returns EVERYTHING needed to populate the form
@@ -138,7 +141,7 @@
 
                 if (pou.BAS_OF_CLM != null)
                 {
-                    var bocList = FileFromStringList.GetFileFromStringList(pou.BAS_OF_CLM, new[] { ',', ';' });
+                    var bocList = FileFromStringList.GetFileFromStringList(pou.BAS_OF_CLM, new[] { ',', ';' }).Where(x=>x.Error==null);
                     var wellList = bocList?.Where(p => p.Program == "55" || p.Program == "35");
                     var swList = bocList?.Where(p => p.Program != "55" && p.Program != "35");                    
                     pou.Well = wellList?.Select(f => WELLS_VIEW.Get(s => s.FILE_NO == f.FileNo && s.PROGRAM == f.Program)).ToList();
@@ -174,6 +177,11 @@
                 pou.PointOfDiversion = PWR_POD.GetList(p => p.PWR_ID == pwr.ID).Select(p => p.PointOfDiversion).Distinct().ToList();
                 pou.FileList = FILE.GetList(f => f.PWR_ID == pwr.ID);
                 pou.Explanation = EXPLANATIONS.GetList(i => i.PWR_ID == pwr.ID);
+                
+            }
+            if(pou != null)
+            {
+                pou.ExplanationTypeList = ExplanationType.GetAll();
             }
 
             pouList.Add(pou);

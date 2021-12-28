@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-
+    using System.ComponentModel;
 
     public interface IAdwrRepository<TEntity>
     {
@@ -82,6 +82,61 @@ using System.Data.Entity.Infrastructure;
         {
             var query = databaseContext.Set<T>().FirstOrDefault(predicate);
             return query;
+        }
+
+        //testing something out here
+
+        public static T FormToModel(T model,HandleForm provider)
+        {
+            var form = provider.FormData;
+            var prop = model.GetType();
+            var files = provider.Files;
+
+            foreach (var key in form)
+            {
+                var keyValue = form.GetValues(key.ToString())?.FirstOrDefault();
+
+                if (keyValue != null)
+                {
+                    var fieldName = key.ToString().Trim('\"');
+                    var property = model.GetType().GetProperty(fieldName);
+
+
+
+
+                    //Convert the form value to the correct data type
+
+                    if (property != null)
+                    {
+                        var propertyTypeName = property.PropertyType.Name;
+                        var converter = TypeDescriptor.GetConverter(property.PropertyType);
+
+                        if(property.PropertyType.ToString().IndexOf("byte",StringComparison.OrdinalIgnoreCase) > 0)
+                        {
+                            byte[] fileData = files[0].ReadAsByteArrayAsync().Result;
+                            property.SetValue(model, fileData);
+                        }
+                        else
+                        {
+                            property.SetValue(model, converter.ConvertFrom(keyValue));
+                        }
+
+
+
+                        
+
+                    }
+
+                    //if (ffProp == property.PropertyType)
+                    //{
+                    //    property.SetValue(model, keyValue);
+                   // }
+                }
+            }
+
+            return model;
+           
+            
         }
 
         public static T Add(T entity)
