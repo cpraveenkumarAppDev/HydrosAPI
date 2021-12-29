@@ -45,6 +45,13 @@ namespace HydrosApi.Models
         //[NotMapped]
         //public  WATERSHED_FILE_REPORT_SDE WatershedFileReportSDE { get; set; }
 
+        public static bool WfrExists(string wfrnum)
+        {
+            var wfr = Get(w => w.WFR_NUM == wfrnum);
+
+            return wfr != null ? true : false;
+        }
+
         public static WATERSHED_FILE_REPORT WatershedFileReportByObjectId(int? id)
         {
             var wfr = new WATERSHED_FILE_REPORT();

@@ -121,6 +121,13 @@
             }
         }
 
+        [HttpGet, Route("adj/wfrexists/{num}")]
+        public IHttpActionResult WfrExists(string num)
+        {
+            return Ok(WATERSHED_FILE_REPORT.WfrExists(num));
+
+        }
+
         [HttpGet, Route("adj/getwfr/{id?}")]
         public IHttpActionResult GetWfr(int? id = null)
         {
