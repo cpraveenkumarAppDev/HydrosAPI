@@ -124,7 +124,8 @@ namespace HydrosApi.Models
             {
 
                 var mimeType = file.Headers.ContentType.MediaType;
-                var originalFileName = file.Headers.ContentDisposition.FileName.Trim('\"');
+                var fileName= file.Headers.ContentDisposition.FileName.Trim('\"');
+                var originalFileName = fileName == "blob" ? fileInfo.ORIGINAL_FILE_NAME : fileName;
 
                 byte[] fileData = file.ReadAsByteArrayAsync().Result;
 

@@ -562,13 +562,21 @@
                 }
 
                 var provider = await Request.Content.ReadAsMultipartAsync<HandleForm>(new HandleForm());
+
+                var form = provider.FormData;
+
+                if (form["PWR_ID"] == null && form["WFR_ID"] == null && form["POD_ID"]==null)
+                {
+                    return BadRequest("The file provided is not associated with a proposed water right/watershed file report was entered.");
+                }
+ 
                 var id = 0;  // provider.FormData["ID"];
 
-                bool success = int.TryParse(provider.FormData["ID"], out id);
+                bool success = int.TryParse(form["ID"], out id);
 
-                provider.FormData["ID"] = id.ToString();
+                form["ID"] = id.ToString();
 
-                var deleteRecord = provider.FormData["DeleteRecord"];
+                var deleteRecord = form["DeleteRecord"];
 
                 if(deleteRecord=="true" && id > 0)
                 {
@@ -654,13 +662,13 @@
                 return BadRequest("Explanation was not provided");
             }
 
-            if(explanation.PWR_ID == null && explanation.WFR_ID == null && explanation.POD_ID == null)
+           //var wfrId = explanation.WFR_ID;
+            //var pwrId = explanation.PWR_ID;
+
+            if (explanation.PWR_ID == null && explanation.WFR_ID == null && explanation.POD_ID == null)
             {
                 return BadRequest("An invalid explanation not associated with a proposed water right/watershed file report was entered.");
             }
-
-            var wfrId = explanation.WFR_ID;
-            var pwrId = explanation.PWR_ID;
 
             if (explanation.DeleteRecord==true)
             {
