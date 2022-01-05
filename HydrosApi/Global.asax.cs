@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Http;
-using System.Web.Routing;
+﻿using System.Web;
+using System.Web.Http; 
+using System.Web.Mvc;
 
 namespace HydrosApi
 {
@@ -11,6 +8,7 @@ namespace HydrosApi
     {
         protected void Application_Start()
         {
+            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             GlobalConfiguration.Configure(WebApiConfig.Register);
             HttpConfiguration config = GlobalConfiguration.Configuration;
             //When JsonFormatter tries to make json out of the entityframework(EF) objects, it messes up

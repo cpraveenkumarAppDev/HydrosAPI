@@ -18,7 +18,12 @@ namespace HydrosApi.Models
             get
             {
                 DocushareService doc = new DocushareService();
-                return doc.GetSocDocs("39-" + this.FILE_NO).FirstOrDefault().FileUrl;
+                var docItem = doc.GetSocDocs("39-" + this.FILE_NO).FirstOrDefault();
+                if(docItem.Status != null)
+                {
+                    StatusMsg = docItem.Status;
+                }
+                return docItem.FileUrl;
             }
 
             set
@@ -52,6 +57,9 @@ namespace HydrosApi.Models
         [Column(Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int MAIN_ID { get; set; }
+
+        [NotMapped]
+        public string StatusMsg { get; set; }
     
 
         //****this is no longer necessary and can be removed eventually

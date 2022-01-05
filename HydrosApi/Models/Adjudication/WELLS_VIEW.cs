@@ -66,6 +66,9 @@ namespace HydrosApi
 
         public DateTime? INSTALL_DATE { get; set; }
 
+        [NotMapped]
+        public string StatusMsg { get; set; }
+
         //this is no longer necessary and can be removed eventually
         /*public static List<WELLS_VIEW> WellsView(string wellList)
         {

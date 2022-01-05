@@ -578,13 +578,20 @@
 
                 var deleteRecord = form["DeleteRecord"];
 
-                if(deleteRecord=="true" && id > 0)
-                {
-                    var delete = FILE.Get(f => f.ID == id);
-                    FILE.Delete(delete);
-                    delete.STATUS = "Deleted";
+             
 
-                    return Ok(delete);
+                if (deleteRecord == "true")
+                {
+                    if (id > 0)
+                    {
+                        var delete = FILE.Get(f => f.ID == id);
+                        FILE.Delete(delete);
+
+                        return Ok(delete);
+                    }
+
+                    return BadRequest("Error: could not delete. No ID provided");
+
                 }
 
                 var fileList = await Task.FromResult(FILE.FileValues(provider, User.Identity.Name.Replace("AZWATER0\\", "")));
