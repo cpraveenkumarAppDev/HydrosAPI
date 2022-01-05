@@ -18,9 +18,11 @@
     using HydrosApi.Models.Adjudication;
     using System.Web;
     using System.Text;
+    using HydrosApi.App_Start;
  
 
     //[Authorize] 
+     
     //at minimum, ensure this is an authorized user, granular permissions will be added later
     public class AdjudicationController : ApiController
     {
@@ -552,7 +554,7 @@
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]
         [HttpPost, Route("adj/addfile/")] //PWR_ID or an error message is returned       
-        public async Task<IHttpActionResult> AddFile() //<== ID IS THE ID FROM THE EXPLANATION TABLE
+        public async Task<IHttpActionResult> AddFile() 
         {
             try
             {
@@ -578,13 +580,18 @@
 
                 var deleteRecord = form["DeleteRecord"];
 
-                if(deleteRecord=="true" && id > 0)
+                if(deleteRecord=="true")
                 {
-                    var delete = FILE.Get(f => f.ID == id);
-                    FILE.Delete(delete);
-                    delete.STATUS = "Deleted";
+                    if (id > 0)
+                    {
+                        var delete = FILE.Get(f => f.ID == id);
+                        FILE.Delete(delete);
+                        
+                        return Ok(delete);
+                    }                    
 
-                    return Ok(delete);
+                    return BadRequest(string.Format("Error: could not with id: {0}", id));
+
                 }
 
                 var fileList = await Task.FromResult(FILE.FileValues(provider, User.Identity.Name.Replace("AZWATER0\\", "")));

@@ -35,7 +35,11 @@ namespace HydrosApi.Models
             get
             {
                 DocushareService doc = new DocushareService();
-                return doc.getSurfaceWaterDocs(this.ART_PROGRAM + "-" + this.ART_APPLI_NO).Select(f => f.FileUrl).Distinct().ToList();
+                var item = doc.getSurfaceWaterDocs(this.ART_PROGRAM + "-" + this.ART_APPLI_NO);
+
+                StatusMsg = item == null ? "Could not find file" : item.FirstOrDefault().Status != null ? item.FirstOrDefault().Status : null;
+
+                return item?.Select(f => f.FileUrl).Distinct().ToList();
             }
 
             set
@@ -57,7 +61,8 @@ namespace HydrosApi.Models
        /* 
         [StringLength(6)]
         public string WS_CODE { get; set; } */
-
+       [NotMapped]
+       public string StatusMsg { get; set; }
 
         //this is no longer necessary and can be removed eventually
         public static List<SW_AIS_VIEW> SurfaceWaterView(string swList) //a comma-delimited list

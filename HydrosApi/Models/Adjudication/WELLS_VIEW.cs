@@ -20,7 +20,9 @@ namespace HydrosApi
             get
             {
                 DocushareService doc = new DocushareService();
-                return doc.getWellDocs(this.REGISTRY_ID).FileUrl;
+                var item = doc.getWellDocs(this.REGISTRY_ID);
+                StatusMsg = item == null ? "Could not find file" : item.Status != null ? item.Status : null;               
+                return item?.FileUrl;
             }
 
             set
@@ -65,6 +67,9 @@ namespace HydrosApi
         
 
         public DateTime? INSTALL_DATE { get; set; }
+
+        [NotMapped]
+        public string StatusMsg { get; set; }
 
         //this is no longer necessary and can be removed eventually
         /*public static List<WELLS_VIEW> WellsView(string wellList)

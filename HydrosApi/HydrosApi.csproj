@@ -286,6 +286,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\HelpPage\ApiDescriptionExtensions.cs" />
@@ -328,6 +329,7 @@
     <Compile Include="Data\MapUriConfig.cs" />
     <Compile Include="Data\QueryResult.cs" />
     <Compile Include="Data\SdeRepository.cs" />
+    <Compile Include="Data\SendEmail.cs" />
     <Compile Include="Models\Adjudication\AISPODS.cs" />
     <Compile Include="Models\Adjudication\CdUnitOfMeasureSOC.cs" />
     <Compile Include="Models\Adjudication\CropCode.cs" />
