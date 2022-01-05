@@ -1,30 +1,28 @@
-﻿namespace HydrosApi.Services.docushareClient
-{
-    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using Newtonsoft.Json;
-    using App_Start;
-
-
+ 
+namespace HydrosApi.Services.docushareClient
+{
     public class DocushareService
     {
         private HttpClient client;
-        
 
         public DocushareService()
         {
             this.client = new HttpClient();
             this.client.BaseAddress = new Uri("http://dwrsrvc.azwater.gov/dsapi/api/");
         }
-        public List<SOCDOC>GetSocDocs(string pcc)
+        public List<SOCDOC> GetSocDocs(string pcc)
         {
-           
+
             List<SOCDOC> socDocs = new List<SOCDOC>();
             var socMsg = new SOCDOC();
-           try { 
-            
+            try
+            {
+
                 if (pcc == null)
                 {
                     socMsg.Status = "PCC submitted was empty";
@@ -36,39 +34,32 @@ using Newtonsoft.Json;
                 var path = string.Format("soc/getsocdocuments?fileNumber={0}", pcc);
 
                 var result = this.client.GetAsync(path).Result;
-               
+
                 if (result.IsSuccessStatusCode)
                 {
                     //send json object back
                     var content = result.Content.ReadAsStringAsync().Result;
                     if (content.Contains("No records found"))
                     {
-                        socMsg.Status = $"No records found for " + pcc;
+                        socMsg.Status = $"Error: No records found for " + pcc;
                         socDocs.Add(socMsg);
                         return socDocs;
                     }
-                    socDocs = JsonConvert.DeserializeObject<List<SOCDOC>>(content);                    
-                    return socDocs;                    
+                    socDocs = JsonConvert.DeserializeObject<List<SOCDOC>>(content);
+                    return socDocs;
                 }
 
-                socMsg.Status = $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
+                socMsg.Status = $"Error: There was a non success code sent back from the DSAPI: {result.StatusCode}";
                 socDocs.Add(socMsg);
                 return socDocs;
             }
-             catch(Exception exception)
+            catch (Exception exception)
             {
-                
                 socMsg.Status = $"Error {pcc}: {exception.Message}";
                 socDocs.Add(socMsg);
-                var log = new Logger();
-                
-                //write to log file but don't send email
-                log.HandleException(exception,false);               
-
                 return socDocs;
-  
             }
-            
+
         }
 
         public List<SWDOC> getSurfaceWaterDocs(string pcc)
@@ -104,7 +95,7 @@ using Newtonsoft.Json;
                 swDoc.Add(swMsg);
                 return swDoc;
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 swMsg.Status = $"Error {pcc}: {exception.Message}";
                 swDoc.Add(swMsg);
@@ -118,7 +109,7 @@ using Newtonsoft.Json;
             WELLDOC wellDoc = new WELLDOC();
             try
             {
-               
+
                 //call DSAPI
                 var result = this.client.GetAsync("wellregdoc/get?regid=" + pcc).Result;
 
@@ -134,7 +125,7 @@ using Newtonsoft.Json;
 
                 return wellDoc;
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 wellDoc.Status = $"Error {pcc}: {exception.Message}";
                 return wellDoc;

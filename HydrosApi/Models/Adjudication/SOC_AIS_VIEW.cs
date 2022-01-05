@@ -18,13 +18,16 @@ namespace HydrosApi.Models
             get
             {
                 DocushareService doc = new DocushareService();
-                var item = doc.GetSocDocs("39-" + this.FILE_NO).FirstOrDefault();
-                StatusMsg = item == null ? "Could not find file" : item.Status != null ? item.Status : null;
-                return item?.FileUrl;
+                var docItem = doc.GetSocDocs("39-" + this.FILE_NO).FirstOrDefault();
+                if(docItem.Status != null)
+                {
+                    StatusMsg = docItem.Status;
+                }
+                return docItem.FileUrl;
             }
 
             set
-            {                 
+            {
                 this.FILE_LINK = value;
             }
         }
@@ -73,15 +76,9 @@ namespace HydrosApi.Models
             DocushareService docuService = new DocushareService();
             foreach(var item in soc)
             {
-                var doc = docuService.GetSocDocs("39-" + item.FILE_NO).FirstOrDefault();
-
-                if(doc.FileUrl==null && doc.Status != null)
-                {
-                    item.StatusMsg = doc.Status;
-                }
-                var url = doc.FileUrl;
-
-                item.FILE_LINK = url;               
+                var url = docuService.GetSocDocs("39-" + item.FILE_NO).FirstOrDefault().FileUrl;
+                item.FILE_LINK = url;
+               
             }
 
             return soc.Distinct().ToList();
