@@ -19,10 +19,17 @@ namespace HydrosApi
         {
             get
             {
-                DocushareService doc = new DocushareService();
-                var item = doc.getWellDocs(this.REGISTRY_ID);
-                StatusMsg = item == null ? "Could not find file" : item.Status != null ? item.Status : null;               
-                return item?.FileUrl;
+                if (this.REGISTRY_ID != null)
+                {
+                    DocushareService doc = new DocushareService();
+                    var item = doc.getWellDocs(this.REGISTRY_ID);
+                    StatusMsg = item == null ? "Could not find file" : item.Status != null ? item.Status : null;
+                    return item?.FileUrl;
+                }
+                else
+                {
+                    return null;
+                }
             }
 
             set
@@ -71,26 +78,42 @@ namespace HydrosApi
         [NotMapped]
         public string StatusMsg { get; set; }
 
-        //this is no longer necessary and can be removed eventually
-        /*public static List<WELLS_VIEW> WellsView(string wellList)
+        
+        public static List<WELLS_VIEW> WellsView(List<FileFromStringList> fileInfo) //a comma-delimited list
         {
-            var db = new ADWRContext();
-            var wellMatch = DelimitedColumnHandler.FileInformation(wellList).Where(i=>i.FileType=="55"||i.FileType=="35").Select(i => i.FileNumber).ToList();
+            var well = new List<WELLS_VIEW>();
+            try
+            {
+                if (fileInfo == null)
+                    return null;
 
-            if (wellMatch == null)
-                return null;
-             
-            var well = db.WELLS_VIEW.Where(w => wellMatch.Contains(w.FILE_NO)).Distinct().ToList();
+                foreach (var f in fileInfo)
+                {
+                    var w = Get(s => s.FILE_NO == f.FileNo6 && s.PROGRAM == f.Program);
 
-            if (well == null)
-                return null;
-            DocushareService docuService = new DocushareService();
-            foreach (var item in well)
-            {                
-                item.FILE_LINK = docuService.getWellDocs(item.REGISTRY_ID).FileUrl;
+                    if(w==null)
+                    {
+                        w = new WELLS_VIEW()
+                        {
+                            PROGRAM = f.Program,
+                            FILE_NO = f.FileNo6,
+                            StatusMsg = string.Format("Could not find a record for Well {0}", f.UserValue),
+                            PCC= string.Format("Error: {0}", f.UserValue)
+                        };
+                    }
+
+                    well.Add(w);
+                }
+                return well.Distinct().ToList();
+            }
+            catch (Exception exception)
+            {
+                var errorWell = new WELLS_VIEW();
+                errorWell.StatusMsg = string.Format("Error{0}", exception.Message);
+                well.Add(errorWell);
+                return well;
             }
 
-            return well;
-        }*/
+        }
     }
 }

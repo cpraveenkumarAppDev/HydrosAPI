@@ -34,13 +34,17 @@ namespace HydrosApi.Models
         {
             get
             {
-                DocushareService doc = new DocushareService();
-                var docItem = doc.getSurfaceWaterDocs(this.ART_PROGRAM + "-" + this.ART_APPLI_NO);
-                var docStatus = docItem?.Where(d => d.Status != null)?.Select(d=>d.Status)?.FirstOrDefault();
-                
-                StatusMsg = docStatus;
-                
-                return docItem?.Select(f => f.FileUrl).Distinct().ToList();
+                if (ART_APPLI_NO != null)
+                {
+                    DocushareService doc = new DocushareService();
+                    var docItem = doc.getSurfaceWaterDocs(this.ART_PROGRAM + "-" + this.ART_APPLI_NO);
+                    var docStatus = docItem?.Where(d => d.Status != null)?.Select(d => d.Status)?.FirstOrDefault();
+
+                    StatusMsg = docStatus;
+
+                    return docItem?.Select(f => f.FileUrl).Distinct().ToList();
+                }
+                return null;
             }
 
             set
@@ -65,26 +69,45 @@ namespace HydrosApi.Models
         [NotMapped]
         public string StatusMsg { get; set; }
 
-        //this is no longer necessary and can be removed eventually
-        public static List<SW_AIS_VIEW> SurfaceWaterView(string swList) //a comma-delimited list
+        public static List<SW_AIS_VIEW> SurfaceWaterView(List<FileFromStringList> fileInfo) //a comma-delimited list
         {
-            
-            var swMatch = DelimitedColumnHandler.FileInformation(swList).Where(i=>i.FileType != "55" && i.FileType != "35").ToList();
-            var sw = new List<SW_AIS_VIEW>();
-
-            DocushareService docuService = new DocushareService();
-            foreach (var item in swMatch)
+            var surface = new List<SW_AIS_VIEW>();
+            try
             {
-                int fileNo = int.Parse(item.FileNumber);
-                var swItem = GetList(s => s.ART_APPLI_NO == fileNo && s.ART_PROGRAM == item.FileType);
-                var swFile=docuService.getSurfaceWaterDocs(item.FileType+"-"+item.FileNumber).Select(f => f.FileUrl).Distinct();
-                swItem.Select(d => { d.FILE_LINK = swFile.ToList(); return d; }).ToList();
-              
-                sw.AddRange(swItem); //<== it might be possible to have multiple documents related to the one item 
+                if (fileInfo == null)
+                    return null;
 
+                int number;
+
+                foreach (var f in fileInfo)
+                {
+                    var firstNum = int.TryParse(f.Program.Substring(0, 1), out number);
+
+                    //var sw = firstNum == true ? Get(s => s.ART_APPLI_NO == f.NumericFileNo && s.ART_PROGRAM == f.Program) : Get(s => s.PCC == f.UserValue);
+                    var sw = Get(s => s.ART_APPLI_NO == f.NumericFileNo && s.ART_PROGRAM == f.Program);
+
+                    if (sw == null)
+                    {
+                        sw = new SW_AIS_VIEW()
+                        {
+                            ART_PROGRAM = f.Program,
+                            ART_APPLI_NO = f.NumericFileNo,
+                            StatusMsg = string.Format("Could not find a record for Surfacewater {0}", f.UserValue),
+                            PCC = string.Format("Error: {0}", f.UserValue)
+                        };
+                    }
+
+                    surface.Add(sw);
+                }
+                return surface.Distinct().ToList();
             }
-
-            return sw;
+            catch (Exception exception)
+            {
+                var errorSw = new SW_AIS_VIEW();
+                errorSw.StatusMsg = string.Format("Error{0}", exception.Message);
+                surface.Add(errorSw);
+                return surface;
+            }
 
         }
     }
