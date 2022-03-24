@@ -29,10 +29,16 @@ namespace HydrosApi.Models
 
         public int? ART_CONVY_NO { get; set; }
 
+        [NotMapped]
+        public List<SWDOC> SurfaceWaterDocument { get; set; }
+
+
         [NotMapped]         
         public List<string> FILE_LINK
         {
-            get
+            get; set;
+           
+           /* get
             {
                 if (ART_APPLI_NO != null)
                 {
@@ -50,7 +56,7 @@ namespace HydrosApi.Models
             set
             {
                 this.FILE_LINK = value;
-            }
+            }*/
         }
 
         [Column("OWNER_NAME"), StringLength(40)]
@@ -61,11 +67,7 @@ namespace HydrosApi.Models
         //public string USE { get; set; }
         [Column("PCC"), StringLength(88)]
         public string PCC { get; set; }
-        //public string FILE_STATUS { get; set; }
-        // public DateTime? ART_FILE_DATE { get; set; }
-        /* 
-         [StringLength(6)]
-         public string WS_CODE { get; set; } */
+       
         [NotMapped]
         public string StatusMsg { get; set; }
 
@@ -77,16 +79,22 @@ namespace HydrosApi.Models
                 if (fileInfo == null)
                     return null;
 
-                int number;
-
+                
                 foreach (var f in fileInfo)
-                {
-                    var firstNum = int.TryParse(f.Program.Substring(0, 1), out number);
+                {                                  
+                    var sw = f.Program != "CW" ? Get(s => s.ART_APPLI_NO == f.NumericFileNo && s.ART_PROGRAM == f.Program) : null;
 
-                    //var sw = firstNum == true ? Get(s => s.ART_APPLI_NO == f.NumericFileNo && s.ART_PROGRAM == f.Program) : Get(s => s.PCC == f.UserValue);
-                    var sw = Get(s => s.ART_APPLI_NO == f.NumericFileNo && s.ART_PROGRAM == f.Program);
+                    if (sw != null)
+                    {
+                        DocushareService doc = new DocushareService();
+                        var docItem = doc.getSurfaceWaterDocs(sw.ART_PROGRAM + "-" + sw.ART_APPLI_NO)?.OrderByDescending(x=>x.Handle).ToList();
+                        var docStatus = docItem?.Where(d => d.Status != null)?.Select(d => d.Status)?.FirstOrDefault();
+                        sw.SurfaceWaterDocument = docItem;
+                        sw.StatusMsg = docStatus;
+                        sw.FILE_LINK=docItem?.Select(d => d.FileUrl).Distinct().ToList();
+                    }
 
-                    if (sw == null)
+                    else // (sw == null || sw.ART_PROGRAM != f.Program)
                     {
                         sw = new SW_AIS_VIEW()
                         {
@@ -96,7 +104,7 @@ namespace HydrosApi.Models
                             PCC = string.Format("Error: {0}", f.UserValue)
                         };
                     }
-
+                 
                     surface.Add(sw);
                 }
                 return surface.Distinct().ToList();

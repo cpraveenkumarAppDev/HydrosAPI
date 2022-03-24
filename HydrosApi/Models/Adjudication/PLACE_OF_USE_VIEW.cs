@@ -124,6 +124,14 @@
         [NotMapped]
         public List<FILE> FileList { get; set; }
 
+
+        //get sde pou information to match watershed
+        public static PLACE_OF_USE_VIEW PlaceOfUseInfo(int id)
+        {
+            var pwr = PROPOSED_WATER_RIGHT.Get(p => p.ID == id);
+            var pou = pwr != null ? Get(p => p.DWR_ID == pwr.POU_ID) : null;
+            return pou;
+        }
         //Returns EVERYTHING needed to populate the form
         //removed from controller
         public static List<PLACE_OF_USE_VIEW> PlaceOfUseView(string id)
@@ -189,6 +197,7 @@
             }
 
             pouList.Add(pou);
+
 
             return pouList;
         }        

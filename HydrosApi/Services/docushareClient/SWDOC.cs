@@ -14,7 +14,6 @@ namespace HydrosApi.Services.docushareClient
         public string FileUrl { get; set; }
         public string ObjSummary { get; set; }
         public string FileIdentifier { get; set; }
-
         public string Status { get; set; }
     }
 }

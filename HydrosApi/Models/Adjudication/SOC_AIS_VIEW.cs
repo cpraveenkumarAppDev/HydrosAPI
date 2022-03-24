@@ -15,7 +15,8 @@ namespace HydrosApi.Models
         [StringLength(4000)]
         public string FILE_LINK
         {
-            get
+            get; set;
+          /* get
             {
                 if (FILE_NO != null)
                 {
@@ -33,7 +34,7 @@ namespace HydrosApi.Models
             set
             {
                 this.FILE_LINK = value;
-            }
+            }*/
         }
         [StringLength(45)]
         public string PCC { get; set; }
@@ -63,6 +64,20 @@ namespace HydrosApi.Models
         public int? MAIN_ID { get; set; }
 
         [NotMapped]
+        public List<SOCDOC> StatementOfClaimDocument { 
+            get
+            {
+                DocushareService doc = new DocushareService();
+                return doc.GetSocDocs("39-" + this.FILE_NO);
+            }
+            set
+            {
+                StatementOfClaimDocument = value;
+            }
+        
+        }
+
+        [NotMapped]
         public string StatusMsg { get; set; }
     
        
@@ -74,6 +89,7 @@ namespace HydrosApi.Models
                 {
                     return null;
                 }
+
                 var socList = GetList(s => fileNumberList.Contains(s.FILE_NO ?? -1));
 
                 var statement = (from fileNumber in fileNumberList
@@ -90,6 +106,7 @@ namespace HydrosApi.Models
                                      }
 
                                  }).Select(s => s.statementJoin).Distinct().ToList();
+
 
                 return statement;
 

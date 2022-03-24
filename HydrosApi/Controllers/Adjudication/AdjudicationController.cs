@@ -84,13 +84,14 @@
         public async Task<IHttpActionResult> GetPlaceOfUse(string id = null)
         {
             if (id != null)
-            {
+            { 
                 var pou = await Task.FromResult(PLACE_OF_USE_VIEW.PlaceOfUseView(id));
                 return Ok(pou);
             }
             else
-            {
-                return Ok(await Task.FromResult(PLACE_OF_USE_VIEW.GetAll())); //return all places of use
+            {                
+                //return Ok(await Task.FromResult(PLACE_OF_USE_VIEW.GetAll())); //return all places of use
+                return Ok(await Task.FromResult(PLACE_OF_USE_VIEW.GetList(p => p.DWR_ID.IndexOf("SPR") != 0))); //For now, exclude places of use with DWR_ID SPR
             }
         }
         [Route("adj/getAisConfig")]
@@ -217,50 +218,87 @@
         public async Task<IHttpActionResult> AddPod(int podobjectid, string Objtype, int id)
         {
             var adwrpod = POINT_OF_DIVERSION_VIEW.Get(p => p.OBJECTID == podobjectid);
-            if (Objtype == "PWR")
+
+            try
             {
-                var pwrPodList = await Task.FromResult(PWR_POD.GetList(p => (p.POD_ID ?? -1) == adwrpod.ID && (p.PWR_ID ?? -1) == id));
-                if (pwrPodList != null && pwrPodList.Count() > 0)
-                {
-                    return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
-                }
-                if (adwrpod != null)
+                if (Objtype == "PWR")
                 {
 
-                    var newPwrPod = PWR_POD.Add(new PWR_POD()
+                    var pwrPodList = await Task.FromResult(PWR_POD.GetList(p => (p.POD_ID ?? -1) == adwrpod.ID && (p.PWR_ID ?? -1) == id));
+                    if (pwrPodList != null && pwrPodList.Count() > 0)
+                    {
+                        return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
+                    }
+                    if (adwrpod != null)
+                    {
+                        /*var pou = PLACE_OF_USE_VIEW.PlaceOfUseInfo(id);
+                        var podSDE = POINT_OF_DIVERSION.Get(p => p.OBJECTID == podobjectid);
+
+                        if(!(pou.WS==podSDE.WS && (pou.SW==podSDE.SW || pou.SW==null && podSDE.SW==null)))
+                        {
+                            return BadRequest("Points of Diversion and Places of Use must have the same Watershed and Subwatershed.");
+                        }*/
+
+                        var newPwrPod = PWR_POD.Add(new PWR_POD()
+                        {
+                            CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
+                            CREATEDT = DateTime.Now,
+                            POD_ID = adwrpod.ID,
+                            PWR_ID = id
+                        });
+                        return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion(newPwrPod)));
+                    }
+                    else
+                    {
+                        return Ok("No POD found in ADWR table");
+                    }
+
+                }
+                else
+                {
+
+                    var wfrPodList = await Task.FromResult(WFR_POD.Get(p => p.POD_ID == adwrpod.ID && p.WFR_ID == id));
+
+                    if (wfrPodList != null)
+                    {
+                        return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
+                    }
+                    var newWfrPod = WFR_POD.Add(new WFR_POD()
                     {
                         CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
                         CREATEDT = DateTime.Now,
                         POD_ID = adwrpod.ID,
-                        PWR_ID = id
+                        WFR_ID = id
                     });
-                    return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversion(newPwrPod)));
+                    return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversionWfr(newWfrPod)));
                 }
-                else
-                {
-                    return Ok("No POD found in ADWR table");
-                }
-
             }
-            else
+            catch(Exception exception)
             {
-
-                var wfrPodList = await Task.FromResult(WFR_POD.Get(p => p.POD_ID == adwrpod.ID && p.WFR_ID == id));
-
-                if (wfrPodList != null)
+                try
                 {
-                    return BadRequest("A relationship already exists for this Place of Use and Point of Diversion");
+                    var msg = exception.InnerException.InnerException.Message;
+                    var ora = msg.ToLower().IndexOf("ora-") == 0;
+                    var idx =msg.ToLower().IndexOf("watershed") > -1 && msg.ToLower().IndexOf("match") > -1;
+
+                    if(idx==true)
+                    {
+                        return BadRequest("Cannot update, the watershed or sub watershed does not match.");
+                    }
+                    if (ora == true)
+                    {
+                        return BadRequest("Could not update this record.");
+                    }
+
+                    return InternalServerError(exception);
+                    
                 }
-                var newWfrPod = WFR_POD.Add(new WFR_POD()
+                catch(Exception innerException)
                 {
-                    CREATEBY = User.Identity.Name.Replace("AZWATER0\\", ""),
-                    CREATEDT = DateTime.Now,
-                    POD_ID = adwrpod.ID,
-                    WFR_ID = id
-                });
-                return Ok(await Task.FromResult(POINT_OF_DIVERSION.PointOfDiversionWfr(newWfrPod)));
+                    return InternalServerError(exception != null ? exception : innerException);
+                }                
+                
             }
-
         }
 
         [Authorize(Roles = "AZWATER0\\PG-APPDEV,AZWATER0\\PG-Adjudications")]       

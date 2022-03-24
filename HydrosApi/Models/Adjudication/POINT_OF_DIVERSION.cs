@@ -215,8 +215,8 @@
             var PodView = POINT_OF_DIVERSION_VIEW.Get(p => p.ID == pwrPod.POD_ID);
             if(objectid > -1)
             {
-                var pod = POINT_OF_DIVERSION.PointOfDiversion(PodView.OBJECTID);
-                pod.PWR_POD_ID = pwrPod.ID;
+                var pod = PointOfDiversion(PodView.OBJECTID);
+                pod.PWR_POD_ID = pwrPod?.ID;                 
                 return pod;
             }
             return null;
