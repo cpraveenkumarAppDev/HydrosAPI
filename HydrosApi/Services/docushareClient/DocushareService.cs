@@ -22,13 +22,11 @@ namespace HydrosApi.Services.docushareClient
             var socMsg = new SOCDOC();
             try
             {
-
                 if (pcc == null)
                 {
                     socMsg.Status = "PCC submitted was empty";
                     socDocs.Add(socMsg);
                     return socDocs;
-
                 }
                 //call DSAPI
                 var path = string.Format("soc/getsocdocuments?fileNumber={0}", pcc);
@@ -41,7 +39,7 @@ namespace HydrosApi.Services.docushareClient
                     var content = result.Content.ReadAsStringAsync().Result;
                     if (content.Contains("No records found"))
                     {
-                        socMsg.Status = $"Error: No records found for " + pcc;
+                        socMsg.Status = $"No records found for " + pcc;
                         socDocs.Add(socMsg);
                         return socDocs;
                     }
@@ -49,13 +47,13 @@ namespace HydrosApi.Services.docushareClient
                     return socDocs;
                 }
 
-                socMsg.Status = $"Error: There was a non success code sent back from the DSAPI: {result.StatusCode}";
+                socMsg.Status = $"DSAPI error: {result.StatusCode}";
                 socDocs.Add(socMsg);
                 return socDocs;
             }
             catch (Exception exception)
             {
-                socMsg.Status = $"Error {pcc}: {exception.Message}";
+                socMsg.Status = $"File error for {pcc}: {exception.Message}";
                 socDocs.Add(socMsg);
                 return socDocs;
             }
@@ -91,13 +89,13 @@ namespace HydrosApi.Services.docushareClient
 
                 //swDoc.FirstOrDefault().Status = $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
 
-                swMsg.Status = $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
+                swMsg.Status = $"DSAPI error: {result.StatusCode}";
                 swDoc.Add(swMsg);
                 return swDoc;
             }
             catch (Exception exception)
             {
-                swMsg.Status = $"Error {pcc}: {exception.Message}";
+                swMsg.Status = $"File error for {pcc}: {exception.Message}";
                 swDoc.Add(swMsg);
                 return swDoc;
             }
@@ -121,13 +119,13 @@ namespace HydrosApi.Services.docushareClient
                     return wellDoc;
                 }
 
-                wellDoc.Status = $"There was a non success code sent back from the DSAPI: {result.StatusCode}";
+                wellDoc.Status = $"DSAPI Error: {result.StatusCode}";
 
                 return wellDoc;
             }
             catch (Exception exception)
             {
-                wellDoc.Status = $"Error {pcc}: {exception.Message}";
+                wellDoc.Status = $"File error for {pcc}: {exception.Message}";
                 return wellDoc;
             }
 

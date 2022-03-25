@@ -29,24 +29,34 @@ namespace HydrosApi.Models
 
         public int? ART_CONVY_NO { get; set; }
 
+        [NotMapped]
+        public List<SWDOC> SurfaceWaterDocument { get; set; }
+
+
         [NotMapped]         
         public List<string> FILE_LINK
         {
-            get
+            get; set;
+           
+           /* get
             {
-                DocushareService doc = new DocushareService();
-                var docItem = doc.getSurfaceWaterDocs(this.ART_PROGRAM + "-" + this.ART_APPLI_NO);
-                var docStatus = docItem?.Where(d => d.Status != null)?.Select(d=>d.Status)?.FirstOrDefault();
-                
-                StatusMsg = docStatus;
-                
-                return docItem?.Select(f => f.FileUrl).Distinct().ToList();
+                if (ART_APPLI_NO != null)
+                {
+                    DocushareService doc = new DocushareService();
+                    var docItem = doc.getSurfaceWaterDocs(this.ART_PROGRAM + "-" + this.ART_APPLI_NO);
+                    var docStatus = docItem?.Where(d => d.Status != null)?.Select(d => d.Status)?.FirstOrDefault();
+
+                    StatusMsg = docStatus;
+
+                    return docItem?.Select(f => f.FileUrl).Distinct().ToList();
+                }
+                return null;
             }
 
             set
             {
                 this.FILE_LINK = value;
-            }
+            }*/
         }
 
         [Column("OWNER_NAME"), StringLength(40)]
@@ -57,34 +67,55 @@ namespace HydrosApi.Models
         //public string USE { get; set; }
         [Column("PCC"), StringLength(88)]
         public string PCC { get; set; }
-        //public string FILE_STATUS { get; set; }
-        // public DateTime? ART_FILE_DATE { get; set; }
-        /* 
-         [StringLength(6)]
-         public string WS_CODE { get; set; } */
+       
         [NotMapped]
         public string StatusMsg { get; set; }
 
-        //this is no longer necessary and can be removed eventually
-        public static List<SW_AIS_VIEW> SurfaceWaterView(string swList) //a comma-delimited list
+        public static List<SW_AIS_VIEW> SurfaceWaterView(List<FileFromStringList> fileInfo) //a comma-delimited list
         {
-            
-            var swMatch = DelimitedColumnHandler.FileInformation(swList).Where(i=>i.FileType != "55" && i.FileType != "35").ToList();
-            var sw = new List<SW_AIS_VIEW>();
-
-            DocushareService docuService = new DocushareService();
-            foreach (var item in swMatch)
+            var surface = new List<SW_AIS_VIEW>();
+            try
             {
-                int fileNo = int.Parse(item.FileNumber);
-                var swItem = GetList(s => s.ART_APPLI_NO == fileNo && s.ART_PROGRAM == item.FileType);
-                var swFile=docuService.getSurfaceWaterDocs(item.FileType+"-"+item.FileNumber).Select(f => f.FileUrl).Distinct();
-                swItem.Select(d => { d.FILE_LINK = swFile.ToList(); return d; }).ToList();
-              
-                sw.AddRange(swItem); //<== it might be possible to have multiple documents related to the one item 
+                if (fileInfo == null)
+                    return null;
 
+                
+                foreach (var f in fileInfo)
+                {                                  
+                    var sw = f.Program != "CW" ? Get(s => s.ART_APPLI_NO == f.NumericFileNo && s.ART_PROGRAM == f.Program) : null;
+
+                    if (sw != null)
+                    {
+                        DocushareService doc = new DocushareService();
+                        var docItem = doc.getSurfaceWaterDocs(sw.ART_PROGRAM + "-" + sw.ART_APPLI_NO)?.OrderByDescending(x=>x.Handle).ToList();
+                        var docStatus = docItem?.Where(d => d.Status != null)?.Select(d => d.Status)?.FirstOrDefault();
+                        sw.SurfaceWaterDocument = docItem;
+                        sw.StatusMsg = docStatus;
+                        sw.FILE_LINK=docItem?.Select(d => d.FileUrl).Distinct().ToList();
+                    }
+
+                    else // (sw == null || sw.ART_PROGRAM != f.Program)
+                    {
+                        sw = new SW_AIS_VIEW()
+                        {
+                            ART_PROGRAM = f.Program,
+                            ART_APPLI_NO = f.NumericFileNo,
+                            StatusMsg = string.Format("Could not find a record for Surfacewater {0}", f.UserValue),
+                            PCC = string.Format("Error: {0}", f.UserValue)
+                        };
+                    }
+                 
+                    surface.Add(sw);
+                }
+                return surface.Distinct().ToList();
             }
-
-            return sw;
+            catch (Exception exception)
+            {
+                var errorSw = new SW_AIS_VIEW();
+                errorSw.StatusMsg = string.Format("Error{0}", exception.Message);
+                surface.Add(errorSw);
+                return surface;
+            }
 
         }
     }

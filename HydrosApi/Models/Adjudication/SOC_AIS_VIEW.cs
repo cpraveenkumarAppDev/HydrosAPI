@@ -15,21 +15,26 @@ namespace HydrosApi.Models
         [StringLength(4000)]
         public string FILE_LINK
         {
-            get
+            get; set;
+          /* get
             {
-                DocushareService doc = new DocushareService();
-                var docItem = doc.GetSocDocs("39-" + this.FILE_NO).FirstOrDefault();
-                if(docItem.Status != null)
+                if (FILE_NO != null)
                 {
-                    StatusMsg = docItem.Status;
+                    DocushareService doc = new DocushareService();
+                    var docItem = doc.GetSocDocs("39-" + this.FILE_NO).FirstOrDefault();
+                    if (docItem.Status != null)
+                    {
+                        StatusMsg = docItem.Status;
+                    }
+                    return docItem.FileUrl;
                 }
-                return docItem.FileUrl;
+                return null;
             }
 
             set
             {
                 this.FILE_LINK = value;
-            }
+            }*/
         }
         [StringLength(45)]
         public string PCC { get; set; }
@@ -46,7 +51,7 @@ namespace HydrosApi.Models
         [Key]
         [Column(Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int FILE_NO { get; set; }
+        public int? FILE_NO { get; set; }
 
         [Key]
         [Column(Order = 1)]
@@ -56,32 +61,65 @@ namespace HydrosApi.Models
         [Key]
         [Column(Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int MAIN_ID { get; set; }
+        public int? MAIN_ID { get; set; }
+
+        [NotMapped]
+        public List<SOCDOC> StatementOfClaimDocument { 
+            get
+            {
+                DocushareService doc = new DocushareService();
+                return doc.GetSocDocs("39-" + this.FILE_NO);
+            }
+            set
+            {
+                StatementOfClaimDocument = value;
+            }
+        
+        }
 
         [NotMapped]
         public string StatusMsg { get; set; }
     
-
-        //****this is no longer necessary and can be removed eventually
-        public static List<SOC_AIS_VIEW> StatementOfClaimView(string socList) //a comma-delimited list
+       
+        public static List<SOC_AIS_VIEW> StatementOfClaimView(List<int> fileNumberList) //a comma-delimited list
         {
-            var db = new ADWRContext();            
-            var socMatch = DelimitedColumnHandler.FileInformation(socList).Select(i => i.FileNumber == null ? -1 : int.Parse(i.FileNumber)).ToList();
+            try
+            { 
+                if(!(fileNumberList!=null && fileNumberList.Count() > 0))
+                {
+                    return null;
+                }
 
-             
-            var soc = db.SOC_AIS_VIEW.Where(s => socMatch.Contains(s.FILE_NO)).Distinct().ToList();
+                var socList = GetList(s => fileNumberList.Contains(s.FILE_NO ?? -1));
 
-            if (soc == null)
-                return null;
-            DocushareService docuService = new DocushareService();
-            foreach(var item in soc)
-            {
-                var url = docuService.GetSocDocs("39-" + item.FILE_NO).FirstOrDefault().FileUrl;
-                item.FILE_LINK = url;
-               
+                var statement = (from fileNumber in fileNumberList
+                                 join soc in socList on fileNumber equals soc.FILE_NO ?? -1 into socJoin
+                                 from sj in socJoin.DefaultIfEmpty()
+                                 select new
+                                 {
+                                     fileNumber,
+                                     statementJoin = sj != null ? sj : new SOC_AIS_VIEW()
+                                     {
+                                         FILE_NO = fileNumber,
+                                         PCC= string.Format("Error: 39-{0}", fileNumber),
+                                         StatusMsg = string.Format("Could not find a record for FILE_NO 39-{0}", fileNumber)
+                                     }
+
+                                 }).Select(s => s.statementJoin).Distinct().ToList();
+
+
+                return statement;
+
             }
-
-            return soc.Distinct().ToList();
+            catch(Exception exception)
+            {
+                var errorSOCList= new List<SOC_AIS_VIEW>();
+                var errorSOC = new SOC_AIS_VIEW();
+                errorSOC.StatusMsg = string.Format("Error{0}", exception.Message);
+                errorSOCList.Add(errorSOC);
+                return errorSOCList;
+            }
+          
         }
     }
 }

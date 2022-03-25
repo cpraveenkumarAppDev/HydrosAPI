@@ -124,6 +124,14 @@
         [NotMapped]
         public List<FILE> FileList { get; set; }
 
+
+        //get sde pou information to match watershed
+        public static PLACE_OF_USE_VIEW PlaceOfUseInfo(int id)
+        {
+            var pwr = PROPOSED_WATER_RIGHT.Get(p => p.ID == id);
+            var pou = pwr != null ? Get(p => p.DWR_ID == pwr.POU_ID) : null;
+            return pou;
+        }
         //Returns EVERYTHING needed to populate the form
         //removed from controller
         public static List<PLACE_OF_USE_VIEW> PlaceOfUseView(string id)
@@ -136,16 +144,20 @@
                 if (pou.SOC != null)
                 {
                     var soc = FileFromStringList.GetFileFromStringList(pou.SOC, new[] { ',', ';' });
-                    pou.StatementOfClaim = soc?.Select(f => SOC_AIS_VIEW.Get(s => s.FILE_NO == f.NumericFileNo)).Distinct().ToList();
+                    pou.StatementOfClaim = SOC_AIS_VIEW.StatementOfClaimView(soc.Select(s => s.NumericFileNo).Distinct().ToList());
+                   // pou.StatementOfClaim = soc?.Select(f => SOC_AIS_VIEW.Get(s => s.FILE_NO == f.NumericFileNo)).Distinct().ToList();
                 }
 
                 if (pou.BAS_OF_CLM != null)
                 {
-                    var bocList = FileFromStringList.GetFileFromStringList(pou.BAS_OF_CLM, new[] { ',', ';' }).Where(x=>x.Error==null);
-                    var wellList = bocList?.Where(p => p.Program == "55" || p.Program == "35");
-                    var swList = bocList?.Where(p => p.Program != "55" && p.Program != "35");                    
-                    pou.Well = wellList?.Select(f => WELLS_VIEW.Get(s => s.FILE_NO == f.FileNo && s.PROGRAM == f.Program)).ToList();
-                    pou.Surfacewater = swList?.Select(f => SW_AIS_VIEW.Get(s => s.ART_APPLI_NO == f.NumericFileNo)).ToList();
+                    var bocList = FileFromStringList.GetFileFromStringList(pou.BAS_OF_CLM, new[] { ',', ';' }).ToList();
+                    var wellList = bocList?.Where(p => p.Program == "55" || p.Program == "35").Distinct().ToList();
+                    var swList = bocList?.Where(p => p.Program != "55" && p.Program != "35").Distinct().ToList();
+                    //pou.Well = wellList?.Select(f => WELLS_VIEW.Get(s => s.FILE_NO == f.FileNo && s.PROGRAM == f.Program)).ToList();
+
+                    pou.Well = WELLS_VIEW.WellsView(wellList);
+                    //pou.Surfacewater = swList?.Select(f => SW_AIS_VIEW.Get(s => s.ART_APPLI_NO == f.NumericFileNo)).ToList();
+                    pou.Surfacewater = SW_AIS_VIEW.SurfaceWaterView(swList);
                 }
 
             }
@@ -185,6 +197,7 @@
             }
 
             pouList.Add(pou);
+
 
             return pouList;
         }        

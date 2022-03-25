@@ -467,6 +467,7 @@
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="Adj.config" />
     <Content Include="MapConfig\ais.json" />
+    <Content Include="Docs\Manage Notices of Appropriation.docx" />
     <None Include="packages.config" />
     <Content Include="Properties\launchSettings.json" />
     <None Include="Properties\PublishProfiles\TESTenvDeploy.pubxml" />
